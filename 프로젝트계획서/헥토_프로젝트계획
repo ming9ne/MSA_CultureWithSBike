@@ -1,0 +1,95 @@
+# 헥토
+
+1. 개발 목표
+- Spring Cloud 모듈을 활용한 MSA(Micro Service Architecture) 개발하고, 대용량 서비스 운영에 필수적인 분산 처리 환경을 경험함으로써 역량 강화
+    - MSA 아키텍처 설계 및 구현
+    - 동적 서비스 식별 및 검색을 위한 Eureka를 활용하여 서비스 구현
+    - 부하 분산을 위한 Load Balancing 및 Routing 처리를 Ribbon/Zuul Api Gateway를 사용하여 구현
+    - 장애 전파 방지를 위한 Circuit Breaker 구현
+
+2. 키워드
+- 시퀀스 다이어그램
+- Spring Cloud
+- MSA
+- Eureka
+- DB 스키마 설계
+- API 명세서 작성
+- Git 관리
+- 기능 단위 분업
+
+3. 팀원 구성 및 역할 분배
+- 팀원 구성
+    - 2018301008 김성태
+    - 2017301033 박태현
+- 역할 분배
+    - 김성태 : Architecture 설계, 리소스 관리, 서비스 구현
+    - 박태현 : 서비스 구현, 테스트 수행, 일정 관리
+
+4. 사용 기술
+- Spring Boot
+- Java 11
+- Spring Cloud
+- Eureka Server
+- Configuration Server
+- Ribbon
+- Circuit Breaker
+
+5. 주요 기능
+- 동적 서비스 식별(Eureka)
+- 단위 서비스 Configuration 중앙 관리(server)
+- 부하 분산을 위한 Load Balancing 및 Routing 처리 (Ribbon/Zuul API Gateway)
+- 장애 전파 방지 기능 구현 (Circuit Breaker)
+
+6. 개발환경
+- 개발 언어 : JAVA
+- 프레임워크 : Spring Boot, Spring Cloud
+- 데이터베이스 : RDBMS (MySQL)
+- Intellij
+
+7. 협업관리 툴
+- Git
+- Notion
+- ERD Cloud
+
+8. 산출물
+- 요구사항 명세서
+- WBS
+- 시퀀스 다이어그램
+- API 명세서
+- DB ERD
+- 테스트 명세서
+- 관리자 매뉴얼
+
+<개발 전>
+
+주제 : 수강신청 웹 사이트 개발
+
+부제 : 스프링 클라우드를 활용한 MSA
+
+수강신청에 필요한 요구사항을 분석하여 요구사항 명세서를 기능단위를 분류해서 작성한 후 각 기능에 대한 개발을 분업화 
+
+WBS(Work Breakdown Structure)를 활용하여 프로젝트 일정을 관리
+
+시퀀스 다이어그램을 사용하여 객체간의 상호작용을 가시화(StarUML)
+
+MySQL을 사용한 DB 설계
+
+설계된 DB를 ERD Cloud로 (https://www.erdcloud.com/)
+
+Git Convention을 조율하여 효율적인 협업
+
+<개발 단계>
+
+개발 계획에 따른 개발을 진행
+
+협업툴로 Github을 사용하여 2일 간격으로 Pull Request를 진행하여 프로젝트 개발 
+
+Github Issue를 활용하여 프로젝트의 작업과 개선사항, 버그수정 등을 관리
+
+<개발 후>
+
+테스트 진행
+
+AWS를 사용하여 웹 배포 
+
+명세서 작성
