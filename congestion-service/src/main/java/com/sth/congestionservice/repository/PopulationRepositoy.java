@@ -1,4 +1,7 @@
 package com.sth.congestionservice.repository;
 
-public class PopulationRepositoy {
+import com.sth.congestionservice.model.entity.PopulationEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PopulationRepositoy extends JpaRepository<PopulationEntity, Integer> {
 }

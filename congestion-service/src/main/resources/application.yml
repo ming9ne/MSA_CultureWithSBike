@@ -2,7 +2,7 @@
 #database-config
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/sth?useUnicode=true;characterEncoding=utf8;
+    url: jdbc:mysql://localhost:3306/cws?useUnicode=true;characterEncoding=utf8;
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
