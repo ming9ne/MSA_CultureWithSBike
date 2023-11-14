@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.sth.gatewayservice.GatewayServiceApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-11-14T00:31:59" hostname="NORTH205-30" time="0.622">
+  <properties/>
+  <testcase name="contextLoads()" classname="com.sth.gatewayservice.GatewayServiceApplicationTests" time="0.622"/>
+  <system-out><![CDATA[09:31:56.567 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.sth.gatewayservice.GatewayServiceApplicationTests]: GatewayServiceApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+09:31:56.642 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.sth.gatewayservice.GatewayServiceApplication for test class com.sth.gatewayservice.GatewayServiceApplicationTests
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.1.5)
+
+2023-11-14T09:31:57.119+09:00  INFO 3648 --- [    Test worker] c.s.g.GatewayServiceApplicationTests     : Starting GatewayServiceApplicationTests using Java 17.0.8.1 with PID 3648 (started by 북205_130 in C:\work\MSA_SBIKE\MSA_CultureWithSBike\gateway-service)
+2023-11-14T09:31:57.120+09:00  INFO 3648 --- [    Test worker] c.s.g.GatewayServiceApplicationTests     : No active profile set, falling back to 1 default profile: "default"
+2023-11-14T09:31:57.965+09:00  INFO 3648 --- [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=045cc752-d062-358f-bdd3-774f8b65c606
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
+2023-11-14T09:31:58.803+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
+2023-11-14T09:31:58.804+09:00  INFO 3648 --- [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
+2023-11-14T09:31:59.114+09:00  INFO 3648 --- [    Test worker] c.s.g.GatewayServiceApplicationTests     : Started GatewayServiceApplicationTests in 2.323 seconds (process running for 3.205)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
