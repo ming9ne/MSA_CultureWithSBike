@@ -18,6 +18,7 @@ public class CongestionService {
         this.congestionRepository = congestionRepository;
     }
 
+    // 혼잡도 조회
     public List<CongestionDTO> listCongestion() {
         List<Congestion> list = new ArrayList<>();
         List<CongestionDTO> resultList = new ArrayList<>();
@@ -29,4 +30,11 @@ public class CongestionService {
 
         return resultList;
     }
+
+    // 혼잡도 추가
+    public void addCongestion(CongestionDTO congestionDTO) {
+        congestionRepository.save(congestionDTO.toEntity());
+    }
+
+
 }
