@@ -1,6 +1,6 @@
 package com.sth.eventservice.model.dto;
 
-import com.sth.eventservice.model.entity.EventEntity;
+import com.sth.eventservice.model.entity.Event;
 import lombok.*;
 
 @Getter
@@ -9,29 +9,32 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EventDTO {
+    private String title; // 공연 행사명
+    private String strtdate; // 공연 시작 시간
+    private String end_date; // 공연 종료 시간
+
     private String codename; // 분류
     private String guname; // 자치구
-    private String title; // 공연 행사명
-    private String date; // 날짜 시간
     private String place; // 장소
-    private String useFee;  // 이용 요금
+    private String useFee; // 이용 요금
     private String player; // 출연자 정보
     private String program; // 프로그램 소개
+    private String org_link; // 홈페이지 주소
     private double lot; // 위도 X좌표
     private double lat; // 경도 Y좌표
 
-
-
-    public EventEntity toEntity() {
-        return EventEntity.builder()
+    public Event toEntity() {
+        return Event.builder()
+                .title(title)
+                .strtdate(strtdate)
+                .strtdate(end_date)
                 .codename(codename)
                 .guname(guname)
-                .title(title)
-                .date(date)
                 .place(place)
                 .useFee(useFee)
                 .player(player)
                 .program(program)
+                .org_link(org_link)
                 .lot(lot)
                 .lat(lat)
                 .build();
