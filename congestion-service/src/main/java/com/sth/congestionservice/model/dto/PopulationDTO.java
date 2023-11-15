@@ -1,6 +1,6 @@
 package com.sth.congestionservice.model.dto;
 
-import com.sth.congestionservice.model.entity.PopulationEntity;
+import com.sth.congestionservice.model.entity.Population;
 import lombok.*;
 
 @Getter
@@ -16,8 +16,8 @@ public class PopulationDTO {
     private int fcstPpltnMin;
     private int fcstPpltnMax;
 
-    public PopulationEntity toEntity() {
-        return PopulationEntity.builder()
+    public Population toEntity() {
+        return Population.builder()
                 .areaNo(areaNo)
                 .areaPpltnMin(areaPpltnMin)
                 .areaPpltnMax(areaPpltnMax)

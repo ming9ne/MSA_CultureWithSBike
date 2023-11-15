@@ -1,6 +1,6 @@
 package com.sth.congestionservice.model.dto;
 
-import com.sth.congestionservice.model.entity.CongestionEntity;
+import com.sth.congestionservice.model.entity.Congestion;
 import lombok.*;
 
 @Getter
@@ -12,14 +12,14 @@ public class CongestionDTO {
     private int areaNo;
     private int areaCongestLvl;
     private String areaCongestMsg;
-    private int FcstCongestLvl;
+    private int fcstCongestLvl;
 
-    public CongestionEntity toEntity() {
-        return CongestionEntity.builder()
+    public Congestion toEntity() {
+        return Congestion.builder()
                 .areaNo(areaNo)
                 .areaCongestLvl(areaCongestLvl)
                 .areaCongestMsg(areaCongestMsg)
-                .FcstCongestLvl(FcstCongestLvl)
+                .fcstCongestLvl(fcstCongestLvl)
                 .build();
     }
 }

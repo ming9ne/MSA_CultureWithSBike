@@ -1,6 +1,8 @@
 package com.sth.congestionservice.model.entity;
 
 import com.sth.congestionservice.model.dto.PopulationDTO;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import lombok.*;
 
 @Getter
@@ -8,11 +10,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PopulationEntity {
+public class Population {
+    @Id
     private int areaNo;
+    @Column
     private int areaPpltnMin;
+    @Column
     private int areaPpltnMax;
+    @Column
     private int fcstPpltnMin;
+    @Column
     private int fcstPpltnMax;
 
     public PopulationDTO toDto() {

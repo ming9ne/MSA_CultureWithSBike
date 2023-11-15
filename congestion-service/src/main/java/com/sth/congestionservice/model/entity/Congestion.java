@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CongestionEntity {
+public class Congestion {
     @Id
     private int areaNo;
     @Column
@@ -18,14 +18,14 @@ public class CongestionEntity {
     @Column
     private String areaCongestMsg;
     @Column
-    private int FcstCongestLvl;
+    private int fcstCongestLvl;
 
     public CongestionDTO toDto() {
         return CongestionDTO.builder()
                 .areaNo(areaNo)
                 .areaCongestLvl(areaCongestLvl)
                 .areaCongestMsg(areaCongestMsg)
-                .FcstCongestLvl(FcstCongestLvl)
+                .fcstCongestLvl(fcstCongestLvl)
                 .build();
     }
 }
