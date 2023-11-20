@@ -1,10 +1,9 @@
 package com.sth.congestionservice.service;
 
-import com.sth.congestionservice.model.dto.CongestionDTO;
 import com.sth.congestionservice.model.dto.PopulationDTO;
-import com.sth.congestionservice.model.entity.Congestion;
 import com.sth.congestionservice.model.entity.Population;
 import com.sth.congestionservice.repository.PopulationRepositoy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PopulationService {
-    private PopulationRepositoy populationRepositoy;
-
-    @Autowired
-    public PopulationService(PopulationRepositoy populationRepositoy) {
-        this.populationRepositoy = populationRepositoy;
-    }
+    private final PopulationRepositoy populationRepositoy;
 
     // 인구 조회
     public List<PopulationDTO> listPopulation() {

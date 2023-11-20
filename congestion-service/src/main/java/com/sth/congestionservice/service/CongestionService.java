@@ -3,6 +3,7 @@ package com.sth.congestionservice.service;
 import com.sth.congestionservice.model.dto.CongestionDTO;
 import com.sth.congestionservice.model.entity.Congestion;
 import com.sth.congestionservice.repository.CongestionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CongestionService {
-    private CongestionRepository congestionRepository;
-
-    @Autowired
-    public CongestionService(CongestionRepository congestionRepository) {
-        this.congestionRepository = congestionRepository;
-    }
+    private final CongestionRepository congestionRepository;
 
     // 혼잡도 조회
     public List<CongestionDTO> listCongestion() {
