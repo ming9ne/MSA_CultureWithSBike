@@ -15,11 +15,23 @@ spring:
   cloud:
     gateway:
       routes:
+        # 문화행사
         - id: event-service
-          uri: lb://event-SERVICE
+          uri: lb://EVENT-SERVICE
           predicates:
-            - Path=/event-service/**
+            - Path=/event-service/api/v1/**
+        # 혼잡도
         - id: congestion-service
-          uri: lb://congestion-SERVICE
+          uri: lb://CONGESTION-SERVICE
           predicates:
-            - Path=/congestion-service/**
+            - Path=/congestion-service/api/v1/**
+        # 지역
+        - id: area-service
+          uri: lb://AREA-SERVICE
+          predicates:
+            - Path=/area-service/api/v1/**
+        # 따릉이
+        - id: sbike-service
+          uri: lb://SBIKE-SERVICE
+          predicates:
+            - Path=/sbike-service/api/v1/**
