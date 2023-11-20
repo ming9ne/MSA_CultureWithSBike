@@ -11,9 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class CongestionService {
     private final CongestionRepository congestionRepository;
+
+    @Autowired
+    public CongestionService(CongestionRepository congestionRepository) {
+        this.congestionRepository = congestionRepository;
+    }
 
     // 혼잡도 조회
     public List<CongestionDTO> listCongestion() {

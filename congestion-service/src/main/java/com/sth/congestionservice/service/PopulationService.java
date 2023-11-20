@@ -11,9 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PopulationService {
     private final PopulationRepositoy populationRepositoy;
+
+    @Autowired
+    public PopulationService(PopulationRepositoy populationRepositoy) {
+        this.populationRepositoy = populationRepositoy;
+    }
 
     // 인구 조회
     public List<PopulationDTO> listPopulation() {

@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("congestion-service/api/v1")
+@RequestMapping("/api/v1/congestion-service")
 public class CongestionController {
     private final CongestionService congestionService;
     private final PopulationService populationService;
