@@ -1,5 +1,3 @@
-// EventService.java
-
 package com.sth.eventservice.service;
 
 import com.sth.eventservice.model.dto.EventDTO;
@@ -25,41 +23,54 @@ public class EventService {
 
     @Data
     @XmlRootElement(name = "culturalEventInfo")
-    private static class EventListResponse {
-        private List<EventDTO> culturalEventInfo;
+    public static class EventListResponse {
+        private List<EventDTO> row;
 
         @XmlElement(name = "row")
-        public void setCulturalEventInfo(List<EventDTO> culturalEventInfo) {
-            this.culturalEventInfo = culturalEventInfo;
+        public void setRow(List<EventDTO> row) {
+            this.row = row;
         }
     }
 
     public void updateEventsFromApi() {
         // API 호출 및 데이터 저장
-        String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/1/5/";
-        RestTemplate restTemplate = new RestTemplate();
+        int startPage = 1;
+        int pageSize = 100; // 한 페이지당 가져올 이벤트 수
 
-        try {
-            // API 호출 및 응답을 ResponseEntity로 받음
-            ResponseEntity<EventListResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventListResponse.class);
+        while (true) {
+            String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + startPage + "/" + pageSize + "/";
+            RestTemplate restTemplate = new RestTemplate();
 
-            // API 호출이 실패한 경우에 대한 처리
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                EventListResponse response = responseEntity.getBody();
+            try {
+                // API 호출 및 응답을 ResponseEntity로 받음
+                ResponseEntity<EventListResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventListResponse.class);
 
-                if (response.getCulturalEventInfo() != null) {
-                    List<EventDTO> eventDTOList = response.getCulturalEventInfo();
-                    saveEventsToDatabase(eventDTOList);
-                    System.out.println("API 호출 성공");
+                // API 호출이 성공한 경우
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    EventListResponse response = responseEntity.getBody();
+
+                    // 여기서부터는 이벤트 정보를 처리하면 됩니다
+                    if (response != null && response.getRow() != null && !response.getRow().isEmpty()) {
+                        List<EventDTO> eventDTOList = response.getRow();
+                        saveEventsToDatabase(eventDTOList);
+                        System.out.println("API 호출 성공 - 페이지: " + startPage);
+                    } else {
+                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
+                        break;
+                    }
                 } else {
-                    System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
+                    // API 호출이 실패한 경우
+                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+                    break;
                 }
-            } else {
-                System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+            } catch (Exception e) {
+                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
+                e.printStackTrace(); // 스택 트레이스 출력
+                break;
             }
-        } catch (Exception e) {
-            System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-            e.printStackTrace(); // 스택 트레이스 출력
+
+            // 다음 페이지로 이동
+            startPage++;
         }
     }
 

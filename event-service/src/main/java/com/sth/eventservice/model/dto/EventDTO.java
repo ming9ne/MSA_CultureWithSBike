@@ -1,47 +1,43 @@
 package com.sth.eventservice.model.dto;
 
 import com.sth.eventservice.model.entity.Event;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EventDTO {
-    private UUID id;
-    private String title; // 공연 행사명
-    private String strtdate; // 공연 시작 시간
-    private String end_date; // 공연 종료 시간
-
-    private String codename; // 분류
-    private String guname; // 자치구
-    private String place; // 장소
-    private String useFee; // 이용 요금
-    private String player; // 출연자 정보
-    private String program; // 프로그램 소개
-    private String org_link; // 홈페이지 주소
-    private double lot; // 위도 X좌표
-    private double lat; // 경도 Y좌표
+    private String CODENAME;
+    private String GUNAME;
+    private String TITLE;
+    private String STRTDATE;
+    private String END_DATE;
+    private String PLACE;
+    private String USE_FEE;
+    private String PLAYER;
+    private String PROGRAM;
+    private String ORG_LINK;
+    private double LOT;
+    private double LAT;
 
     public Event toEntity() {
         return Event.builder()
-                .id(id !=null ? id: UUID.randomUUID())
-                .title(title)
-                .strtdate(strtdate)
-                .end_date(end_date)
-                .codename(codename)
-                .guname(guname)
-                .place(place)
-                .useFee(useFee)
-                .player(player)
-                .program(program)
-                .org_link(org_link)
-                .lot(lot)
-                .lat(lat)
+                .CODENAME(CODENAME)
+                .GUNAME(GUNAME)
+                .TITLE(TITLE)
+                .STRTDATE(STRTDATE)
+                .END_DATE(END_DATE)
+                .PLACE(PLACE)
+                .USE_FEE(USE_FEE)
+                .PLAYER(PLAYER)
+                .PROGRAM(PROGRAM)
+                .ORG_LINK(ORG_LINK)
+                .LOT(LOT)
+                .LAT(LAT)
                 .build();
     }
-
 }

@@ -1,62 +1,53 @@
 package com.sth.eventservice.model.entity;
 
 import com.sth.eventservice.model.dto.EventDTO;
-import jakarta.persistence.*;
 import lombok.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 import java.util.UUID;
 
 @Entity
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private UUID ID;
 
-    @Column
-    private String guname; // 자치구
-    @Column
-    private String title; // 공연 행사명
-    @Column
-    private String codename; // 분류
-    @Column
-    private String strtdate; // 날짜 시간
-    @Column
-    private String end_date;
-    @Column
-    private String place; // 장소
-    @Column
-    private String useFee; // 이용 요금
-    @Column
-    private String player; // 출연자 정보
-    @Column
-    private String program; // 프로그램 소개
-    @Column
-    private String org_link; // 홈페이지 주소
-    @Column
-    private double lot; // 위도 X좌표
-    @Column
-    private double lat; // 경도 Y좌표
+    private String CODENAME;
+    private String GUNAME;
+    private String TITLE;
+    private String STRTDATE;
+    private String END_DATE;
+    private String PLACE;
+    private String USE_FEE;
+    private String PLAYER;
+    private String PROGRAM;
+    private String ORG_LINK;
+    private double LOT;
+    private double LAT;
+
 
     public EventDTO toDto() {
         return EventDTO.builder()
-                .id(id)
-                .guname(guname)
-                .title(title)
-                .codename(codename)
-                .strtdate(strtdate)
-                .end_date(end_date)
-                .place(place)
-                .useFee(useFee)
-                .player(player)
-                .program(program)
-                .org_link(org_link)
-                .lot(lot)
-                .lat(lat)
+                .CODENAME(CODENAME)
+                .GUNAME(GUNAME)
+                .TITLE(TITLE)
+                .STRTDATE(STRTDATE)
+                .END_DATE(END_DATE)
+                .PLACE(PLACE)
+                .USE_FEE(USE_FEE)
+                .PLAYER(PLAYER)
+                .PROGRAM(PROGRAM)
+                .ORG_LINK(ORG_LINK)
+                .LOT(LOT)
+                .LAT(LAT)
                 .build();
     }
 }
