@@ -1,10 +1,10 @@
 package com.sth.eventservice.model.entity;
 
-
 import com.sth.eventservice.model.dto.EventDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -14,6 +14,10 @@ import lombok.*;
 @Builder
 public class Event {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    @Column
     private String guname; // 자치구
     @Column
     private String title; // 공연 행사명
@@ -38,8 +42,9 @@ public class Event {
     @Column
     private double lat; // 경도 Y좌표
 
-    public EventDTO toDto(){
+    public EventDTO toDto() {
         return EventDTO.builder()
+                .id(id)
                 .guname(guname)
                 .title(title)
                 .codename(codename)

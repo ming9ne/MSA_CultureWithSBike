@@ -3,12 +3,15 @@ package com.sth.eventservice.model.dto;
 import com.sth.eventservice.model.entity.Event;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class EventDTO {
+    private UUID id;
     private String title; // 공연 행사명
     private String strtdate; // 공연 시작 시간
     private String end_date; // 공연 종료 시간
@@ -25,9 +28,10 @@ public class EventDTO {
 
     public Event toEntity() {
         return Event.builder()
+                .id(id !=null ? id: UUID.randomUUID())
                 .title(title)
                 .strtdate(strtdate)
-                .strtdate(end_date)
+                .end_date(end_date)
                 .codename(codename)
                 .guname(guname)
                 .place(place)
@@ -39,4 +43,5 @@ public class EventDTO {
                 .lat(lat)
                 .build();
     }
+
 }

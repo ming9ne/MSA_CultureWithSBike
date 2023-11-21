@@ -31,6 +31,12 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+  jackson:
+    serialization:
+      indent-output: true
+    xml:
+      default_use_wrapper: false
+
 
 api:
   key: 71684451416f75723738574b486156
