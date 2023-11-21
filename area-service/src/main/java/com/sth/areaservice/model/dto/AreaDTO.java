@@ -10,12 +10,10 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class AreaDTO {
-    private int areaNo;
     private String areaNm;
 
     public Area toEntity() {
         return Area.builder()
-                .areaNo(areaNo)
                 .areaNm(areaNm)
                 .build();
     }
