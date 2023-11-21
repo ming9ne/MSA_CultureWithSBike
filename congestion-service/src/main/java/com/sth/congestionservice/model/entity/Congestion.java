@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 public class Congestion {
     @Id
-    private int areaNo;
+    private String areaNm;
     @Column
     private int areaCongestLvl;
     @Column
@@ -23,7 +23,7 @@ public class Congestion {
 
     public CongestionDTO toDto() {
         return CongestionDTO.builder()
-                .areaNo(areaNo)
+                .areaNm(areaNm)
                 .areaCongestLvl(areaCongestLvl)
                 .areaCongestMsg(areaCongestMsg)
                 .fcstCongestLvl(fcstCongestLvl)
