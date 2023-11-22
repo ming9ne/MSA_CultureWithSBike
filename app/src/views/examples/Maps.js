@@ -5,18 +5,20 @@ import { Button, ButtonGroup, Card, Container, Row } from "reactstrap";
 
 // core components
 import Header from "components/Headers/Header.js";
+import { useLocation } from "react-router-dom";
 
 const {kakao} = window;
 let map;
 
-const MapWrapper = () => {
+const MapWrapper = ({lot, lat, isMarked}) => {
   const mapRef = React.useRef(null);
+  const [positions, setPositions] = useState([]);
   
-  React.useEffect(() => {   
+  React.useEffect(() => {
 
     const container = mapRef.current;
     const options = { //지도를 생성할 때 필요한 기본 옵션
-      center: new kakao.maps.LatLng(37.566535, 126.9779692), //지도의 중심좌표.
+      center: new kakao.maps.LatLng(lot, lat), //지도의 중심좌표.
       level: 6 //지도의 레벨(확대, 축소 정도)
     };
 
@@ -34,7 +36,7 @@ const MapWrapper = () => {
     // marker.setMap(map);
 
     // 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
-    var positions = [
+    setPositions([
       {
           content: '<div>카카오</div>', 
           latlng: new kakao.maps.LatLng(37.566535, 126.9779692)
@@ -51,7 +53,15 @@ const MapWrapper = () => {
           content: '<div>근린공원</div>',
           latlng: new kakao.maps.LatLng(33.451393, 126.570738)
       }
-    ];
+    ]);
+
+    if(isMarked == true) {
+      setPositions([...positions, {
+        content: "<div>마커</div>", 
+        latlng: new kakao.maps.LatLng(lot, lat)
+      }]);
+      console.log(positions);
+    }
 
     for (var i = 0; i < positions.length; i ++) {
       // 마커를 생성합니다
@@ -101,6 +111,19 @@ const MapWrapper = () => {
 
 
 const Maps = () => {
+  const location = useLocation();
+  console.log("location", location);
+
+  let lot = 37.566535;
+  let lat = 126.9779692;
+  let isMarked = false;
+  
+  if(location.state) {
+    lot = location.state.lot;
+    lat = location.state.lat;
+    isMarked = true;
+  }
+
   return (
     <>
       <Header />
@@ -110,14 +133,14 @@ const Maps = () => {
           <div className="col">
           <ButtonGroup>
             <Button color="primary" onClick={() => {
-                map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);   
+              map.addOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC);   
               }}>혼잡도</Button>
             <Button color="primary" onClick={() => {
               map.removeOverlayMapTypeId(kakao.maps.MapTypeId.TRAFFIC); 
             }}>지도</Button>
           </ButtonGroup>
             <Card className="shadow border-0">   
-              <MapWrapper />
+              <MapWrapper lot={lot} lat={lat} isMarked={isMarked}/>
             </Card>
           </div>
         </Row>

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("area-service/api/v1")
+@RequestMapping("api/v1/area-service")
 @RequiredArgsConstructor
 public class AreaController {
     private final AreaService areaService;

@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 public class Population {
     @Id
-    private int areaNo;
+    private String areaNm;
     @Column
     private int areaPpltnMin;
     @Column
@@ -25,7 +25,7 @@ public class Population {
 
     public PopulationDTO toDto() {
         return PopulationDTO.builder()
-                .areaNo(areaNo)
+                .areaNm(areaNm)
                 .areaPpltnMin(areaPpltnMin)
                 .areaPpltnMax(areaPpltnMax)
                 .fcstPpltnMin(fcstPpltnMin)

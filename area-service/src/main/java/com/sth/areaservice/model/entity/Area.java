@@ -17,13 +17,10 @@ import lombok.NoArgsConstructor;
 @Entity
 public class Area {
     @Id
-    private int areaNo;
-    @Column
     private String areaNm;
 
     public AreaDTO toDto() {
         return AreaDTO.builder()
-                .areaNo(areaNo)
                 .areaNm(areaNm)
                 .build();
     }

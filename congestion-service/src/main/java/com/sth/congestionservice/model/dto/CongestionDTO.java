@@ -9,14 +9,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CongestionDTO {
-    private int areaNo;
+    private String areaNm;
     private int areaCongestLvl;
     private String areaCongestMsg;
     private int fcstCongestLvl;
 
     public Congestion toEntity() {
         return Congestion.builder()
-                .areaNo(areaNo)
+                .areaNm(areaNm)
                 .areaCongestLvl(areaCongestLvl)
                 .areaCongestMsg(areaCongestMsg)
                 .fcstCongestLvl(fcstCongestLvl)

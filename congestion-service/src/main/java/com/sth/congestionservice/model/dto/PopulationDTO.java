@@ -10,7 +10,7 @@ import lombok.*;
 @Builder
 public class PopulationDTO {
 
-    private int areaNo;
+    private String areaNm;
     private int areaPpltnMin;
     private int areaPpltnMax;
     private int fcstPpltnMin;
@@ -18,7 +18,7 @@ public class PopulationDTO {
 
     public Population toEntity() {
         return Population.builder()
-                .areaNo(areaNo)
+                .areaNm(areaNm)
                 .areaPpltnMin(areaPpltnMin)
                 .areaPpltnMax(areaPpltnMax)
                 .fcstPpltnMin(fcstPpltnMin)
