@@ -10,12 +10,28 @@ import { useLocation } from "react-router-dom";
 const {kakao} = window;
 let map;
 
-const MapWrapper = ({lot, lat, isMarked}) => {
+const MapWrapper = ({lot, lat}) => {
+  console.log(lot, lat);
+
   const mapRef = React.useRef(null);
-  const [positions, setPositions] = useState([]);
+  const [positions, setPositions] = useState([{
+      content: '<div>카카오</div>', 
+      latlng: new kakao.maps.LatLng(37.5499060881738, 126.945533810385)
+  },
+  {
+      content: '<div>생태연못</div>', 
+      latlng: new kakao.maps.LatLng(33.450936, 126.569477)
+  },
+  {
+      content: '<div>텃밭</div>', 
+      latlng: new kakao.maps.LatLng(33.450879, 126.569940)
+  },
+  {
+      content: '<div>근린공원</div>',
+      latlng: new kakao.maps.LatLng(33.451393, 126.570738)
+  }]);
   
   React.useEffect(() => {
-
     const container = mapRef.current;
     const options = { //지도를 생성할 때 필요한 기본 옵션
       center: new kakao.maps.LatLng(lot, lat), //지도의 중심좌표.
@@ -34,34 +50,6 @@ const MapWrapper = ({lot, lat, isMarked}) => {
 
     // // 마커가 지도 위에 표시되도록 설정합니다
     // marker.setMap(map);
-
-    // 마커를 표시할 위치와 내용을 가지고 있는 객체 배열입니다 
-    setPositions([
-      {
-          content: '<div>카카오</div>', 
-          latlng: new kakao.maps.LatLng(37.566535, 126.9779692)
-      },
-      {
-          content: '<div>생태연못</div>', 
-          latlng: new kakao.maps.LatLng(33.450936, 126.569477)
-      },
-      {
-          content: '<div>텃밭</div>', 
-          latlng: new kakao.maps.LatLng(33.450879, 126.569940)
-      },
-      {
-          content: '<div>근린공원</div>',
-          latlng: new kakao.maps.LatLng(33.451393, 126.570738)
-      }
-    ]);
-
-    if(isMarked == true) {
-      setPositions([...positions, {
-        content: "<div>마커</div>", 
-        latlng: new kakao.maps.LatLng(lot, lat)
-      }]);
-      console.log(positions);
-    }
 
     for (var i = 0; i < positions.length; i ++) {
       // 마커를 생성합니다
@@ -97,6 +85,9 @@ const MapWrapper = ({lot, lat, isMarked}) => {
     }
 
   }, []);
+
+  
+
   return (
     <>
       <div
@@ -108,7 +99,6 @@ const MapWrapper = ({lot, lat, isMarked}) => {
     </>
   );
 };
-
 
 const Maps = () => {
   const location = useLocation();
