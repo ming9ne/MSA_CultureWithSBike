@@ -7,6 +7,8 @@ import com.sth.eventservice.vo.Greeting;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +20,28 @@ public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    public void callAreaService() {
+        String areaServiceUrl = "http://localhost:8000/api/v1/area-service/areas";
+
+        ResponseEntity<List<EventDTO>> responseEntity = restTemplate.exchange(
+                areaServiceUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<EventDTO>>() {}
+        );
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            List<EventDTO> areaList = responseEntity.getBody();
+            saveEventsFromAreaList(areaList);
+        } else {
+            System.out.println("Area Service 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+        }
+    }
+
 
     public void updateEventsFromApi() {
         // API 호출 및 데이터 저장
@@ -57,6 +81,18 @@ public class EventService {
 
             // 다음 페이지로 이동
             startPage++;
+        }
+    }
+
+    @Transactional
+    public void saveEventsFromAreaList(List<EventDTO> areaList) {
+        for (EventDTO eventDTO : areaList) {
+            Event event = eventDTO.toEntity();
+
+            if (event.getAreaNm() == null) {
+                event.setAreaNm("default");
+            }
+            eventRepository.save(event);
         }
     }
 
