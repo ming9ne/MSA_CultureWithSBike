@@ -35,3 +35,8 @@ spring:
           uri: lb://SBIKE-SERVICE
           predicates:
             - Path=/api/v1/sbike-service/**
+        # 도시
+        - id: city-service
+          uri: lb://CITY-SERVICE
+          predicates:
+            - Path=/api/v1/city-service/**

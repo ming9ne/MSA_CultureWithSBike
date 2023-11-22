@@ -19,19 +19,24 @@ spring:
         - id: event-service
           uri: lb://EVENT-SERVICE
           predicates:
-            - Path=/event-service/api/v1/**
+            - Path=/api/v1/event-service/**
         # 혼잡도
         - id: congestion-service
           uri: lb://CONGESTION-SERVICE
           predicates:
-            - Path=/congestion-service/api/v1/**
+            - Path=/api/v1/congestion-service/**
         # 지역
         - id: area-service
           uri: lb://AREA-SERVICE
           predicates:
-            - Path=/area-service/api/v1/**
+            - Path=/api/v1/area-service/**
         # 따릉이
         - id: sbike-service
           uri: lb://SBIKE-SERVICE
           predicates:
-            - Path=/sbike-service/api/v1/**
+            - Path=/api/v1/sbike-service/**
+        # 도시
+        - id: city-service
+          uri: lb://CITY-SERVICE
+          predicates:
+            - Path=/api/v1/city-service/**
