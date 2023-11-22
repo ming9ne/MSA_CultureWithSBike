@@ -1,6 +1,6 @@
-package com.sth.eventservice.model.dto;
+package com.sth.sbikeservice.model.dto;
 
-import com.sth.eventservice.model.entity.Event;
+import com.sth.sbikeservice.model.entity.Sbike;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventDTO {
+public class SbikeDTO {
     private String CODENAME;
     private String GUNAME;
     private String TITLE;
@@ -23,10 +23,9 @@ public class EventDTO {
     private String ORG_LINK;
     private double LOT;
     private double LAT;
-    private String areaNm;
 
-    public Event toEntity() {
-        return Event.builder()
+    public Sbike toEntity() {
+        return Sbike.builder()
                 .CODENAME(CODENAME)
                 .GUNAME(GUNAME)
                 .TITLE(TITLE)
@@ -39,7 +38,6 @@ public class EventDTO {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
-                .areaNm(areaNm)
                 .build();
     }
 }

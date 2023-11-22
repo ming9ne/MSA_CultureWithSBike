@@ -1,34 +1,32 @@
-package com.sth.eventservice.service;
+package com.sth.sbikeservice.service;
 
-import com.sth.eventservice.model.dto.EventDTO;
-import com.sth.eventservice.model.entity.Event;
-import com.sth.eventservice.repository.EventRepository;
+import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.model.entity.Sbike;
+import com.sth.sbikeservice.repository.SbikeRepository;
 import jakarta.transaction.Transactional;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
 
 @Service
-public class EventService {
+public class SbikeService {
 
     @Autowired
-    private EventRepository eventRepository;
-
+    private SbikeRepository sbikeRepository;
 
     @Data
     @XmlRootElement(name = "culturalEventInfo")
     public static class EventListResponse {
-        private List<EventDTO> row;
+        private List<SbikeDTO> row;
 
         @XmlElement(name = "row")
-        public void setRow(List<EventDTO> row) {
+        public void setRow(List<SbikeDTO> row) {
             this.row = row;
         }
     }
@@ -36,7 +34,7 @@ public class EventService {
     public void updateEventsFromApi() {
         // API 호출 및 데이터 저장
         int startPage = 1;
-        int pageSize = 10; // 한 페이지당 가져올 이벤트 수
+        int pageSize = 100; // 한 페이지당 가져올 이벤트 수
 
         while (true) {
             String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + startPage + "/" + pageSize + "/";
@@ -52,8 +50,8 @@ public class EventService {
 
                     // 여기서부터는 이벤트 정보를 처리하면 됩니다
                     if (response != null && response.getRow() != null && !response.getRow().isEmpty()) {
-                        List<EventDTO> eventDTOList = response.getRow();
-                        saveEventsToDatabase(eventDTOList);
+                        List<SbikeDTO> sbikeDTOList = response.getRow();
+                        saveSbikeToDatabase(sbikeDTOList);
                         System.out.println("API 호출 성공 - 페이지: " + startPage);
                     } else {
                         System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
@@ -76,15 +74,11 @@ public class EventService {
     }
 
     @Transactional
-    public void saveEventsToDatabase(List<EventDTO> eventDTOList) {
+    public void saveSbikeToDatabase(List<SbikeDTO> sbikeDTOList) {
         // DTO를 Entity로 변환하여 저장
-        for (EventDTO eventDTO : eventDTOList) {
-            Event event = eventDTO.toEntity();
-
-            if(event.getAreaNm() ==null){
-                event.setAreaNm("default");
-            }
-            eventRepository.save(event);
+        for (SbikeDTO sbikeDTO : sbikeDTOList) {
+            Sbike sbike = sbikeDTO.toEntity();
+            sbikeRepository.save(sbike);
         }
     }
 }

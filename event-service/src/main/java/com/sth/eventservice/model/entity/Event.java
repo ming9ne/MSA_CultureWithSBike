@@ -1,12 +1,8 @@
 package com.sth.eventservice.model.entity;
 
 import com.sth.eventservice.model.dto.EventDTO;
+import jakarta.persistence.*;
 import lombok.*;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.util.UUID;
 
@@ -18,7 +14,7 @@ import java.util.UUID;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID ID;
+    private int ID;
 
     private String CODENAME;
     private String GUNAME;
@@ -32,6 +28,10 @@ public class Event {
     private String ORG_LINK;
     private double LOT;
     private double LAT;
+
+    @Column(nullable = true, columnDefinition = "VARCHAR(255) DEFAULT NULL")
+    private String areaNm;
+
 
 
     public EventDTO toDto() {
@@ -48,6 +48,7 @@ public class Event {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
+                .areaNm(areaNm)
                 .build();
     }
 }

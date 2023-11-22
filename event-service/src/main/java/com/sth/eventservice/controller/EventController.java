@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("event-service/api/v1")
+@RequestMapping("/api/v1/event-service")
 public class EventController {
 
     private final EventService eventService;
@@ -32,6 +32,6 @@ public class EventController {
 
     @PostMapping("/saveEventsToDatabase")
     public void saveEventsToDatabase(@RequestBody List<EventDTO> eventDTOList) {
-        eventService.saveEventsToDatabase(eventDTOList);
+        eventService.addEventsToDatabase(eventDTOList);
     }
 }
