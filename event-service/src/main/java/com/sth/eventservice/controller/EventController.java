@@ -32,6 +32,6 @@ public class EventController {
 
     @PostMapping("/saveEventsToDatabase")
     public void saveEventsToDatabase(@RequestBody List<EventDTO> eventDTOList) {
-        eventService.addEventsToDatabase(eventDTOList);
+        eventService.saveEventsToDatabase(eventDTOList);
     }
 }
