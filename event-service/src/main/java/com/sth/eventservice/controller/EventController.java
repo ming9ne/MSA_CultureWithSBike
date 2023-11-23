@@ -19,6 +19,7 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    // 주석 처리된 부분은 사용되지 않는 메서드이므로 주석 처리
 //    @GetMapping("/updateFromApi")
 //    public ResponseEntity<String> updateEventsFromApi() {
 //        eventService.updateEventsFromApi();
@@ -26,25 +27,24 @@ public class EventController {
 //    }
 
     @GetMapping("/area")
-    public ResponseEntity<String> callAreaService() {
-        eventService.callAreaService();
+    public ResponseEntity<String> callAreaServiceAndSaveEvents() {
+        eventService.callAreaServiceAndSaveEvents();
         return ResponseEntity.ok("Area Service add successful");
     }
-
 
     @GetMapping("/")
     public String index() {
         return "hello, this is event service";
     }
 
+    // 주석 처리된 부분은 사용되지 않는 메서드이므로 주석 처리
 //    @PostMapping("/saveEventsFromAreaList")
 //    public void saveEventsFromAreaList(@RequestBody List<EventDTO> areaList) {
 //        eventService.saveEventsFromAreaList(areaList);
 //    }
 
-
     @PostMapping("/saveEventsToDatabase")
     public void saveEventsToDatabase(@RequestBody List<EventDTO> eventDTOList) {
-        eventService.saveEventsToDatabase((EventDTO) eventDTOList);
+        eventService.saveEventsToDatabase(eventDTOList);
     }
 }
