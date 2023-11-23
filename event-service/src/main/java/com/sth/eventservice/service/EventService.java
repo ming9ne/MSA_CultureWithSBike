@@ -1,90 +1,118 @@
 package com.sth.eventservice.service;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sth.eventservice.model.dto.EventDTO;
 import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
 import jakarta.transaction.Transactional;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventService {
 
+    private final EventRepository eventRepository;
+    private final RestTemplate restTemplate;
+
     @Autowired
-    private EventRepository eventRepository;
+    public EventService(EventRepository eventRepository, RestTemplate restTemplate) {
+        this.eventRepository = eventRepository;
+        this.restTemplate = restTemplate;
 
-
-    @Data
-    @XmlRootElement(name = "culturalEventInfo")
-    public static class EventListResponse {
-        private List<EventDTO> row;
-
-        @XmlElement(name = "row")
-        public void setRow(List<EventDTO> row) {
-            this.row = row;
-        }
+        // Add MappingJackson2HttpMessageConverter to support JSON mapping
+        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
     }
 
-    public void updateEventsFromApi() {
-        // API 호출 및 데이터 저장
-        int startPage = 1;
-        int pageSize = 10; // 한 페이지당 가져올 이벤트 수
+    @Transactional
+    public void callAreaService() {
+        String areaServiceUrl = "http://localhost:8000/api/v1/area-service/areas";
 
-        while (true) {
-            String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + startPage + "/" + pageSize + "/";
-            RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List<Map<String, String>>> responseEntity = restTemplate.exchange(
+                areaServiceUrl,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Map<String, String>>>() {}
+        );
 
-            try {
-                // API 호출 및 응답을 ResponseEntity로 받음
-                ResponseEntity<EventListResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventListResponse.class);
-
-                // API 호출이 성공한 경우
-                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                    EventListResponse response = responseEntity.getBody();
-
-                    // 여기서부터는 이벤트 정보를 처리하면 됩니다
-                    if (response != null && response.getRow() != null && !response.getRow().isEmpty()) {
-                        List<EventDTO> eventDTOList = response.getRow();
-                        saveEventsToDatabase(eventDTOList);
-                        System.out.println("API 호출 성공 - 페이지: " + startPage);
-                    } else {
-                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
-                        break;
-                    }
-                } else {
-                    // API 호출이 실패한 경우
-                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-                    break;
-                }
-            } catch (Exception e) {
-                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-                e.printStackTrace(); // 스택 트레이스 출력
-                break;
-            }
-
-            // 다음 페이지로 이동
-            startPage++;
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            List<Map<String, String>> areaList = responseEntity.getBody();
+            saveEventsFromAreaList(areaList);
+        } else {
+            System.out.println("Area Service 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
         }
     }
 
     @Transactional
-    public void saveEventsToDatabase(List<EventDTO> eventDTOList) {
-        // DTO를 Entity로 변환하여 저장
-        for (EventDTO eventDTO : eventDTOList) {
-            Event event = eventDTO.toEntity();
+    public void saveEventsFromAreaList(List<Map<String, String>> areaList) {
+        for (Map<String, String> areaData : areaList) {
+            String area = areaData.get("areaNm");
 
-            if(event.getAreaNm() ==null){
-                event.setAreaNm("default");
+            String apiUrl = "http://openapi.seoul.go.kr:8088/636f62694e6f757236364b49674759/xml/citydata/1/5/" + area;
+
+            try {
+                ResponseEntity<CITYDATA> responseEntity = restTemplate.getForEntity(apiUrl, CITYDATA.class);
+
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    CITYDATA citydata = responseEntity.getBody();
+
+                    if (citydata != null && citydata.getEventSttsList() != null && !citydata.getEventSttsList().isEmpty()) {
+                        List<EVENT_STTS> eventSttsList = citydata.getEventSttsList();
+
+                        for (EVENT_STTS eventStts : eventSttsList) {
+                            EventDTO eventDTO = new EventDTO();
+                            eventDTO.setAREA_NM(citydata.getAreaNm());
+                            eventDTO.setEVENT_NM(eventStts.getEventNm());
+
+                            saveEventsToDatabase(eventDTO);
+                            System.out.println("API 호출 성공 - 지역: " + area + ", 이벤트: " + eventStts.getEventNm());
+                        }
+                    } else {
+                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
+                e.printStackTrace();
             }
-            eventRepository.save(event);
+        }
+    }
+
+    @Transactional
+    public void saveEventsToDatabase(EventDTO eventDTO) {
+        Event event = eventDTO.toEntity();
+        eventRepository.save(event);
+    }
+
+    static class CITYDATA {
+        @JsonProperty("AREA_NM")
+        private String areaNm;
+
+        @JsonProperty("EVENT_STTS")
+        private List<EVENT_STTS> eventSttsList;
+
+        public String getAreaNm() {
+            return areaNm;
+        }
+
+        public List<EVENT_STTS> getEventSttsList() {
+            return eventSttsList;
+        }
+    }
+
+    static class EVENT_STTS {
+        @JsonProperty("EVENT_NM")
+        private String eventNm;
+
+        public String getEventNm() {
+            return eventNm;
         }
     }
 }

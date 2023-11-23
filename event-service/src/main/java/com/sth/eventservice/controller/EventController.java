@@ -19,19 +19,32 @@ public class EventController {
         this.eventService = eventService;
     }
 
-    @GetMapping("/updateFromApi")
-    public ResponseEntity<String> updateEventsFromApi() {
-        eventService.updateEventsFromApi();
-        return ResponseEntity.ok("Update successful");
+//    @GetMapping("/updateFromApi")
+//    public ResponseEntity<String> updateEventsFromApi() {
+//        eventService.updateEventsFromApi();
+//        return ResponseEntity.ok("Event API add successful");
+//    }
+
+    @GetMapping("/area")
+    public ResponseEntity<String> callAreaService() {
+        eventService.callAreaService();
+        return ResponseEntity.ok("Area Service add successful");
     }
+
 
     @GetMapping("/")
     public String index() {
-        return "hello, this is congestion service";
+        return "hello, this is event service";
     }
+
+//    @PostMapping("/saveEventsFromAreaList")
+//    public void saveEventsFromAreaList(@RequestBody List<EventDTO> areaList) {
+//        eventService.saveEventsFromAreaList(areaList);
+//    }
+
 
     @PostMapping("/saveEventsToDatabase")
     public void saveEventsToDatabase(@RequestBody List<EventDTO> eventDTOList) {
-        eventService.addEventsToDatabase(eventDTOList);
+        eventService.saveEventsToDatabase((EventDTO) eventDTOList);
     }
 }

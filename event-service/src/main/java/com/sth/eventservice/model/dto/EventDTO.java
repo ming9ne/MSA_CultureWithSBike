@@ -23,7 +23,8 @@ public class EventDTO {
     private String ORG_LINK;
     private double LOT;
     private double LAT;
-    private String areaNm;
+    private String AREA_NM;
+    private String EVENT_NM;
 
     public Event toEntity() {
         return Event.builder()
@@ -39,7 +40,8 @@ public class EventDTO {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
-                .areaNm(areaNm)
+                .AREA_NM(AREA_NM)
+                .EVENT_NM(EVENT_NM)
                 .build();
     }
 }

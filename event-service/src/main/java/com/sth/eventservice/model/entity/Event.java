@@ -29,8 +29,8 @@ public class Event {
     private double LOT;
     private double LAT;
 
-    @Column(nullable = true, columnDefinition = "VARCHAR(255) DEFAULT NULL")
-    private String areaNm;
+    private String AREA_NM;
+    private String EVENT_NM;
 
 
 
@@ -48,7 +48,8 @@ public class Event {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
-                .areaNm(areaNm)
+                .AREA_NM(AREA_NM)
+                .EVENT_NM(EVENT_NM)
                 .build();
     }
 }
