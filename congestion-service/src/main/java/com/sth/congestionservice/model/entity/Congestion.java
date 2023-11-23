@@ -15,18 +15,15 @@ public class Congestion {
     @Id
     private String areaNm;
     @Column
-    private int areaCongestLvl;
+    private String areaCongestLvl;
     @Column
     private String areaCongestMsg;
-    @Column
-    private int fcstCongestLvl;
 
     public CongestionDTO toDto() {
         return CongestionDTO.builder()
                 .areaNm(areaNm)
                 .areaCongestLvl(areaCongestLvl)
                 .areaCongestMsg(areaCongestMsg)
-                .fcstCongestLvl(fcstCongestLvl)
                 .build();
     }
 }

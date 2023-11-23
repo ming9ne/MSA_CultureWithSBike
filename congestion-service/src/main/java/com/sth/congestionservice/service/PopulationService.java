@@ -1,5 +1,6 @@
 package com.sth.congestionservice.service;
 
+import com.sth.congestionservice.model.dto.CongestionDTO;
 import com.sth.congestionservice.model.dto.PopulationDTO;
 import com.sth.congestionservice.model.entity.Population;
 import com.sth.congestionservice.repository.PopulationRepositoy;
@@ -37,4 +38,11 @@ public class PopulationService {
         populationRepositoy.save(populationDTO.toEntity());
     }
 
+
+    // 혼잡도 여러개 추가
+    public void addPopulations(List<PopulationDTO> populationDTOList) {
+        populationDTOList.forEach(populationDTO -> {
+            populationRepositoy.save(populationDTO.toEntity());
+        });
+    }
 }
