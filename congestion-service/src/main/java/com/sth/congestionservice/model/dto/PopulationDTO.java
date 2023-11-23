@@ -13,16 +13,12 @@ public class PopulationDTO {
     private String areaNm;
     private int areaPpltnMin;
     private int areaPpltnMax;
-    private int fcstPpltnMin;
-    private int fcstPpltnMax;
 
     public Population toEntity() {
         return Population.builder()
                 .areaNm(areaNm)
                 .areaPpltnMin(areaPpltnMin)
                 .areaPpltnMax(areaPpltnMax)
-                .fcstPpltnMin(fcstPpltnMin)
-                .fcstPpltnMax(fcstPpltnMax)
                 .build();
     }
 }

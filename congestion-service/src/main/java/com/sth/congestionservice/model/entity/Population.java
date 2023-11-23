@@ -18,18 +18,12 @@ public class Population {
     private int areaPpltnMin;
     @Column
     private int areaPpltnMax;
-    @Column
-    private int fcstPpltnMin;
-    @Column
-    private int fcstPpltnMax;
 
     public PopulationDTO toDto() {
         return PopulationDTO.builder()
                 .areaNm(areaNm)
                 .areaPpltnMin(areaPpltnMin)
                 .areaPpltnMax(areaPpltnMax)
-                .fcstPpltnMin(fcstPpltnMin)
-                .fcstPpltnMax(fcstPpltnMax)
                 .build();
     }
 }

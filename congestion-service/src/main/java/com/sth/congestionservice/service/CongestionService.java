@@ -37,5 +37,10 @@ public class CongestionService {
         congestionRepository.save(congestionDTO.toEntity());
     }
 
-
+    // 혼잡도 여러개 추가
+    public void addCongestions(List<CongestionDTO> congestionDTOList) {
+        congestionDTOList.forEach(congestionDTO -> {
+            congestionRepository.save(congestionDTO.toEntity());
+        });
+    }
 }
