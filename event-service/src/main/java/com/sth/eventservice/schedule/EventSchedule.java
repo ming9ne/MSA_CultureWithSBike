@@ -1,61 +1,38 @@
-package com.sth.eventservice.controller;
+package com.sth.eventservice.schedule;
+
 
 import com.sth.eventservice.model.dto.EventDTO;
-
-
 import com.sth.eventservice.service.EventService;
-
 import com.sth.eventservice.vo.AreaResponse;
-import com.sth.eventservice.vo.Citydata;
 import com.sth.eventservice.vo.EventResponse;
-import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.converter.StringHttpMessageConverter;
+import com.sth.eventservice.vo.Citydata;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-@RestController
+@Slf4j
+@Component
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/event-service")
-public class EventController {
+public class EventSchedule {
     private final EventService eventService;
 
-    @GetMapping("/")
-    public String index() {
-        return "hello, this is event service";
+    @Scheduled(fixedDelay = 300000)
+    public void hello() {
+       log.info("fixedRate Scheduler");
     }
 
-    @GetMapping("/events")
-    public ResponseEntity<List<EventDTO>> getEvent() {
-        Iterable<EventDTO> eventList = eventService.listEvent();
-
-        List<EventDTO> result = new ArrayList<>();
-        eventList.forEach(v -> {
-            result.add(v);
-        });
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-
-    @GetMapping("/saveEvents")
+    @Scheduled(fixedDelay = 300000)
     public void saveEvents() {
         RestTemplate restTemplate = new RestTemplate();
 
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
+
 
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
@@ -65,6 +42,8 @@ public class EventController {
             int pageSize = 100; // 한 페이지당 가져올 이벤트 수
 
             String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areas[i].getAreaNm();
+
+
 
             try {
                 // API 호출 및 응답을 ResponseEntity로 받음
@@ -114,4 +93,3 @@ public class EventController {
     }
 
 }
-
