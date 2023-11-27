@@ -1,55 +1,31 @@
 package com.sth.eventservice.model.entity;
 
 import com.sth.eventservice.model.dto.EventDTO;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
-@Entity
-@Data
-@Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
+@Entity
 public class Event {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int ID;
+    private String areaNm;
 
-    private String CODENAME;
-    private String GUNAME;
-    private String TITLE;
-    private String STRTDATE;
-    private String END_DATE;
-    private String PLACE;
-    private String USE_FEE;
-    private String PLAYER;
-    private String PROGRAM;
-    private String ORG_LINK;
-    private double LOT;
-    private double LAT;
-
-    private String AREA_NM;
-    private String EVENT_NM;
-
-
+    @Column
+    private String eventNm;
 
     public EventDTO toDto() {
         return EventDTO.builder()
-                .CODENAME(CODENAME)
-                .GUNAME(GUNAME)
-                .TITLE(TITLE)
-                .STRTDATE(STRTDATE)
-                .END_DATE(END_DATE)
-                .PLACE(PLACE)
-                .USE_FEE(USE_FEE)
-                .PLAYER(PLAYER)
-                .PROGRAM(PROGRAM)
-                .ORG_LINK(ORG_LINK)
-                .LOT(LOT)
-                .LAT(LAT)
-                .AREA_NM(AREA_NM)
-                .EVENT_NM(EVENT_NM)
+                .areaNm(areaNm)
+                .eventNm(eventNm)
                 .build();
     }
 }
