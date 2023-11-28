@@ -11,9 +11,5 @@ public class EventStts {
 //    @XmlElement(name = "EVENT_STTS")
 //    private EventData eventData;
     private String EVENT_NM;
-    private String EVENT_PERIOD;
-    private String EVENT_PLACE;
-    private String EVENT_ETC_DETAIL;
-    private String EVENT_X;
-    private String EVENT_Y;
+
 }

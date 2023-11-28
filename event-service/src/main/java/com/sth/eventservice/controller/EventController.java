@@ -15,9 +15,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
@@ -107,6 +105,17 @@ public class EventController {
             }
 //        }
         }
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<String> callApiAndSaveEvents() {
+        eventService.callApiAndSaveEvents();
+        return ResponseEntity.ok("Event API add successful");
+    }
+
+    @PostMapping("/saveEventsToDatabase")
+    public void saveEventsToDatabase(@RequestBody List<EventDTO> eventDTOList) {
+        eventService.saveEventsToDatabase(eventDTOList);
     }
 }
 
