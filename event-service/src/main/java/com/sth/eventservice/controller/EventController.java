@@ -8,6 +8,7 @@ import com.sth.eventservice.service.EventService;
 import com.sth.eventservice.vo.AreaResponse;
 import com.sth.eventservice.vo.Citydata;
 import com.sth.eventservice.vo.EventResponse;
+import com.sth.eventservice.vo.EventStts;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
@@ -64,7 +65,10 @@ public class EventController {
             int startPage = 1;
             int pageSize = 100; // 한 페이지당 가져올 이벤트 수
 
-            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areas[i].getAreaNm();
+            String areaname = areas[i].getAreaNm();
+
+            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
+//            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/광화문·덕수궁";
 
             try {
                 // API 호출 및 응답을 ResponseEntity로 받음
@@ -73,30 +77,22 @@ public class EventController {
                 // API 호출이 성공한 경우
                 if (responseEntity.getStatusCode().is2xxSuccessful()) {
                     EventResponse response = responseEntity.getBody();
+//                    return response.getCitydata().getEvents();
 
                     // 여기서부터는 이벤트 정보를 처리하면 됩니다
-                    if (response != null && response.getRow() != null && !response.getRow().isEmpty()) {
-                        List<EventResponse.Citydata> citydataList = response.getRow();
+                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
+                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
                         List<EventDTO> eventDTOList = new ArrayList<>();
 
-                        citydataList.forEach(citydata -> {
-                            // Citydata 안의 EVENT_STTS 리스트를 가져옴
-                            List<EventResponse.EventStts> eventSttsList = citydata.getEVENT_STTS();
-
-                            // EVENT_STTS 리스트가 비어있지 않으면 처리
-                            if (eventSttsList != null && !eventSttsList.isEmpty()) {
-                                // 각각의 EVENT_STTS에서 EVENT_NM 값을 가져와서 EventDTO에 추가
-                                eventSttsList.forEach(eventStts -> {
-                                    eventDTOList.add(EventDTO.builder()
-                                            .areaNm(citydata.getAREA_NM())
-                                            .eventNm(eventStts.getEVENT_NM())
-                                            .build());
-                                });
-                            }
+                        eventSttsList.forEach(eventStts -> {
+                            eventDTOList.add(EventDTO.builder()
+                                    .areaNm(areaname)
+                                    .eventNm(eventStts.getEVENT_NM())
+                                    .build());
                         });
 
                         eventService.addEvents(eventDTOList);
-//
+
                         System.out.println("API 호출 성공 - 페이지: " + startPage);
                     } else {
                         System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
@@ -109,9 +105,8 @@ public class EventController {
                 System.out.println("API 호출 중 오류 발생: " + e.getMessage());
                 e.printStackTrace(); // 스택 트레이스 출력
             }
+//        }
         }
-
     }
-
 }
 

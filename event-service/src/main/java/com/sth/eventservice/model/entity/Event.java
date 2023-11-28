@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class Event {
     @Id
     private String areaNm;
-
     @Column
     private String eventNm;
 

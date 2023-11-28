@@ -9,9 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EventDTO {
-
     private String areaNm;
-
     private String eventNm;
 
     public Event toEntity() {
