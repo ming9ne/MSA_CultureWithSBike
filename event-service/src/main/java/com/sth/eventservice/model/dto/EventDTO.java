@@ -10,30 +10,20 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EventDTO {
-    @XmlElement(nillable = true)
     private String areaNm;
-    @XmlElement(nillable = true)
     private String eventNm;
-    @XmlElement(nillable = true)
     private String GUNAME;
-    @XmlElement(nillable = true)
     private String TITLE;
-    @XmlElement(nillable = true)
     private String CODENAME;
-    @XmlElement(nillable = true)
     private String STRTDATE;
-    @XmlElement(nillable = true)
     private String END_DATE;
-    @XmlElement(nillable = true)
     private String PLACE;
-    @XmlElement(nillable = true)
     private String PROGRAM;
-    @XmlElement(nillable = true)
+    private String USE_FEE;
     private String ORG_LINK;
-    @XmlElement(nillable = true)
     private Double LOT;
-    @XmlElement(nillable = true)
     private Double LAT;
+    private String PLAYER;
 
     public Event toEntity() {
         return Event.builder()
@@ -49,10 +39,8 @@ public class EventDTO {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
+                .USE_FEE(USE_FEE)
+                .PLAYER(PLAYER)
                 .build();
-    }
-
-    public String getTitle() {
-        return TITLE;
     }
 }

@@ -6,13 +6,14 @@ import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.Data;
 
+import javax.xml.transform.Result;
 import java.util.List;
 
 @Data
-@XmlRootElement(name = "SeoulRtd.citydata")
+@XmlRootElement(name = "culturalEventInfo")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class EventResponse {
-    @XmlElement(name = "CITYDATA")
-    private Citydata citydata;
-}
+public class EventResponseTotal {
 
+    @XmlElement(name = "row")
+    private List<Eventdata> events;
+}

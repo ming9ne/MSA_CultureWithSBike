@@ -11,5 +11,18 @@ public class EventStts {
 //    @XmlElement(name = "EVENT_STTS")
 //    private EventData eventData;
     private String EVENT_NM;
+    private String AREA_NM;
+    private String GUNAME;
+    private String TITLE;
+    private String CODENAME;
+    private String STRTDATE;
+    private String END_DATE;
+    private String PLACE;
+    private String PROGRAM;
+    private String ORG_LINK;
+    private Double LOT;
+    private Double LAT;
+    private String USE_FEE;
+    private String PLAYER;
 
 }
