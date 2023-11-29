@@ -1,15 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { Card, CardHeader, CardImg, CardTitle, CardFooter, CardBody, CardText } from "reactstrap";
 
 function Event({title, startDate, endDate, areaNm, codename, guname, place, useFee, player, program, orgLink, mainImg, lot, lat}) { // () 안에 정보들
+    
+    const[congestion, setCongestion] = useState([]);
+    const[population, setPopulation] = useState([]);
+
+
+    useEffect(() => {
+        fetch(`http://localhost:8000/api/v1/congestion-service/congestion/${areaNm}`)
+            .then(response => response.json())
+            .then(response => { 
+                setCongestion(response);
+                // console.log(response);
+            }
+        )
+
+        fetch(`http://localhost:8000/api/v1/congestion-service/population/${areaNm}`)
+            .then(response => response.json())
+            .then(response => {
+                setPopulation(response);
+                // console.log(response);
+            })
+    }, [])
+
     return (
         <Card
             style={{
                 margin: "30px"
-            }}
-        >
+            }}>
             <CardHeader tag="h3">
                 <Link to="/admin/maps" state={{lot, lat}}>{title}</Link>
             </CardHeader>
@@ -31,6 +52,9 @@ function Event({title, startDate, endDate, areaNm, codename, guname, place, useF
                     이용요금 : {useFee} <br />
                     출연자정보 : {player} <br />
                     프로그램소개 : {program}<br />
+                    장소 혼잡도 지표 : {congestion.areaCongestLvl}<br />
+                    장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br />
+                    인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br />
                 </CardText>
             </CardBody>
             <CardFooter>
