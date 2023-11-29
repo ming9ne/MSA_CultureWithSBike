@@ -32,8 +32,9 @@ public class UserController {
     @PostMapping("/users")
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
         UserDTO userDto = UserDTO.builder()
-                .username(user.getUsername())
+                .id(user.getId())
                 .password(user.getPassword())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .build();
         userService.createUser(userDto);
@@ -42,6 +43,7 @@ public class UserController {
                 .id(userDto.getId())
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
+                .userId(userDto.getUserId())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);

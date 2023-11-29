@@ -1,6 +1,9 @@
 package com.sth.userservice.config;
 
+import com.sth.userservice.security.AuthenticationFilter;
+import com.sth.userservice.security.CustomAuthenticationManager;
 import com.sth.userservice.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,22 +16,17 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class Securityconfig {
-//    private final UserService userService;
-//    private final Environment env;
-//    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final CustomAuthenticationManager customAuthenticationManager;
+    private final UserService userService;
+    private final Environment env;
 //
-//    public Securityconfig(UserService userService, Environment env, BCryptPasswordEncoder bCryptPasswordEncoder) {
-//        this.userService = userService;
-//        this.env = env;
-//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-//    }
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -36,16 +34,16 @@ public class Securityconfig {
                         authorizeHttpRequest.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/**")))
-                .formLogin((formLogin) -> formLogin.loginPage("/login").defaultSuccessUrl("/"))
-                .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/").invalidateHttpSession(true));
-
+                .addFilter(getAuthenticationFilter());
         return http.build();
     }
 
+    private AuthenticationFilter getAuthenticationFilter() throws Exception {
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+
+        AuthenticationFilter authenticationFilter =
+                new AuthenticationFilter(customAuthenticationManager, userService, env);
+
+        return authenticationFilter;
     }
 }

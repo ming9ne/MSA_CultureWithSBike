@@ -12,23 +12,25 @@ import lombok.*;
 public class User {
     @Id
     private String id;
-    @Column
+    @Column(nullable = false)
     private String username;
     @Column
     private String password;
     @Column
     private String email;
     @Column
+    private String userId;
+    @Column
     private String encryptedPwd;
 
     public UserDTO toDto() {
         return UserDTO.builder()
-                .id(id)
-                .username(username)
-                .password(password)
-                .email(email)
-                .encryptedPwd(encryptedPwd)
-                .build();
+            .id(id)
+            .username(username)
+            .password(password)
+            .email(email)
+            .userId(userId)
+            .encryptedPwd(encryptedPwd)
+            .build();
     }
-
 }
