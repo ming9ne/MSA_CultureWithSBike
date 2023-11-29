@@ -7,6 +7,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: ${spring.application.name}
+    prefer-ip-address: true
 
 spring:
   application:
@@ -14,6 +17,12 @@ spring:
 
   cloud:
     gateway:
+      default-filters:
+        - name: GlobalFilter
+          args:
+            baseMessage: Spring Cloud Gateway Global Filter
+            preLogger: true
+            postLogger: true
       routes:
         # 문화행사
         - id: event-service
@@ -40,3 +49,34 @@ spring:
           uri: lb://CITY-SERVICE
           predicates:
             - Path=/api/v1/city-service/**
+        # 유저
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/user-service/**
+#            - Method=GET
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/user-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+#            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+#            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
+#        - id: user-service
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/api/v1/user-service/**
+#            - Method=GET
+#          filters:
+#            - RemoveRequestHeader=Cookie
+#            - AuthorizationHeaderFilter
+#            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
