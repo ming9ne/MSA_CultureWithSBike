@@ -2,26 +2,24 @@ package com.sth.userservice.model.entity;
 
 import com.sth.userservice.model.dto.UserDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     @Column
     private String username;
     @Column
     private String password;
     @Column
     private String email;
+    @Column
+    private String encryptedPwd;
 
     public UserDTO toDto() {
         return UserDTO.builder()
@@ -29,6 +27,7 @@ public class User {
                 .username(username)
                 .password(password)
                 .email(email)
+                .encryptedPwd(encryptedPwd)
                 .build();
     }
 

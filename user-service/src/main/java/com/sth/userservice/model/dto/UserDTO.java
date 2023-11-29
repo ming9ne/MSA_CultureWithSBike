@@ -4,16 +4,16 @@ import com.sth.userservice.model.entity.User;
 import jakarta.persistence.Column;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-    private Long id;
+    private String id;
     private String username;
     private String password;
     private String email;
+    private String encryptedPwd;
 
     public User toEntity() {
         return User.builder()
@@ -21,6 +21,7 @@ public class UserDTO {
                 .username(username)
                 .password(password)
                 .email(email)
+                .encryptedPwd(encryptedPwd)
                 .build();
     }
 }
