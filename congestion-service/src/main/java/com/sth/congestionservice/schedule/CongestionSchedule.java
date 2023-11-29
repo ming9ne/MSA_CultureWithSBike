@@ -34,9 +34,7 @@ public class CongestionSchedule {
     public void saveCongestions() {
         RestTemplate restTemplate = new RestTemplate();
 
-//        List<String> area = restTemplate.getForObject("http://localhost:8000/api/v1/area-service/areas");
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
-
 
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
@@ -44,15 +42,14 @@ public class CongestionSchedule {
             // API 호출 및 데이터 저장
             int startPage = 1;
             int pageSize = 100; // 한 페이지당 가져올 이벤트 수
+            String areaname = areas[i].getAreaNm();
 
-            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata_ppltn/" + startPage + "/" + pageSize + "/" + areas[i].getAreaNm();
-//            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata_ppltn/1/100/광화문·덕수궁";
-
+            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata_ppltn/" + startPage + "/" + pageSize + "/" + areaname;
 
             try {
                 // API 호출 및 응답을 ResponseEntity로 받음
                 ResponseEntity<CongestionResponse> responseEntity = restTemplate.getForEntity(apiUrl, CongestionResponse.class);
-//                return responseEntity;
+
                 // API 호출이 성공한 경우
                 if (responseEntity.getStatusCode().is2xxSuccessful()) {
                     CongestionResponse response = responseEntity.getBody();
@@ -93,7 +90,5 @@ public class CongestionSchedule {
                 e.printStackTrace(); // 스택 트레이스 출력
             }
         }
-
     }
-
 }

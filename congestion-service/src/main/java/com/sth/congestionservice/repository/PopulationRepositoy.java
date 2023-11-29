@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PopulationRepositoy extends JpaRepository<Population, Integer> {
+    public Population findByAreaNm(String areaNm);
 }

@@ -2,6 +2,7 @@ package com.sth.congestionservice.service;
 
 import com.sth.congestionservice.model.dto.CongestionDTO;
 import com.sth.congestionservice.model.dto.PopulationDTO;
+import com.sth.congestionservice.model.entity.Congestion;
 import com.sth.congestionservice.model.entity.Population;
 import com.sth.congestionservice.repository.PopulationRepositoy;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class PopulationService {
         }
 
         return resultList;
+    }
+
+    // 지역이름으로 인구 조회
+    public PopulationDTO getCongestionByArea(String areaNm) {
+        Population population = populationRepositoy.findByAreaNm(areaNm);
+
+        return population.toDto();
     }
 
     // 인구 추가

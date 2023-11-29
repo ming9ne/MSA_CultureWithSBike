@@ -32,6 +32,13 @@ public class CongestionService {
         return resultList;
     }
 
+    // 지역 이름으로 혼잡도 조회
+    public CongestionDTO getCongestionByArea(String areaNm) {
+        Congestion congestion = congestionRepository.findByAreaNm(areaNm);
+
+        return congestion.toDto();
+    }
+
     // 혼잡도 추가
     public void addCongestion(CongestionDTO congestionDTO) {
         congestionRepository.save(congestionDTO.toEntity());
