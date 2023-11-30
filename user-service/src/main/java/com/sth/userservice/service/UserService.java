@@ -50,8 +50,19 @@ public class UserService implements UserDetailsService {
 
         return user.toDto();
     }
+
+    // 유저 디테일 by 아이디
+    public UserDTO getUserDetailsById(String id) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            UserDTO userDto = user.get().toDto();
+            return userDto;
+        }else {
+            throw new UsernameNotFoundException(id);
+        }
+    }
     
-    // 유저 디테일
+    // 유저 디테일 by 이메일
     public UserDTO getUserDetailsByEmail(String email) {
         User user = userRepository.findByEmail(email);
         if (user == null)
@@ -68,7 +79,7 @@ public class UserService implements UserDetailsService {
         if(optionalUser.isPresent()) {
             user = optionalUser.get();
 
-            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getEncryptedPwd(),
+            return new org.springframework.security.core.userdetails.User(user.getId(), user.getEncryptedPwd(),
                     true, true, true, true,
                     new ArrayList<>());
         }else {
