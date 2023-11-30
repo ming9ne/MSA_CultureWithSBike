@@ -1,6 +1,7 @@
 package com.sth.eventservice.model.dto;
 
 import com.sth.eventservice.model.entity.Event;
+import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Data
 public class EventDTO {
     private String areaNm;
     private String eventNm;

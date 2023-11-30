@@ -50,6 +50,8 @@ public class EventController {
             int pageSize = 100;
             String areaname = area.getAreaNm();
 
+            // areaNameFromSaveEvents에 값을 설정
+
             String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
 
             try {

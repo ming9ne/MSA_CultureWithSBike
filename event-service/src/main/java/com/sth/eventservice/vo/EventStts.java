@@ -5,10 +5,13 @@ import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.Data;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
 public class EventStts {
-//    @XmlElement(name = "EVENT_STTS")
+    //    @XmlElement(name = "EVENT_STTS")
 //    private EventData eventData;
     private String EVENT_NM;
     private String AREA_NM;
@@ -24,5 +27,6 @@ public class EventStts {
     private Double LAT;
     private String USE_FEE;
     private String PLAYER;
+
 
 }

@@ -15,4 +15,3 @@ public class EventResponse {
     @XmlElement(name = "CITYDATA")
     private Citydata citydata;
 }
-

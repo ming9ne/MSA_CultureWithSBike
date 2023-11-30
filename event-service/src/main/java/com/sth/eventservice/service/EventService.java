@@ -57,7 +57,7 @@ public class EventService {
 
     private List<EventDTO> callApiAndParseXml() {
         RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/1/30/";
+        String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/1/500/";
 
         try {
             ResponseEntity<EventResponseTotal> responseEntity = restTemplate.getForEntity(apiUrl, EventResponseTotal.class);
@@ -68,7 +68,7 @@ public class EventService {
                 if (response != null && response.getEvents() != null && !response.getEvents().isEmpty()) {
                     return response.getEvents().stream()
                             .map(eventdata -> EventDTO.builder()
-                                    .areaNm(eventdata.getGuname())
+//                                    .areaNm(eventdata.getGuname())
                                     .eventNm(eventdata.getTitle())
                                     .TITLE(eventdata.getTitle())
                                     .CODENAME(eventdata.getCodeName())
@@ -81,6 +81,7 @@ public class EventService {
                                     .ORG_LINK(eventdata.getOrgLink())
                                     .LOT(eventdata.getLot())
                                     .LAT(eventdata.getLat())
+                                    .GUNAME(eventdata.getGuname())
                                     .build())
                             .collect(Collectors.toList());
                 } else {

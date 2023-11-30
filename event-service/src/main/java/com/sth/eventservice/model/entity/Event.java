@@ -4,22 +4,20 @@ import com.sth.eventservice.model.dto.EventDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
 import jakarta.xml.bind.annotation.XmlElement;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@Data
 public class Event {
-    @Id
-    private String areaNm;
     @Column
+    private String areaNm;
+    @Id
     private String eventNm;
     @Column
     private String GUNAME;

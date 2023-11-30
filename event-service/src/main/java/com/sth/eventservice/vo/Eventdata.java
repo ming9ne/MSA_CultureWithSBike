@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Eventdata {
+
+    private String areaNm;
     @XmlElement(name = "CODENAME")
     private String codeName;
 
