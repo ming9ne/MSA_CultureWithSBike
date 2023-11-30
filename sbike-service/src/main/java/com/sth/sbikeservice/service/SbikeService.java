@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SbikeService {
@@ -18,70 +19,94 @@ public class SbikeService {
     private SbikeRepository sbikeRepository;
 
     public static class RentBikeStatus {
-        private List<SbikeDTO> row;
+        private RentBikeInfo rentBikeStatus;
 
-        public List<SbikeDTO> getRow() {
-            return row;
+        public RentBikeInfo getRentBikeStatus() {
+            return rentBikeStatus;
         }
 
-        public void setRow(List<SbikeDTO> row) {
-            this.row = row;
+        public void setRentBikeStatus(RentBikeInfo rentBikeStatus) {
+            this.rentBikeStatus = rentBikeStatus;
+        }
+
+        public static class RentBikeInfo {
+            private List<SbikeDTO> row;
+
+            public List<SbikeDTO> getRow() {
+                return row;
+            }
+
+            public void setRow(List<SbikeDTO> row) {
+                this.row = row;
+            }
         }
     }
 
+    @Transactional
     public void updateEventsFromApi() {
-        // API 호출 및 데이터 저장
-        int startPage = 1;
-        int pageSize = 1000; // 한 페이지당 가져올 이벤트 수
+        int firstData = 1;
+        int lastData = 5; // 한 페이지당 가져올 이벤트 수
+        int maxPage = 1000; // 최대 페이지 수
 
-        while (true) {
-            String apiUrl = "http://openapi.seoul.go.kr:8088/4d5967564d6f757233354443497375/json/bikeList/" + startPage + "/" + pageSize + "/";
+        while (firstData <= maxPage) {
+            String apiUrl = "http://openapi.seoul.go.kr:8088/4d5967564d6f757233354443497375/json/bikeList/" + firstData + "/" + (firstData + lastData - 1);
             RestTemplate restTemplate = new RestTemplate();
 
             try {
-                // API 호출 및 응답을 ResponseEntity로 받음
                 ResponseEntity<RentBikeStatus> responseEntity = restTemplate.getForEntity(apiUrl, RentBikeStatus.class);
 
-                // API 호출이 성공한 경우
                 if (responseEntity.getStatusCode().is2xxSuccessful()) {
                     RentBikeStatus response = responseEntity.getBody();
 
-                    // 여기서부터는 이벤트 정보를 처리
-                    if (response != null && response.getRow() != null && !response.getRow().isEmpty()) {
-                        List<SbikeDTO> sbikeDTOList = response.getRow();
+                    if (response != null && response.getRentBikeStatus() != null && response.getRentBikeStatus().getRow() != null && !response.getRentBikeStatus().getRow().isEmpty()) {
+                        List<SbikeDTO> sbikeDTOList = response.getRentBikeStatus().getRow();
                         saveSbikeToDatabase(sbikeDTOList);
-                        System.out.println("API 호출 성공 - 페이지: " + startPage);
+                        System.out.println("API 호출 성공 - 페이지: " + firstData);
                     } else {
                         System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
-                        // 추가: 로그로 API 응답 전체 출력
                         System.out.println("API 응답 전체: " + responseEntity.getBody());
                         break;
                     }
                 } else {
-                    // API 호출이 실패한 경우
                     System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-                    // 추가: 로그로 API 응답 전체 출력
                     System.out.println("API 응답 전체: " + responseEntity.getBody());
                     break;
                 }
             } catch (Exception e) {
                 System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-                // 추가: 로그로 스택 트레이스 전체 출력
-                e.printStackTrace(); // 스택 트레이스 출력
+                e.printStackTrace();
                 break;
             }
-
-            // 다음 페이지로 이동
-            startPage++;
+            firstData += lastData;
         }
     }
+
 
     @Transactional
     public void saveSbikeToDatabase(List<SbikeDTO> sbikeDTOList) {
         // DTO를 Entity로 변환하여 저장
         for (SbikeDTO sbikeDTO : sbikeDTOList) {
-            Sbike sbike = sbikeDTO.toEntity();
-            sbikeRepository.save(sbike);
+            Optional<Sbike> existingSbike = sbikeRepository.findByStationId(sbikeDTO.getStationId());
+
+            if (existingSbike.isPresent()) {
+                // 이미 있는 데이터면 업데이트
+                Sbike sbikeToUpdate = existingSbike.get();
+                updateSbikeFromDTO(sbikeToUpdate, sbikeDTO);
+                sbikeRepository.save(sbikeToUpdate); // 업데이트 수행
+            } else {
+                // 새로운 데이터면 저장
+                Sbike sbike = sbikeDTO.toEntity();
+                sbikeRepository.save(sbike);
+            }
         }
+    }
+
+    private void updateSbikeFromDTO(Sbike sbike, SbikeDTO sbikeDTO) {
+        sbike.setRackTotCnt(sbikeDTO.getRackTotCnt());
+        sbike.setStationName(sbikeDTO.getStationName());
+        sbike.setParkingBikeTotCnt(sbikeDTO.getParkingBikeTotCnt());
+        sbike.setShared(sbikeDTO.getShared());
+        sbike.setStationLongitude(sbikeDTO.getStationLongitude());
+        sbike.setStationLatitude(sbikeDTO.getStationLatitude());
     }
 }

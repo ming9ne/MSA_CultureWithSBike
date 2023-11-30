@@ -1,3 +1,5 @@
+// Sbike.java
+
 package com.sth.sbikeservice.model.entity;
 
 import com.sth.sbikeservice.model.dto.SbikeDTO;
@@ -6,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -15,30 +18,31 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sbike {
-    // rackTotCnt	거치대개수
-// stationName	대여소이름
-// parkingBikeTotCnt	자전거주차총건수
-// shared	거치율
-// stationLatitude	위도
-// stationLongitude	경도
-// stationId	대여소ID
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column
     private String stationId;
+
     @Column
     private String rackTotCnt;
+
     @Column
     private String stationName;
+
     @Column
     private String parkingBikeTotCnt;
+
     @Column
     private String shared;
+
     @Column
     private String stationLatitude;
+
     @Column
     private String stationLongitude;
-
-
 
     public SbikeDTO toDto() {
         return SbikeDTO.builder()

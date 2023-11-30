@@ -12,31 +12,30 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@XmlRootElement(name="row")
+@XmlRootElement(name = "row")
 public class SbikeDTO {
 
-// rackTotCnt	거치대개수
-// stationName	대여소이름
-// parkingBikeTotCnt	자전거주차총건수
-// shared	거치율
-// stationLatitude	위도
-// stationLongitude	경도
-// stationId	대여소ID
+    @XmlElement(name = "stationId")
+    private String stationId;
 
-
+    @XmlElement(name = "rackTotCnt")
     private String rackTotCnt;
 
+    @XmlElement(name = "stationName")
     private String stationName;
 
+    @XmlElement(name = "parkingBikeTotCnt")
     private String parkingBikeTotCnt;
 
+    @XmlElement(name = "shared")
     private String shared;
 
+    @XmlElement(name = "stationLatitude")
     private String stationLatitude;
 
+    @XmlElement(name = "stationLongitude")
     private String stationLongitude;
 
-    private String stationId;
 
     public Sbike toEntity() {
         return Sbike.builder()
