@@ -1,6 +1,8 @@
 package com.sth.sbikeservice.model.dto;
 
 import com.sth.sbikeservice.model.entity.Sbike;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,34 +12,41 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@XmlRootElement(name="row")
 public class SbikeDTO {
-    private String CODENAME;
-    private String GUNAME;
-    private String TITLE;
-    private String STRTDATE;
-    private String END_DATE;
-    private String PLACE;
-    private String USE_FEE;
-    private String PLAYER;
-    private String PROGRAM;
-    private String ORG_LINK;
-    private double LOT;
-    private double LAT;
+
+// rackTotCnt	거치대개수
+// stationName	대여소이름
+// parkingBikeTotCnt	자전거주차총건수
+// shared	거치율
+// stationLatitude	위도
+// stationLongitude	경도
+// stationId	대여소ID
+
+
+    private String rackTotCnt;
+
+    private String stationName;
+
+    private String parkingBikeTotCnt;
+
+    private String shared;
+
+    private String stationLatitude;
+
+    private String stationLongitude;
+
+    private String stationId;
 
     public Sbike toEntity() {
         return Sbike.builder()
-                .CODENAME(CODENAME)
-                .GUNAME(GUNAME)
-                .TITLE(TITLE)
-                .STRTDATE(STRTDATE)
-                .END_DATE(END_DATE)
-                .PLACE(PLACE)
-                .USE_FEE(USE_FEE)
-                .PLAYER(PLAYER)
-                .PROGRAM(PROGRAM)
-                .ORG_LINK(ORG_LINK)
-                .LOT(LOT)
-                .LAT(LAT)
+                .stationId(stationId)
+                .rackTotCnt(rackTotCnt)
+                .stationName(stationName)
+                .parkingBikeTotCnt(parkingBikeTotCnt)
+                .shared(shared)
+                .stationLatitude(stationLatitude)
+                .stationLongitude(stationLongitude)
                 .build();
     }
 }
