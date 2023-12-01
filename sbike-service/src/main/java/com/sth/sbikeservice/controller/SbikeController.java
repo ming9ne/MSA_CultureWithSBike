@@ -19,10 +19,10 @@ public class SbikeController {
         this.sbikeService = sbikeService;
     }
 
-    @GetMapping("/updateFromApi")
-    public ResponseEntity<String> updateEventsFromApi() {
-        sbikeService.updateEventsFromApi();
-        return ResponseEntity.ok("Update successful");
+    @GetMapping("/sbike")
+    public ResponseEntity<String> get_sbike() {
+        sbikeService.get_sbike();
+        return ResponseEntity.ok("Update Sbike successful");
     }
 
     @GetMapping("/")
