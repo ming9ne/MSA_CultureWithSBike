@@ -50,18 +50,17 @@ spring:
           predicates:
             - Path=/api/v1/city-service/**
         # 유저
-        - id: user-service
-          uri: lb://USER-SERVICE
-          predicates:
-            - Path=/api/v1/user-service/**
-#            - Method=GET
+#        - id: user-service
+#          uri: lb://USER-SERVICE
+#          predicates:
+#            - Path=/api/v1/user-service/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
             - Path=/api/v1/user-service/login
             - Method=POST
-          filters:
-            - RemoveRequestHeader=Cookie
+#          filters:
+#            - RemoveRequestHeader=Cookie
 #            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
         - id: user-service
           uri: lb://USER-SERVICE
@@ -71,12 +70,16 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
 #            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
-#        - id: user-service
-#          uri: lb://USER-SERVICE
-#          predicates:
-#            - Path=/api/v1/user-service/**
-#            - Method=GET
-#          filters:
-#            - RemoveRequestHeader=Cookie
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/api/v1/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
 #            - AuthorizationHeaderFilter
 #            - RewritePath=/api/v1/user-service/(?<segment>.*), /$\{segment}
+
+token:
+  expiration_time: 86400000
+  secret: dXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2Vu
