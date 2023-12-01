@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,16 +41,27 @@ public class EventService {
         eventRepository.save(eventDTO.toEntity());
     }
 
+    // 이벤트 리스트 추가
     public void addEvents(List<EventDTO> eventDTOList) {
         eventDTOList.forEach(cityDTO -> eventRepository.save(cityDTO.toEntity()));
+    }
+    
+
+    public EventDTO getEventsByEventNm(String eventNm) {
+        Event event = eventRepository.findByEventNm(eventNm);
+
+        if(event != null) {
+            return event.toDto();
+        }
+
+        return null;
     }
 
     @Transactional
     public void saveEventsFromXml() {
         List<EventDTO> eventDTOList = callApiAndParseXml();
         for (EventDTO eventDTO : eventDTOList) {
-            List<Event> existingEvent = eventRepository.findByEventNmAndTITLE(eventDTO.getEventNm(), eventDTO.getTITLE());
-            if (existingEvent.isEmpty()) {
+            if(eventDTO != null) {
                 eventRepository.save(eventDTO.toEntity());
             }
         }
@@ -57,7 +69,7 @@ public class EventService {
 
     private List<EventDTO> callApiAndParseXml() {
         RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/1/500/";
+        String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/1/1000/";
 
         try {
             ResponseEntity<EventResponseTotal> responseEntity = restTemplate.getForEntity(apiUrl, EventResponseTotal.class);
@@ -67,22 +79,27 @@ public class EventService {
 
                 if (response != null && response.getEvents() != null && !response.getEvents().isEmpty()) {
                     return response.getEvents().stream()
-                            .map(eventdata -> EventDTO.builder()
-//                                    .areaNm(eventdata.getGuname())
-                                    .eventNm(eventdata.getTitle())
-                                    .TITLE(eventdata.getTitle())
-                                    .CODENAME(eventdata.getCodeName())
-                                    .STRTDATE(eventdata.getStartDate())
-                                    .END_DATE(eventdata.getEndDate())
-                                    .PLACE(eventdata.getPlace())
-                                    .USE_FEE(eventdata.getUseFee())
-                                    .PLAYER(eventdata.getPlayer())
-                                    .PROGRAM(eventdata.getProgram())
-                                    .ORG_LINK(eventdata.getOrgLink())
-                                    .LOT(eventdata.getLot())
-                                    .LAT(eventdata.getLat())
-                                    .GUNAME(eventdata.getGuname())
-                                    .build())
+                            .map(eventdata -> {
+                                Event event = eventRepository.findByEventNm(eventdata.getTitle());
+                                if(event == null) {
+                                    return null;
+                                }
+                                EventDTO eventDTO = event.toDto();
+                                eventDTO.setTitle(eventdata.getTitle());
+                                eventDTO.setCodename(eventdata.getCodeName());
+                                eventDTO.setStrtdate(eventdata.getStartDate());
+                                eventDTO.setEndDate(eventdata.getEndDate());
+                                eventDTO.setPlace(eventdata.getPlace());
+                                eventDTO.setUseFee(eventdata.getUseFee());
+                                eventDTO.setPlayer(eventdata.getPlayer());
+                                eventDTO.setProgram(eventdata.getProgram());
+                                eventDTO.setOrgLink(eventdata.getOrgLink());
+                                eventDTO.setLot(eventdata.getLot());
+                                eventDTO.setLat(eventdata.getLat());
+                                eventDTO.setGuname(eventdata.getGuname());
+
+                                return eventDTO;
+                            })
                             .collect(Collectors.toList());
                 } else {
                     return Collections.emptyList();

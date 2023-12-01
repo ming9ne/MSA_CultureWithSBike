@@ -15,51 +15,50 @@ import lombok.*;
 @Entity
 @Data
 public class Event {
-    @Column
-    private String areaNm;
     @Id
     private String eventNm;
     @Column
-    private String GUNAME;
+    private String areaNm;
     @Column
-    private String TITLE;
+    private String guname;
     @Column
-    private String CODENAME;
+    private String title;
     @Column
-    private String STRTDATE;
+    private String codename;
     @Column
-    private String END_DATE;
+    private String strtdate;
     @Column
-    private String PLACE;
+    private String endDate;
     @Column
-    private String PROGRAM;
+    private String place;
     @Column
-    private String ORG_LINK;
+    private String program;
     @Column
-    private String USE_FEE;
+    private String useFee;
     @Column
-    private Double LOT;
+    private String orgLink;
     @Column
-    private Double LAT;
+    private Double lot;
     @Column
-    private String PLAYER;
+    private Double lat;
+    @Column
+    private String player;
 
     public EventDTO toDto() {
         return EventDTO.builder()
-                .areaNm(areaNm)
                 .eventNm(eventNm)
-                .GUNAME(GUNAME)
-                .TITLE(TITLE)
-                .CODENAME(CODENAME)
-                .STRTDATE(STRTDATE)
-                .END_DATE(END_DATE)
-                .PLACE(PLACE)
-                .PROGRAM(PROGRAM)
-                .ORG_LINK(ORG_LINK)
-                .LOT(LOT)
-                .LAT(LAT)
-                .USE_FEE(USE_FEE)
-                .PLAYER(PLAYER)
+                .areaNm(areaNm)
+                .guname(guname)
+                .codename(codename)
+                .strtdate(strtdate)
+                .endDate(endDate)
+                .place(place)
+                .program(program)
+                .useFee(useFee)
+                .orgLink(orgLink)
+                .lot(lot)
+                .lat(lat)
+                .player(player)
                 .build();
     }
 }
