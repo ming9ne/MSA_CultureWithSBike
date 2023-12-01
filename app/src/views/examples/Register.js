@@ -13,8 +13,54 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import {useState} from "react";
+import { useNavigate } from "react-router-dom";
+
 
 const Register = () => {
+  const[id, setId] = useState("");
+  const[password, setPassword] = useState("");
+  const[username, setUsername] = useState("");
+  const[email, setEmail] = useState("");
+  const navigate = useNavigate();
+
+  const handleInputId = e => {
+    setId(e.target.value);
+  }
+
+  const handleInputPassword = e => {
+    setPassword(e.target.value);
+  }
+
+  const handleInputUsername = e => {
+    setUsername(e.target.value);
+  }
+
+  const handleInputEmail = e => {
+    setEmail(e.target.value);
+  }
+
+  const registerConfirm = e => {
+    e.preventDefault();
+    if(id.length === 0 || password.length === 0 || username.length === 0 || email.length === 0) {
+      window.alert("!!!");
+    } else {
+      fetch(`http://localhost:8000/api/v1/user-service/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id, password, username, email
+        }),
+      }).then(response => {
+        console.log(response);
+        window.alert("회원가입이 완료되었습니다.");
+        navigate("/");
+      })
+    }
+  }
+
   return (
     <>
       <Col lg="6" md="8">
@@ -28,24 +74,10 @@ const Register = () => {
                 <InputGroup className="input-group-alternative mb-3">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-hat-3" />
+                      <i className="ni ni-single-02" />
                     </InputGroupText>
                   </InputGroupAddon>
-                  <Input placeholder="Name" type="text" />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative mb-3">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-email-83" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    autoComplete="new-email"
-                  />
+                  <Input placeholder="Id" type="text" onChange={handleInputId} value={id}/>
                 </InputGroup>
               </FormGroup>
               <FormGroup>
@@ -59,6 +91,32 @@ const Register = () => {
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
+                    onChange={handleInputPassword} value={password}
+                  />
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-hat-3" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input placeholder="Username" type="text" onChange={handleInputUsername} value={username}/>
+                </InputGroup>
+              </FormGroup>
+              <FormGroup>
+                <InputGroup className="input-group-alternative mb-3">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="ni ni-email-83" />
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    placeholder="Email"
+                    type="email"
+                    autoComplete="new-email"
+                    onChange={handleInputEmail} value={email}
                   />
                 </InputGroup>
               </FormGroup>
@@ -91,7 +149,7 @@ const Register = () => {
                 </Col>
               </Row>
               <div className="text-center">
-                <Button className="mt-4" color="primary" type="button">
+                <Button className="mt-4" color="primary" type="button" onClick={registerConfirm}>
                   Create account
                 </Button>
               </div>

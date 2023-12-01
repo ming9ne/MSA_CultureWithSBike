@@ -14,8 +14,41 @@ import {
   Col,
 } from "reactstrap";
 import {Link} from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
+  const[id, setId] = useState("");
+  const[password, setPassword] = useState("");
+
+  const handleInputId = e => {
+    setId(e.target.value);
+  }
+
+  const handleInputPassword = e => {
+    setPassword(e.target.value);
+  }
+
+  const loginConfirm = e => {
+    e.preventDefault();
+    if(id.length === 0 || password.length === 0) {
+      window.alert("!!!");
+    } else {
+      fetch(`http://localhost:8000/user-service/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id, password
+        }),
+      }).then(response => {
+        console.log(response);
+        window.alert("로그인 완료되었습니다.");
+        // navigate("/");
+      })
+    }
+  }
+
   return (
     <>
       <Col lg="5" md="7">
@@ -29,13 +62,14 @@ const Login = () => {
                 <InputGroup className="input-group-alternative">
                   <InputGroupAddon addonType="prepend">
                     <InputGroupText>
-                      <i className="ni ni-email-83" />
+                      <i className="ni ni-single-02" />
                     </InputGroupText>
                   </InputGroupAddon>
                   <Input
-                    placeholder="Email"
-                    type="email"
-                    autoComplete="new-email"
+                    placeholder="Id"
+                    type="text"
+                    onChange={handleInputId}
+                    value={id}
                   />
                 </InputGroup>
               </FormGroup>
@@ -50,6 +84,8 @@ const Login = () => {
                     placeholder="Password"
                     type="password"
                     autoComplete="new-password"
+                    onChange={handleInputPassword}
+                    value={password}
                   />
                 </InputGroup>
               </FormGroup>
@@ -67,7 +103,7 @@ const Login = () => {
                 </label>
               </div>
               <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
+                <Button className="my-4" color="primary" type="button" onClick={loginConfirm}>
                   Sign in
                 </Button>
               </div>
