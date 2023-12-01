@@ -4,55 +4,45 @@ import com.sth.eventservice.model.dto.EventDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
 import jakarta.xml.bind.annotation.XmlElement;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
+@Data
 public class Event {
-    @Id
-    @XmlElement(nillable = true)
-    private String areaNm;
     @Column
-    @XmlElement(nillable = true)
+    private String areaNm;
+    @Id
     private String eventNm;
     @Column
-    @XmlElement(nillable = true)
     private String GUNAME;
     @Column
-    @XmlElement(nillable = true)
     private String TITLE;
     @Column
-    @XmlElement(nillable = true)
     private String CODENAME;
     @Column
-    @XmlElement(nillable = true)
     private String STRTDATE;
     @Column
-    @XmlElement(nillable = true)
     private String END_DATE;
     @Column
-    @XmlElement(nillable = true)
     private String PLACE;
     @Column
-    @XmlElement(nillable = true)
     private String PROGRAM;
     @Column
-    @XmlElement(nillable = true)
     private String ORG_LINK;
     @Column
-    @XmlElement(nillable = true)
+    private String USE_FEE;
+    @Column
     private Double LOT;
     @Column
-    @XmlElement(nillable = true)
     private Double LAT;
+    @Column
+    private String PLAYER;
 
     public EventDTO toDto() {
         return EventDTO.builder()
@@ -68,9 +58,8 @@ public class Event {
                 .ORG_LINK(ORG_LINK)
                 .LOT(LOT)
                 .LAT(LAT)
+                .USE_FEE(USE_FEE)
+                .PLAYER(PLAYER)
                 .build();
-    }
-    public String getTitle() {
-        return TITLE;
     }
 }

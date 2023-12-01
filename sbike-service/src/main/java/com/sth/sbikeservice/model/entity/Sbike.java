@@ -1,14 +1,14 @@
+// Sbike.java
+
 package com.sth.sbikeservice.model.entity;
 
 import com.sth.sbikeservice.model.dto.SbikeDTO;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.UUID;
 
@@ -18,38 +18,41 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Sbike {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String CODENAME;
-    private String GUNAME;
-    private String TITLE;
-    private String STRTDATE;
-    private String END_DATE;
-    private String PLACE;
-    private String USE_FEE;
-    private String PLAYER;
-    private String PROGRAM;
-    private String ORG_LINK;
-    private double LOT;
-    private double LAT;
+    @Column
+    private String stationId;
 
+    @Column
+    private String rackTotCnt;
+
+    @Column
+    private String stationName;
+
+    @Column
+    private String parkingBikeTotCnt;
+
+    @Column
+    private String shared;
+
+    @Column
+    private String stationLatitude;
+
+    @Column
+    private String stationLongitude;
 
     public SbikeDTO toDto() {
         return SbikeDTO.builder()
-                .CODENAME(CODENAME)
-                .GUNAME(GUNAME)
-                .TITLE(TITLE)
-                .STRTDATE(STRTDATE)
-                .END_DATE(END_DATE)
-                .PLACE(PLACE)
-                .USE_FEE(USE_FEE)
-                .PLAYER(PLAYER)
-                .PROGRAM(PROGRAM)
-                .ORG_LINK(ORG_LINK)
-                .LOT(LOT)
-                .LAT(LAT)
+                .stationId(stationId)
+                .rackTotCnt(rackTotCnt)
+                .stationName(stationName)
+                .parkingBikeTotCnt(parkingBikeTotCnt)
+                .shared(shared)
+                .stationLatitude(stationLatitude)
+                .stationLongitude(stationLongitude)
                 .build();
     }
 }

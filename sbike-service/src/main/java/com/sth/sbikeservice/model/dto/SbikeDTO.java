@@ -1,6 +1,8 @@
 package com.sth.sbikeservice.model.dto;
 
 import com.sth.sbikeservice.model.entity.Sbike;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,34 +12,40 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@XmlRootElement(name = "row")
 public class SbikeDTO {
-    private String CODENAME;
-    private String GUNAME;
-    private String TITLE;
-    private String STRTDATE;
-    private String END_DATE;
-    private String PLACE;
-    private String USE_FEE;
-    private String PLAYER;
-    private String PROGRAM;
-    private String ORG_LINK;
-    private double LOT;
-    private double LAT;
+
+    @XmlElement(name = "stationId")
+    private String stationId;
+
+    @XmlElement(name = "rackTotCnt")
+    private String rackTotCnt;
+
+    @XmlElement(name = "stationName")
+    private String stationName;
+
+    @XmlElement(name = "parkingBikeTotCnt")
+    private String parkingBikeTotCnt;
+
+    @XmlElement(name = "shared")
+    private String shared;
+
+    @XmlElement(name = "stationLatitude")
+    private String stationLatitude;
+
+    @XmlElement(name = "stationLongitude")
+    private String stationLongitude;
+
 
     public Sbike toEntity() {
         return Sbike.builder()
-                .CODENAME(CODENAME)
-                .GUNAME(GUNAME)
-                .TITLE(TITLE)
-                .STRTDATE(STRTDATE)
-                .END_DATE(END_DATE)
-                .PLACE(PLACE)
-                .USE_FEE(USE_FEE)
-                .PLAYER(PLAYER)
-                .PROGRAM(PROGRAM)
-                .ORG_LINK(ORG_LINK)
-                .LOT(LOT)
-                .LAT(LAT)
+                .stationId(stationId)
+                .rackTotCnt(rackTotCnt)
+                .stationName(stationName)
+                .parkingBikeTotCnt(parkingBikeTotCnt)
+                .shared(shared)
+                .stationLatitude(stationLatitude)
+                .stationLongitude(stationLongitude)
                 .build();
     }
 }
