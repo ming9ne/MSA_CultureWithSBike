@@ -36,15 +36,17 @@ public class Securityconfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
 
-
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests((authorizeHttpRequest) ->
                         authorizeHttpRequest.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .csrf(csrf -> csrf.ignoringRequestMatchers(new AntPathRequestMatcher("/**")))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
 //                .apply(new JwtSecurityConfig(tokenProvider));
+                .authorizeHttpRequests(authorize -> {
+
+                })
                 .addFilter(getAuthenticationFilter());
         return http.build();
     }

@@ -49,10 +49,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
     }
 
-    @GetMapping("/login")
-    public void login() {
-
-    }
 
     @GetMapping("/logout")
     public void logout() {
