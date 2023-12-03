@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
-    List<Event> findByEventNmAndTITLE(String eventNm, String TITLE);
+    public Event findByEventNm(String eventNm);
 
 }
