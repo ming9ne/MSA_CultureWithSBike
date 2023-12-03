@@ -78,7 +78,14 @@ const Tables = () => {
       lot: "37.5499060881738",
       lat: "126.945533810385"
     }])
-    console.log(events);
+
+    fetch(`http://localhost:8000/api/v1/event-service/events`)
+      .then(response => response.json())
+      .then(response => {
+        console.log(response);
+        setEvents(response);
+      })
+    
   }, []);
 
   return (

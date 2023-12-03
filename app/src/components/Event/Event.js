@@ -29,7 +29,8 @@ function Event({title, startDate, endDate, areaNm, codename, guname, place, useF
     return (
         <Card
             style={{
-                margin: "30px"
+                margin: "30px",
+                width: "600px"
             }}>
             <CardHeader tag="h3">
                 <Link to="/admin/maps" state={{lot, lat}}>{title}</Link>
@@ -51,10 +52,13 @@ function Event({title, startDate, endDate, areaNm, codename, guname, place, useF
                     장소 : {place} <br />
                     이용요금 : {useFee} <br />
                     출연자정보 : {player} <br />
-                    프로그램소개 : {program}<br />
-                    장소 혼잡도 지표 : {congestion.areaCongestLvl}<br />
-                    장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br />
-                    인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br />
+                    {program ? <>프로그램소개 : {program}</> : ""}<br />
+                    {congestion ? (<>
+                        장소 혼잡도 지표 : {congestion.areaCongestLvl}<br />
+                        장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br />
+                        인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br />
+                        </>) : <></>
+                    }
                 </CardText>
             </CardBody>
             <CardFooter>

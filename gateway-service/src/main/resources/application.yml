@@ -67,7 +67,7 @@ spring:
         - id: user-service-login
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/user-service/login
+            - Path=/api/v1/user-service/login
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie
