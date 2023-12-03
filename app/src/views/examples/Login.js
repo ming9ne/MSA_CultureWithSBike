@@ -15,10 +15,12 @@ import {
 } from "reactstrap";
 import {Link} from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const[id, setId] = useState("");
   const[password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleInputId = e => {
     setId(e.target.value);
@@ -28,12 +30,12 @@ const Login = () => {
     setPassword(e.target.value);
   }
 
-  const loginConfirm = e => {
+  const loginConfirm = async e => {
     e.preventDefault();
     if(id.length === 0 || password.length === 0) {
       window.alert("!!!");
     } else {
-      fetch(`http://localhost:8000/user-service/login`, {
+      fetch(`http://localhost:8000/api/v1/user-service/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,10 +44,15 @@ const Login = () => {
           id, password
         }),
       }).then(response => {
-        console.log(response);
-        window.alert("로그인 완료되었습니다.");
-        // navigate("/");
+        if(response.status == 200) {
+          console.log("status 200")
+          localStorage.setItem("login-token", response.headers.get("Authorization"))
+          alert("로그인이 완료되었습니다!");
+          navigate("/");
+        }
       })
+
+      
     }
   }
 
