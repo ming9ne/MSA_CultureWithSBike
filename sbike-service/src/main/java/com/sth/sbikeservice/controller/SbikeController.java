@@ -1,6 +1,7 @@
 package com.sth.sbikeservice.controller;
 
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.schedule.SbikeSchedule;
 import com.sth.sbikeservice.service.SbikeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,16 +13,16 @@ import java.util.List;
 @RequestMapping("/api/v1/sbike-service")
 public class SbikeController {
 
-    private final SbikeService sbikeService;
+    private final SbikeSchedule sbikeSchedule;
 
     @Autowired
-    public SbikeController(SbikeService sbikeService) {
-        this.sbikeService = sbikeService;
+    public SbikeController(SbikeSchedule sbikeSchedule) {
+        this.sbikeSchedule = sbikeSchedule;
     }
 
     @GetMapping("/sbike")
     public ResponseEntity<String> get_sbike() {
-        sbikeService.get_sbike();
+        sbikeSchedule.get_sbike();
         return ResponseEntity.ok("Update Sbike successful");
     }
 
@@ -32,6 +33,6 @@ public class SbikeController {
 
     @PostMapping("/saveSbikeToDatabase")
     public void saveSbikeToDatabase(@RequestBody List<SbikeDTO> sbikeDTOList) {
-        sbikeService.saveSbikeToDatabase(sbikeDTOList);
+        sbikeSchedule.saveSbikeToDatabase(sbikeDTOList);
     }
 }
