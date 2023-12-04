@@ -36,6 +36,7 @@ public class EventDTO {
                 .strtdate(strtdate)
                 .endDate(endDate)
                 .place(place)
+                .title(title)
                 .program(program)
                 .useFee(useFee)
                 .orgLink(orgLink)
