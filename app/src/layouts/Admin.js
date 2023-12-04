@@ -6,6 +6,7 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import LeftSidebar from "components/Sidebar/LeftSidebar.js";
+import Details from "views/examples/Detail.js";
 
 import routes from "routes.js";
 
@@ -62,6 +63,7 @@ const Admin = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
+          <Route path="/details" element={<Details />} exact />
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
         </Routes>
         <Container fluid>

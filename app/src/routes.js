@@ -4,7 +4,9 @@ import Maps from "views/examples/Maps.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Lists from "views/examples/List.js";
+import Details from "views/examples/Detail.js";
 import Icons from "views/examples/Icons.js";
+
 
 var routes = [
   {
@@ -28,6 +30,13 @@ var routes = [
     component: <Lists />,
     layout: "/admin",
   },
+  // {
+  //   path: "/details",
+  //   name: "Details",
+  //   icon: "ni ni-bullet-list-67 text-red",
+  //   component: <Details />,
+  //   layout: "/admin",
+  // },
   {
     path: "/user-profile",
     name: "User Profile",

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 // reactstrap components
 import { Button, ButtonGroup, Card, Container, Row } from "reactstrap";
@@ -6,32 +6,46 @@ import { Button, ButtonGroup, Card, Container, Row } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
 import { useLocation } from "react-router-dom";
+import Event from "components/Event/Event";
 
 const {kakao} = window;
 let map;
 
-const MapWrapper = ({lot, lat}) => {
-  console.log(lot, lat);
+const MapWrapper = () => {
+  const location = useLocation();
+  const mapRef = useRef(null);
+  let positions = [{
+      // content: '<div>카카오</div>',
+      content: `<div>카카오</div>`,
+      latlng: new kakao.maps.LatLng(37.566535, 126.9779692)
+    }];
+  console.log(location.state);
+ 
+  let lot = 37.566535;
+  let lat = 126.9779692;
 
-  const mapRef = React.useRef(null);
-  const [positions, setPositions] = useState([{
-      content: '<div>카카오</div>', 
-      latlng: new kakao.maps.LatLng(37.5499060881738, 126.945533810385)
-  },
-  {
-      content: '<div>생태연못</div>', 
-      latlng: new kakao.maps.LatLng(33.450936, 126.569477)
-  },
-  {
-      content: '<div>텃밭</div>', 
-      latlng: new kakao.maps.LatLng(33.450879, 126.569940)
-  },
-  {
-      content: '<div>근린공원</div>',
-      latlng: new kakao.maps.LatLng(33.451393, 126.570738)
-  }]);
-  
-  React.useEffect(() => {
+  useEffect(() => {
+    if(location.state) {
+      console.log("location state is here!");
+      lot = location.state.lot;
+      lat = location.state.lat;
+      console.log(positions, positions.length);
+      positions = [{
+          // content: '<div>카카오</div>',
+          content: `<div>${location.state.title}</div>`,
+          latlng: new kakao.maps.LatLng(lot, lat)
+        }];
+        // ,{
+        //   // content: '<div>카카오</div>',
+        //   content: `<div>${location.state.title}</div>`,
+        //   latlng: new kakao.maps.LatLng(37.6499060881738, 127.945533810385)
+        // }
+
+      console.log(positions, positions.length);
+    }
+
+    
+
     const container = mapRef.current;
     const options = { //지도를 생성할 때 필요한 기본 옵션
       center: new kakao.maps.LatLng(lot, lat), //지도의 중심좌표.
@@ -83,10 +97,7 @@ const MapWrapper = ({lot, lat}) => {
           infowindow.close();
       };
     }
-
-  }, []);
-
-  
+  }, [])
 
   return (
     <>
@@ -102,17 +113,7 @@ const MapWrapper = ({lot, lat}) => {
 
 const Maps = () => {
   const location = useLocation();
-  console.log("location", location);
-
-  let lot = 37.566535;
-  let lat = 126.9779692;
-  let isMarked = false;
-  
-  if(location.state) {
-    lot = location.state.lot;
-    lat = location.state.lat;
-    isMarked = true;
-  }
+  // console.log("location", location);
 
   return (
     <>
@@ -130,7 +131,7 @@ const Maps = () => {
             }}>지도</Button>
           </ButtonGroup>
             <Card className="shadow border-0">   
-              <MapWrapper lot={lot} lat={lat} isMarked={isMarked}/>
+              <MapWrapper state={location.state}/>
             </Card>
           </div>
         </Row>
