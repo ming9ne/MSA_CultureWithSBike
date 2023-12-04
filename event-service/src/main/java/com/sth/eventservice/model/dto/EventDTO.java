@@ -29,19 +29,19 @@ public class EventDTO {
 
     public Event toEntity() {
         return Event.builder()
-            .eventNm(eventNm)
-            .areaNm(areaNm)
-            .guname(guname)
-            .codename(codename)
-            .strtdate(strtdate)
-            .endDate(endDate)
-            .place(place)
-            .program(program)
-            .useFee(useFee)
-            .orgLink(orgLink)
-            .lot(lot)
-            .lat(lat)
-            .player(player)
-            .build();
+                .eventNm(eventNm)
+                .areaNm(areaNm)
+                .guname(guname)
+                .codename(codename)
+                .strtdate(strtdate)
+                .endDate(endDate)
+                .place(place)
+                .program(program)
+                .useFee(useFee)
+                .orgLink(orgLink)
+                .lot(lot)
+                .lat(lat)
+                .player(player)
+                .build();
     }
 }

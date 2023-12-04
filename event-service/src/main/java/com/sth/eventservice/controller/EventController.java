@@ -2,6 +2,7 @@
 package com.sth.eventservice.controller;
 
 import com.sth.eventservice.model.dto.EventDTO;
+import com.sth.eventservice.schedule.EventSchedule;
 import com.sth.eventservice.service.EventService;
 import com.sth.eventservice.vo.AreaResponse;
 import com.sth.eventservice.vo.EventResponse;
@@ -20,9 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/event-service")
 public class EventController {
     private final EventService eventService;
+    private final EventSchedule eventSchedule;
 
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventSchedule eventSchedule) {
         this.eventService = eventService;
+        this.eventSchedule = eventSchedule;
     }
 
     @GetMapping("/")
@@ -39,52 +42,10 @@ public class EventController {
     }
 
     @GetMapping("/saveEvents")
-    public void saveEvents() {
-        RestTemplate restTemplate = new RestTemplate();
-
-        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
-        AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
-
-        for (AreaResponse area : areas) {
-            int startPage = 1;
-            int pageSize = 100;
-            String areaname = area.getAreaNm();
-
-            // areaNameFromSaveEvents에 값을 설정
-
-            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
-
-            try {
-                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
-                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                    EventResponse response = responseEntity.getBody();
-                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
-                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
-                        List<EventDTO> eventDTOList = eventSttsList.stream()
-                                .map(eventStts -> EventDTO.builder()
-                                        .areaNm(areaname)
-                                        .eventNm(eventStts.getEVENT_NM())
-                                        .build())
-                                .collect(Collectors.toList());
-
-                        eventService.addEvents(eventDTOList);
-
-                        System.out.println("API 호출 성공 - 페이지: " + startPage);
-                    } else {
-                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
-                    }
-                } else {
-                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-                }
-            } catch (Exception e) {
-                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
+    public void saveEvents(){eventSchedule.saveEvents();}
 
     @GetMapping("/saveEventsFromXml")
     public void saveEventsFromXml() {
-        eventService.saveEventsFromXml();
+        eventSchedule.saveEventsFromXml();
     }
 }
