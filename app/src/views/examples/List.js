@@ -85,6 +85,9 @@ const Tables = () => {
         console.log(response);
         setEvents(response);
       })
+      .catch(e => {
+        console.log(e);
+      })
     
   }, []);
 
