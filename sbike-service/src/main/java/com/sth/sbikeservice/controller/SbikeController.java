@@ -47,4 +47,9 @@ public class SbikeController {
     public void saveSbikeToDatabase(@RequestBody List<SbikeDTO> sbikeDTOList) {
         sbikeSchedule.saveSbikeToDatabase(sbikeDTOList);
     }
+
+    @GetMapping("/distance")
+    public void Distance() {
+        SbikeSchedule.Distance();
+    }
 }
