@@ -44,6 +44,7 @@ public class Event {
     @Column
     private String player;
 
+
     public EventDTO toDto() {
         return EventDTO.builder()
                 .eventNm(eventNm)
@@ -52,6 +53,7 @@ public class Event {
                 .codename(codename)
                 .strtdate(strtdate)
                 .endDate(endDate)
+                .title(title)
                 .place(place)
                 .program(program)
                 .useFee(useFee)
