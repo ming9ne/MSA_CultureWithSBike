@@ -37,7 +37,7 @@ const AdminNavbar = () => {
           <NavbarBrand to="/" tag={Link}>
             <img
               alt="..."
-              src={require("../../assets/img/brand/argon-react-white.png")}
+              src={require("../../assets/img/brand/sw-logo.png")}
             />
           </NavbarBrand>
           <button className="navbar-toggler" id="navbar-collapse-main">
@@ -50,7 +50,7 @@ const AdminNavbar = () => {
                   <Link to="/">
                     <img
                       alt="..."
-                      src={require("../../assets/img/brand/argon-react.png")}
+                      src={require("../../assets/img/brand/sw-logo.png")}
                     />
                   </Link>
                 </Col>
@@ -70,6 +70,12 @@ const AdminNavbar = () => {
                 </NavLink>
               </NavItem>
               <NavItem>
+                <NavLink className="nav-link-icon" to="/auth/login" tag={Link}>
+                  <i className="ni ni-key-25" />
+                  <span className="nav-link-inner--text">Login</span>
+                </NavLink>
+              </NavItem>
+              <NavItem>
                 <NavLink
                   className="nav-link-icon"
                   to="/auth/register"
@@ -79,13 +85,7 @@ const AdminNavbar = () => {
                   <span className="nav-link-inner--text">Register</span>
                 </NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink className="nav-link-icon" to="/auth/login" tag={Link}>
-                  <i className="ni ni-key-25" />
-                  <span className="nav-link-inner--text">Login</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
+              {/* <NavItem>
                 <NavLink
                   className="nav-link-icon"
                   to="/admin/user-profile"
@@ -94,7 +94,7 @@ const AdminNavbar = () => {
                   <i className="ni ni-single-02" />
                   <span className="nav-link-inner--text">Profile</span>
                 </NavLink>
-              </NavItem>
+              </NavItem> */}
             </Nav>
           </UncontrolledCollapse>
         </Container>

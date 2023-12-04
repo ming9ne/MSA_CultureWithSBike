@@ -30,13 +30,6 @@ var routes = [
     component: <Lists />,
     layout: "/admin",
   },
-  // {
-  //   path: "/details",
-  //   name: "Details",
-  //   icon: "ni ni-bullet-list-67 text-red",
-  //   component: <Details />,
-  //   layout: "/admin",
-  // },
   {
     path: "/user-profile",
     name: "User Profile",
