@@ -1,6 +1,7 @@
 package com.sth.sbikeservice.controller;
 
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.schedule.KakaoApi;
 import com.sth.sbikeservice.schedule.SbikeSchedule;
 import com.sth.sbikeservice.service.SbikeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,12 @@ public class SbikeController {
         for (SbikeDTO sbikeDTO : sbikeDTOList) {
             String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
             String stationName = sbikeDTO.getStationName();
-            SbikeSchedule.Distance(origin, destination, stationName);
+            KakaoApi.Distance(origin, destination, stationName);
         }
+    }
+
+    @PostMapping("/saveDistance")
+    public void saveDistance(){
+
     }
 }
