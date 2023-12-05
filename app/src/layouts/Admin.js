@@ -23,9 +23,21 @@ const Admin = (props) => {
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-        return (
-          <Route path={prop.path} element={prop.component} key={key} exact />
-        );
+        if (prop.requireToken) {
+          if(localStorage.getItem("login-token")) {
+            return (
+              <Route path={prop.path} element={prop.component} key={key} exact />
+            );
+          } else {
+            return (
+              <Route path={prop.path} element={<Navigate to="/auth" replace />} />
+            );
+          }
+        } else {
+          return (
+            <Route path={prop.path} element={prop.component} key={key} exact />
+          );
+        }
       } else {
         return null;
       }
