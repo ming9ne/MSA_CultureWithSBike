@@ -49,7 +49,18 @@ public class SbikeController {
     }
 
     @GetMapping("/distance")
-    public void Distance() {
-        SbikeSchedule.Distance();
+    public void getDistance() {
+        // 전체 정류장 정보를 읽어옴
+        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+
+        // 출발지 고정값
+        String origin = "127.11015314141542,37.39472714688412,name=출발";
+
+        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
+        for (SbikeDTO sbikeDTO : sbikeDTOList) {
+            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
+            String stationName = sbikeDTO.getStationName();
+            SbikeSchedule.Distance(origin, destination, stationName);
+        }
     }
 }

@@ -4,45 +4,48 @@ package com.sth.sbikeservice.schedule;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.SbikeRepository;
+import com.sth.sbikeservice.repository.KaKaoRepository;
 import com.sth.sbikeservice.service.SbikeService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
 public class SbikeSchedule {
 
     private final SbikeService sbikeService;
+    private final SbikeRepository sbikeRepository;
+    private static KaKaoRepository kaKaoRepository = null;
     @Autowired
-    public SbikeSchedule(SbikeService sbikeService){
+    public SbikeSchedule(SbikeService sbikeService, SbikeRepository sbikeRepository, KaKaoRepository kaKaoRepository) {
         this.sbikeService = sbikeService;
+        this.sbikeRepository = sbikeRepository;
+        SbikeSchedule.kaKaoRepository = kaKaoRepository;
     }
 
-    @Autowired
-    private SbikeRepository sbikeRepository;
 
-//    @Scheduled(fixedDelay = 300000)
+
+
+    //    @Scheduled(fixedDelay = 300000)
     public void hello() {
         log.info("Sbike Scheduler");
     }
-//    @Scheduled(fixedDelay = 300000)
+    //    @Scheduled(fixedDelay = 300000)
     public void get_sbike() {
         int firstData = 1;
         int lastData = 1000; // 한 페이지당 가져올 이벤트 수
@@ -110,15 +113,32 @@ public class SbikeSchedule {
         sbike.setStationLatitude(sbikeDTO.getStationLatitude());
     }
 
-    public static void Distance() {
+    public void getDistance() {
+        // 전체 정류장 정보를 읽어옴
+        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+
+        if (!sbikeDTOList.isEmpty()) {
+            // 모든 정류장 정보를 사용
+            for (SbikeDTO sbikeDTO : sbikeDTOList) {
+                // 출발지 고정값
+                String origin = "127.11015314141542,37.39472714688412,name=출발";
+
+                // 목적지 정보를 이용하여 Distance 메서드 호출
+                String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
+                Distance(origin, destination, sbikeDTO.getStationName());
+            }
+        } else {
+            System.out.println("No data available in the list.");
+        }
+    }
+
+    public static void Distance(String origin, String destination, String stationName) {
         try {
             // 카카오디벨로퍼스에서 발급 받은 REST API 키
             String REST_API_KEY = "b607b434b034948b1f4dcba5efc74551";
 
             // 요청 URL 생성
             String baseUrl = "https://apis-navi.kakaomobility.com/v1/directions";
-            String origin = "127.11015314141542,37.39472714688412";
-            String destination = "127.10824367964793,37.401937080111644";
             String waypoints = "";
             String priority = "RECOMMEND";
             String carFuel = "GASOLINE";
@@ -165,6 +185,8 @@ public class SbikeSchedule {
 //                    System.out.println("Response:\n" + response.toString());
 
                     // JSON 파싱하여 distance 값 추출
+                    System.out.println("출발지점 :"+ origin);
+                    System.out.println("도착지점 :" +stationName);
                     extractDistance(response.toString());
                 }
             } else {
@@ -191,12 +213,12 @@ public class SbikeSchedule {
                     .asInt();
 
             // 추출한 distance 값 출력
-            System.out.println("Distance: " + distance + " meters");
+            System.out.println("둘 사이 거리: " + distance + " 미터");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-}
 
+}

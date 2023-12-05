@@ -1,5 +1,6 @@
 package com.sth.sbikeservice.model.dto;
 
+import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.model.entity.Sbike;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
@@ -36,6 +37,11 @@ public class SbikeDTO {
     @XmlElement(name = "stationLongitude")
     private String stationLongitude;
 
+    private String destination;
+
+    private String origin;
+
+
 
     public Sbike toEntity() {
         return Sbike.builder()
@@ -46,6 +52,8 @@ public class SbikeDTO {
                 .shared(shared)
                 .stationLatitude(stationLatitude)
                 .stationLongitude(stationLongitude)
+                .destination(destination)
                 .build();
     }
+
 }
