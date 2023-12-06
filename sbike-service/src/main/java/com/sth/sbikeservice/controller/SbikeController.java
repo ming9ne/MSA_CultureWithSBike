@@ -31,6 +31,9 @@ public class SbikeController {
         this.kaKaoRepository = kaKaoRepository;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    // 공공API에서 따릉이 데이터 저장 /// ///////////////////////////////////////////////////////////////
+
     @GetMapping("/sbikeList")
     public ResponseEntity<List<SbikeDTO>> getSbike() {
         Iterable<SbikeDTO> sbikeList = sbikeService.listSbike();  // 수정된 부분
@@ -55,23 +58,9 @@ public class SbikeController {
         sbikeSchedule.saveSbikeToDatabase(sbikeDTOList);
     }
 
-    // 예전 코드
-//    @GetMapping("/distance")
-//    public void getDistance() {
-//        // 전체 정류장 정보를 읽어옴
-//        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-//
-//        // 출발지 고정값
-//        String origin = "127.11015314141542,37.39472714688412,name=출발";
-//
-//        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
-//        for (SbikeDTO sbikeDTO : sbikeDTOList) {
-//            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
-//            String stationName = sbikeDTO.getStationName();
-//            KakaoApi.Distance(origin, destination, stationName);
-//        }
-//    }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    // 위도,경도에 따른 따릉이 정류장 저장 ///////////////////////////////////////////////////////////////
 
     @GetMapping("/getDistanceAndSaveToDB")
     public ResponseEntity<String> getDistanceAndSaveToDB() {
@@ -79,13 +68,28 @@ public class SbikeController {
         return ResponseEntity.ok("Get distance and save to DB successful");
     }
 
+//    @PostMapping("/saveDistance")
+//    public void saveDistance() {
+//        // 전체 정류장 정보를 읽어옴
+//        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+//
+//        // 출발지 고정값
+//        String origin = "126.9760053,37.5726241,name=광화문광장";
+//
+//        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
+//        for (SbikeDTO sbikeDTO : sbikeDTOList) {
+//            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
+//            String stationName = sbikeDTO.getStationName();
+//
+//            // 거리를 호출하고 저장하는 메서드 추가
+//            saveDistanceForStation(origin, destination, stationName);
+//        }
+//    }
+
     @PostMapping("/saveDistance")
-    public void saveDistance() {
+    public void saveDistance(@RequestParam String origin) {
         // 전체 정류장 정보를 읽어옴
         List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-
-        // 출발지 고정값
-        String origin = "126.9760053,37.5726241,name=광화문광장";
 
         // 각 정류장의 정보를 이용하여 Distance 메서드 호출
         for (SbikeDTO sbikeDTO : sbikeDTOList) {
