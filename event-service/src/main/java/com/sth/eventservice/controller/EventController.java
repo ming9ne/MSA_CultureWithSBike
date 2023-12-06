@@ -7,7 +7,7 @@ import com.sth.eventservice.service.EventService;
 import com.sth.eventservice.vo.AreaResponse;
 import com.sth.eventservice.vo.EventResponse;
 import com.sth.eventservice.vo.EventStts;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,26 +35,20 @@ public class EventController {
         return "hello, this is event service";
     }
 
+//    @GetMapping("/events")
+//    public ResponseEntity<List<EventDTO>> getEvent() {
+//        Iterable<EventDTO> eventList = eventService.listEvent();
+//        List<EventDTO> result = new ArrayList<>();
+//        eventList.forEach(result::add);
+//        return ResponseEntity.status(HttpStatus.OK).body(result);
+//    }
+
     @GetMapping("/events")
-    public ResponseEntity<List<EventDTO>> getEvent() {
-        Iterable<EventDTO> eventList = eventService.listEvent();
-        List<EventDTO> result = new ArrayList<>();
-        eventList.forEach(result::add);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+    public ResponseEntity<Page<EventDTO>> getEvent(Pageable pageable) {
+        Page<EventDTO> eventPage = eventService.listEvent(pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(eventPage);
     }
 
-    @GetMapping("/events/{page}")
-    public ResponseEntity<List<EventDTO>> getEventByPage(@PathVariable int page) {
-        int size = 20;
-
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-        Iterable<EventDTO> eventList = eventService.listEventPaging(pageable);
-        List<EventDTO> result = new ArrayList<>();
-        eventList.forEach(result::add);
-
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
 
     @GetMapping("/saveEvents")
     public void saveEvents(){eventSchedule.saveEvents();}
