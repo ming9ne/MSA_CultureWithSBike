@@ -6,6 +6,7 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import LeftSidebar from "components/Sidebar/LeftSidebar.js";
+import Details from "views/examples/Detail.js";
 
 import routes from "routes.js";
 
@@ -22,9 +23,21 @@ const Admin = (props) => {
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-        return (
-          <Route path={prop.path} element={prop.component} key={key} exact />
-        );
+        if (prop.requireToken) {
+          if(localStorage.getItem("login-token")) {
+            return (
+              <Route path={prop.path} element={prop.component} key={key} exact />
+            );
+          } else {
+            return (
+              <Route path={prop.path} element={<Navigate to="/auth" replace />} />
+            );
+          }
+        } else {
+          return (
+            <Route path={prop.path} element={prop.component} key={key} exact />
+          );
+        }
       } else {
         return null;
       }
@@ -62,6 +75,7 @@ const Admin = (props) => {
         />
         <Routes>
           {getRoutes(routes)}
+          <Route path="/details" element={<Details />} exact />
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
         </Routes>
         <Container fluid>

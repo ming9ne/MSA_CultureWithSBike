@@ -3,8 +3,10 @@ import Profile from "views/examples/Profile.js";
 import Maps from "views/examples/Maps.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
-import Tables from "views/examples/Tables.js";
+import Lists from "views/examples/List.js";
+import Details from "views/examples/Detail.js";
 import Icons from "views/examples/Icons.js";
+
 
 var routes = [
   {
@@ -13,6 +15,7 @@ var routes = [
     icon: "ni ni-tv-2 text-primary",
     component: <Index />,
     layout: "/admin",
+    requireToken: false,
   },
   {
     path: "/maps",
@@ -20,13 +23,15 @@ var routes = [
     icon: "ni ni-pin-3 text-orange",
     component: <Maps />,
     layout: "/admin",
+    requireToken: true,
   },
   {
-    path: "/tables",
-    name: "Tables",
+    path: "/lists",
+    name: "Lists",
     icon: "ni ni-bullet-list-67 text-red",
-    component: <Tables />,
+    component: <Lists />,
     layout: "/admin",
+    requireToken: true,
   },
   {
     path: "/user-profile",
@@ -34,6 +39,7 @@ var routes = [
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
     layout: "/admin",
+    requireToken: true,
   },
   {
     path: "/icons",
@@ -41,6 +47,7 @@ var routes = [
     icon: "ni ni-planet text-blue",
     component: <Icons />,
     layout: "/admin",
+    requireToken: true,
   },
   {
     path: "/login",
@@ -48,6 +55,7 @@ var routes = [
     icon: "ni ni-key-25 text-info",
     component: <Login />,
     layout: "/auth",
+    requireToken: false,
   },
   {
     path: "/register",
@@ -55,6 +63,7 @@ var routes = [
     icon: "ni ni-circle-08 text-pink",
     component: <Register />,
     layout: "/auth",
+    requireToken: false,
   },
 ];
 export default routes;

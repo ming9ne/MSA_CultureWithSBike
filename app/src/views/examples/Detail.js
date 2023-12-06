@@ -1,0 +1,101 @@
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { Link, useLocation, Navigate, useNavigate } from "react-router-dom";
+import { Card, CardHeader, CardImg, CardTitle, CardFooter, CardBody, CardText, Container, Row } from "reactstrap";
+import Header from "components/Headers/Header.js";
+
+function Detail() { // () 안에 정보들
+    const[congestion, setCongestion] = useState([]);
+    const[population, setPopulation] = useState([]);
+    const navigate = useNavigate();
+    const location = useLocation();
+    console.log(location.state);
+    
+    useEffect(() => {
+        if(location.state === null) {
+            navigate("/");
+        } else {
+            // console.log(location.state);
+            fetch(`http://localhost:8000/api/v1/congestion-service/congestion/${location.state.areaNm}`)
+                .then(response => response.json())
+                .then(response => { 
+                    setCongestion(response);
+                    // console.log(response);
+                })
+                .catch(e => {
+                    console.log(e);
+            });
+
+            fetch(`http://localhost:8000/api/v1/congestion-service/population/${location.state.areaNm}`)
+                .then(response => response.json())
+                .then(response => {
+                    setPopulation(response);
+                    // console.log(response);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
+            };
+
+            console.log(congestion);
+        }
+    , [])
+
+    if(location.state) {
+        return (
+            <>
+                <Header />
+                <Container className="mt--7" fluid>
+                    <Row>
+                        <Card
+                        style={{
+                            margin: "30px",
+                            width: "600px"
+                        }}>
+                        <CardHeader tag="h3">
+                            <Link to="/admin/maps" state={location.state}>{location.state.title}</Link>
+                        </CardHeader>
+                        <CardBody>
+                            <CardImg 
+                                src={location.state.mainImg} 
+                                alt={location.state.title} 
+                                title={location.state.title} 
+                                style={{
+                                    height: 300
+                                }}
+                                top
+                                width="100%"
+                            />
+                            <CardText>
+                                기간 : {location.state.startDate} ~ {location.state.endDate} <br />
+                                지역 : {location.state.guname} <br />
+                                장소 : {location.state.place} <br />
+                                이용요금 : {location.state.useFee} <br />
+                                출연자정보 : {location.state.player} <br />
+                                {location.state.program ? <>프로그램소개 : {location.state.program}</> : ""}<br />
+                                {congestion == []? (<>
+                                    장소 혼잡도 지표 : {congestion.areaCongestLvl}<br />
+                                    장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br />
+                                    </>) : <></>}
+                                {population == []? (
+                                    <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
+                                ) : <></>}
+                            </CardText>
+                        </CardBody>
+                        <CardFooter>
+                            <a
+                                className="font-weight-bold ml-1"
+                                href={location.state.orgLink}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >홈페이지</a>
+                        </CardFooter>
+                    </Card>
+                    </Row>
+                </Container>
+            </>
+        );
+    }
+}
+
+export default Detail;
