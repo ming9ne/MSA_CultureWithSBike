@@ -63,18 +63,24 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody RequestLogin requestLogin, HttpServletResponse response) {
+    public ResponseEntity<ResponseUser> login(@RequestBody RequestLogin requestLogin) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(requestLogin.getId(), requestLogin.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
 
+        UserDTO userDto = userService.getUserDetailsById(authenticationToken.getName());
+        ResponseUser responseUser = ResponseUser.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .email(userDto.getEmail())
+                .userId(userDto.getUserId())
+                .build();
+
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        response.addHeader("token", "Bearer " + jwt);
-
-        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(responseUser, httpHeaders, HttpStatus.OK);
     }
 }
