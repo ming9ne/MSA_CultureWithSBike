@@ -68,23 +68,9 @@ public class SbikeController {
         return ResponseEntity.ok("Get distance and save to DB successful");
     }
 
-//    @PostMapping("/saveDistance")
-//    public void saveDistance() {
-//        // 전체 정류장 정보를 읽어옴
-//        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-//
-//        // 출발지 고정값
-//        String origin = "126.9760053,37.5726241,name=광화문광장";
-//
-//        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
-//        for (SbikeDTO sbikeDTO : sbikeDTOList) {
-//            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
-//            String stationName = sbikeDTO.getStationName();
-//
-//            // 거리를 호출하고 저장하는 메서드 추가
-//            saveDistanceForStation(origin, destination, stationName);
-//        }
-//    }
+
+
+
 
     @PostMapping("/saveDistance")
     public void saveDistance(@RequestParam String origin) {

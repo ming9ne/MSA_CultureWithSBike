@@ -35,59 +35,17 @@ public class KakaoApi {
 
     private final SbikeService sbikeService;
     private final KaKaoRepository kaKaoRepository;
+    private final RestTemplate restTemplate;
     @Autowired
-    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository) {
+    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository,RestTemplate restTemplate) {
         this.sbikeService = sbikeService;
 
         this.kaKaoRepository = kaKaoRepository;
+        this.restTemplate = restTemplate;
     }
 
 
-//    public void getDistanceAndSaveToDB() {
-//        // Scanner를 이용하여 사용자로부터 origin 값을 입력받음
-//        Scanner scanner = new Scanner(System.in);
-//        System.out.print("문화행사 (경도,위도,문화행사명) 입력  : ");
-//        String customOrigin = scanner.nextLine();
-//
-//        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-//
-//        if (!sbikeDTOList.isEmpty()) {
-//            List<KaKao> kaKaoList = new ArrayList<>();
-//
-//            // 각 정류장의 거리를 계산하여 KaKao 엔티티 생성
-//            for (SbikeDTO sbikeDTO : sbikeDTOList) {
-//                // 사용자로부터 입력받은 origin 값을 사용
-//                String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
-//                String stationName = sbikeDTO.getStationName();
-//
-//                // Distance 메서드 호출 및 거리 추출
-//                int distance = getDistance(customOrigin, destination);
-//
-//                // KaKao 엔티티 생성
-//                KaKao kaKao = KaKao.builder()
-//                        .stationName(stationName)
-//                        .origin(customOrigin)
-//                        .destination(destination)
-//                        .distance(distance)
-//                        .stationLatitude(sbikeDTO.getStationLatitude())
-//                        .stationLongitude(sbikeDTO.getStationLongitude())
-//                        .build();
-//
-//                kaKaoList.add(kaKao);
-//            }
-//
-//            // 거리를 기준으로 정렬
-//            kaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
-//
-//            // 상위 3개의 데이터만 선택
-//            List<KaKao> selectedKaKaoList = kaKaoList.stream().limit(3).collect(Collectors.toList());
-//
-//            // 선택된 데이터를 DB에 저장
-//            kaKaoRepository.saveAll(selectedKaKaoList);
-//        } else {
-//            System.out.println("No data available in the list.");
-//        }
-//    }
+
 
     public void getDistanceAndSaveToDB() {
         // Scanner를 이용하여 사용자로부터 origin 값을 입력받음

@@ -143,8 +143,8 @@ public class EventService {
                                     eventDTO.setPlayer(eventdata.getPlayer());
                                     eventDTO.setProgram(eventdata.getProgram());
                                     eventDTO.setOrgLink(eventdata.getOrgLink());
-                                    eventDTO.setLot(eventdata.getLot());
-                                    eventDTO.setLat(eventdata.getLat());
+                                    eventDTO.setLot(eventdata.getLat());
+                                    eventDTO.setLat(eventdata.getLot());
                                     eventDTO.setGuname(eventdata.getGuname());
 
                                     return eventDTO;
