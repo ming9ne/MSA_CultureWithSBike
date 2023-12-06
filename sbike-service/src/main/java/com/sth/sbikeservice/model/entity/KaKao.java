@@ -32,7 +32,4 @@ public class KaKao {
     @Column
     private String stationLongitude;
 
-    public void updateDistance(int distance) {
-        this.distance = distance;
-    }
 }

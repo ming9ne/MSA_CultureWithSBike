@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,11 +39,12 @@ public class SbikeSchedule {
     }
 
 
-    //    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 300000)
     public void hello() {
         log.info("Sbike Scheduler");
     }
-    //    @Scheduled(fixedDelay = 300000)
+
+    @Scheduled(fixedDelay = 300000)
     public void get_sbike() {
         int firstData = 1;
         int lastData = 1000; // 한 페이지당 가져올 이벤트 수
