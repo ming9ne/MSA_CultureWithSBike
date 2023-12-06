@@ -77,14 +77,4 @@ public class UserController {
 
         return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
     }
-
-    @GetMapping("/logout")
-    public void logout() {
-
-    }
-
-    @GetMapping("signUp")
-    public void singUp() {
-
-    }
 }
