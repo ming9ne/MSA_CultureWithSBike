@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -146,8 +147,12 @@ public class EventService {
                                     EventDTO eventDTO = event.toDto();
                                     eventDTO.setTitle(eventdata.getTitle());
                                     eventDTO.setCodename(eventdata.getCodeName());
-                                    eventDTO.setStrtdate(eventdata.getStartDate());
-                                    eventDTO.setEndDate(eventdata.getEndDate());
+
+                                    LocalDate startDate = LocalDate.parse(eventdata.getStartDate().substring(0, 10));
+                                    LocalDate endDate = LocalDate.parse(eventdata.getEndDate().substring(0, 10));
+
+                                    eventDTO.setStrtdate(startDate);
+                                    eventDTO.setEndDate(endDate);
                                     eventDTO.setPlace(eventdata.getPlace());
                                     eventDTO.setUseFee(eventdata.getUseFee());
                                     eventDTO.setPlayer(eventdata.getPlayer());

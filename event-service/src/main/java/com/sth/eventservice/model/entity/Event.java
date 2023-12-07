@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,9 +28,9 @@ public class Event {
     @Column
     private String codename;
     @Column
-    private String strtdate;
+    private LocalDate strtdate;
     @Column
-    private String endDate;
+    private LocalDate endDate;
     @Column
     private String place;
     @Column
