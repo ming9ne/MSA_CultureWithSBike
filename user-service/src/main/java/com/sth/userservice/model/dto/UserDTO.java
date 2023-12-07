@@ -13,7 +13,7 @@ public class UserDTO {
     private String username;
     private String password;
     private String email;
-    private String userId;
+    private String uid;
     private String encryptedPwd;
 
     public User toEntity() {
@@ -22,7 +22,7 @@ public class UserDTO {
                 .username(username)
                 .password(password)
                 .email(email)
-                .userId(userId)
+                .uid(uid)
                 .encryptedPwd(encryptedPwd)
                 .build();
     }

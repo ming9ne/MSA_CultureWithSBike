@@ -41,7 +41,7 @@ public class UserService implements UserDetailsService {
 
     // 유저 회원가입
     public void createUser(UserDTO userDto) {
-        userDto.setUserId(UUID.randomUUID().toString());
+        userDto.setUid(UUID.randomUUID().toString());
 
         User user = userDto.toEntity();
         user.setEncryptedPwd(passwordEncoder.encode(userDto.getPassword()));

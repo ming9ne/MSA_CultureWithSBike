@@ -19,7 +19,7 @@ public class User {
     @Column
     private String email;
     @Column
-    private String userId;
+    private String uid;
     @Column
     private String encryptedPwd;
 
@@ -29,7 +29,7 @@ public class User {
             .username(username)
             .password(password)
             .email(email)
-            .userId(userId)
+            .uid(uid)
             .encryptedPwd(encryptedPwd)
             .build();
     }

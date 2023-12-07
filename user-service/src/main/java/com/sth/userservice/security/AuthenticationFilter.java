@@ -77,13 +77,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //        String token = tokenProvider.createToken(tokenProvider.getAuthentication());
 
         String token = Jwts.builder()
-                .setSubject(userDetails.getUserId())
+                .setSubject(userDetails.getUid())
                 .setExpiration(new Date(System.currentTimeMillis() +
                         Long.parseLong(env.getProperty("token.expiration_time"))))
                 .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
                 .compact();
 
         response.addHeader("token", token);
-        response.addHeader("userId", userDetails.getUserId());
+        response.addHeader("userId", userDetails.getUid());
     }
 }
