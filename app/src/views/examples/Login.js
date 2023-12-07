@@ -45,11 +45,25 @@ const Login = () => {
         }),
       }).then(response => {
         if(response.status == 200) {
-          console.log("status 200")
-          localStorage.setItem("login-token", response.headers.get("Authorization"))
-          alert("로그인이 완료되었습니다!");
-          navigate("/");
+          console.log(response.headers);
+          // console.log(response.headers.get("Authorization"), response.headers.get("username"), response.headers.get("email"))
+          localStorage.setItem("login-token", response.headers.get("Authorization"));
+          return response.json();
+          // localStorage.setItem("username", response.headers.get("username"));
+          // localStorage.setItem("email", response.headers.get("email"));
+          
         }
+      }).then(response => {
+        console.log(response);
+        localStorage.setItem("id", response.id);
+        localStorage.setItem("username", response.username);
+        localStorage.setItem("email", response.email);
+        localStorage.setItem("uid", response.uid);
+        alert("로그인이 완료되었습니다!");
+        navigate("/");
+      }).catch(e => {
+        console.log(e);
+        alert("로그인이 실패했습니다.");
       })
 
       

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // reactstrap components
 import {
   DropdownMenu,
@@ -18,6 +18,8 @@ import {
 } from "reactstrap";
 
 const AdminNavbar = (props) => {
+  const navigate = useNavigate();
+
   return (
     <>
       <Navbar className="navbar-top navbar-dark" expand="md" id="navbar-main">
@@ -83,7 +85,9 @@ const AdminNavbar = (props) => {
                   <DropdownItem to="/admin" onClick={(e) => {
                     e.preventDefault();
                     alert("로그아웃");
-                    localStorage.removeItem("login-token");
+                    // localStorage.removeItem("login-token");
+                    localStorage.clear();
+                    navigate("/");
                   }}>
                     <i className="ni ni-user-run" />
                     <Link to="/admin"><span>Logout</span></Link>
