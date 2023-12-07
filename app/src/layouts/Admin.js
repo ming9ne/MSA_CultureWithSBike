@@ -7,7 +7,7 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import LeftSidebar from "components/Sidebar/LeftSidebar.js";
 import Details from "views/examples/Detail.js";
-
+import Coupons from "views/examples/Coupon.js";
 import routes from "routes.js";
 
 const Admin = (props) => {

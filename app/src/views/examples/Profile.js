@@ -47,6 +47,10 @@ const Profile = () => {
                         <span className="heading">22</span>
                         <span className="description">즐겨찾기</span>
                       </div>
+                      <div>
+                        <span className="heading">22</span>
+                        <span className="description">쿠폰</span>
+                      </div>
                     </div>
                   </div>
                 </Row>

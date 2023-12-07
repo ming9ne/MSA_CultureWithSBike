@@ -20,13 +20,17 @@ import {
   Col
 } from "reactstrap";
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 // core components
 // import "./Table.css";
 import Event from "components/Event/Event.js"
 import Header from "components/Headers/Header.js";
+import Pagebar from "components/Event/Pagebar";
 
 const Tables = () => {
+  const [totalCount, setTotalCount] = useState(0);
   const [events, setEvents] = useState([]);
+  let params = useParams();
 
   useEffect(() => {
     setEvents([{
@@ -98,6 +102,7 @@ const Tables = () => {
       <Container className="mt--7" fluid>
         {/* Table */}
         <h1>123</h1>
+        <Pagebar totalCount={totalCount} page={params.page} perPage={10} />
         <Row>
           {events.map((event) => {
               console.log(event);

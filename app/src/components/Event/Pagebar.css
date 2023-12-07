@@ -1,0 +1,10 @@
+.page_number {
+    margin: 0px 5px;
+    text-align: center;
+}
+
+.pagingBar {
+    padding-top: 50px;
+    margin: 0px auto;
+    text-align: center;
+}

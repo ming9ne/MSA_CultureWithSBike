@@ -4,7 +4,7 @@ import Maps from "views/examples/Maps.js";
 import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Lists from "views/examples/List.js";
-import Details from "views/examples/Detail.js";
+import Coupons from "views/examples/Coupon.js"
 import Icons from "views/examples/Icons.js";
 
 
@@ -38,6 +38,14 @@ var routes = [
     name: "User Profile",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
+    layout: "/admin",
+    requireToken: true,
+  },
+  {
+    path: "/coupons",
+    name: "Coupons",
+    icon: "ni ni-single-02 text-yellow",
+    component: <Coupons />,
     layout: "/admin",
     requireToken: true,
   },
