@@ -31,6 +31,7 @@ public class EventSchedule {
     public void saveEvents() {
         log.info("Scheduled Task: saveEvents");
         eventService.saveEvents();
+        eventService.saveEventsFromXml();
     }
 
     // 초기 지연 5분 후 6시간마다

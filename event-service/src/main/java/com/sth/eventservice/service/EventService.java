@@ -30,13 +30,16 @@ public class EventService {
         this.restTemplate = restTemplate;
     }
 
-    //    public List<EventDTO> listEvent() {
-//        List<Event> list = eventRepository.findAll();
-//        List<EventDTO> resultList = new ArrayList<>();
-//        list.forEach(event -> resultList.add(event.toDto()));
-//        return resultList;
-//    }
-    public Page<EventDTO> listEvent(Pageable pageable) {
+    // 전체 리스트
+    public List<EventDTO> listEvent() {
+        List<Event> list = eventRepository.findAll();
+        List<EventDTO> resultList = new ArrayList<>();
+        list.forEach(event -> resultList.add(event.toDto()));
+        return resultList;
+    }
+
+    // 페이징 처리
+    public Page<EventDTO> listEventPaging(Pageable pageable) {
         Page<Event> page = eventRepository.findAll(pageable);
         return page.map(Event::toDto);
     }
@@ -55,7 +58,7 @@ public class EventService {
     public EventDTO getEventsByEventNm(String eventNm) {
         Event event = eventRepository.findByEventNm(eventNm);
 
-        if(event != null) {
+        if (event != null) {
             return event.toDto();
         }
 
@@ -67,7 +70,7 @@ public class EventService {
     public void saveEventsFromXml() {
         List<EventDTO> eventDTOList = callApiAndParseXml();
         for (EventDTO eventDTO : eventDTOList) {
-            if(eventDTO != null) {
+            if (eventDTO != null) {
                 eventRepository.save(eventDTO.toEntity());
             }
         }
