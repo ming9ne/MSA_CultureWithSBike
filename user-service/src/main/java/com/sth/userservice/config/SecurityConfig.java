@@ -2,24 +2,18 @@ package com.sth.userservice.config;
 
 import com.sth.userservice.jwt.JwtAccessDeniedHandler;
 import com.sth.userservice.jwt.JwtAuthenticationEntryPoint;
-import com.sth.userservice.jwt.JwtSecurityConfig;
 import com.sth.userservice.jwt.TokenProvider;
 import com.sth.userservice.security.AuthenticationFilter;
 import com.sth.userservice.security.CustomAuthenticationManager;
 import com.sth.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,7 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
-public class Securityconfig {
+public class SecurityConfig {
     private final CustomAuthenticationManager customAuthenticationManager;
     private final UserService userService;
     private final Environment env;

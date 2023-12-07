@@ -103,4 +103,16 @@ public class UserCouponService {
             }
         }
     }
+
+    // 해당 유저의 쿠폰 조회
+    public List<UserCouponDTO> getUserCoupons(String userId) {
+        List<UserCoupon> userCouponList = userCouponRepository.findAllByUserID(userId);
+        List<UserCouponDTO> userCouponDTOList = new ArrayList<>();
+
+        userCouponList.forEach(userCoupon -> {
+            userCouponDTOList.add(userCoupon.toDTO());
+        });
+
+        return userCouponDTOList;
+    }
 }

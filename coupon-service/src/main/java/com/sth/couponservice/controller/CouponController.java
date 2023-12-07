@@ -33,7 +33,7 @@ public class CouponController {
     
     // 쿠폰 리스트 조회
     @GetMapping("/coupons")
-    public List<CouponDTO> getCoupons() {
+    public List<CouponDTO> listCoupons() {
         return couponService.listCoupon();
     }
 
@@ -47,8 +47,14 @@ public class CouponController {
 
     // 유저 쿠폰 리스트 조회
     @GetMapping("/userCoupons")
-    public List<UserCouponDTO> getUserCoupons() {
+    public List<UserCouponDTO> listUserCoupons() {
         return userCouponService.listUserCoupon();
+    }
+
+    // 해당 유저의 쿠폰 조회
+    @GetMapping("/userCoupons/{userId}")
+    public List<UserCouponDTO> findUserCoupons(@PathVariable String userId) {
+        return userCouponService.getUserCoupons(userId);
     }
 
     // 쿠폰 발급

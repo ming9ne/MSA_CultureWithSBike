@@ -41,7 +41,7 @@ public class CongestionController {
 
     // 전체 혼잡도 조회
     @GetMapping("/congestions")
-    public ResponseEntity<List<CongestionDTO>> getCongestions() {
+    public ResponseEntity<List<CongestionDTO>> listCongestions() {
         Iterable<CongestionDTO> congestionList = congestionService.listCongestion();
 
         List<CongestionDTO> result = new ArrayList<>();
@@ -54,7 +54,7 @@ public class CongestionController {
 
     // 전체 인구 조회
     @GetMapping("/populations")
-    public ResponseEntity<List<PopulationDTO>> getPopulations() {
+    public ResponseEntity<List<PopulationDTO>> listPopulations() {
         Iterable<PopulationDTO> populationList = populationService.listPopulation();
 
         List<PopulationDTO> result = new ArrayList<>();
@@ -67,7 +67,7 @@ public class CongestionController {
 
     // 지역이름으로 혼잡도 조회
     @GetMapping("/congestion/{areaNm}")
-    public ResponseEntity<CongestionDTO> findCongestionByArea(@PathVariable("areaNm") String areaNm) {
+    public ResponseEntity<CongestionDTO> findCongestion(@PathVariable("areaNm") String areaNm) {
         CongestionDTO congestionDTO = congestionService.getCongestionByArea(areaNm);
 
         return ResponseEntity.status(HttpStatus.OK).body(congestionDTO);
@@ -75,7 +75,7 @@ public class CongestionController {
 
     // 지역이름으로 인구 조회
     @GetMapping("/population/{areaNm}")
-    public ResponseEntity<PopulationDTO> findPopulationByArea(@PathVariable("areaNm") String areaNm) {
+    public ResponseEntity<PopulationDTO> findPopulation(@PathVariable("areaNm") String areaNm) {
         PopulationDTO populationDTO = populationService.getCongestionByArea(areaNm);
 
         return ResponseEntity.status(HttpStatus.OK).body(populationDTO);

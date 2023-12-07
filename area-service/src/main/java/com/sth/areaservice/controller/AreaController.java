@@ -21,7 +21,7 @@ public class AreaController {
     }
 
     @GetMapping("/areas")
-    public List<AreaDTO> getAreas() {
+    public List<AreaDTO> listAreas() {
         return areaService.listArea();
     }
 }

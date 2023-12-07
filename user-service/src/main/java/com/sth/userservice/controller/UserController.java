@@ -37,7 +37,7 @@ public class UserController {
 
     // 유저 조회
     @GetMapping("/users")
-    public List<UserDTO> getUsers() {
+    public List<UserDTO> listUsers() {
         return userService.listUser();
     }
 
