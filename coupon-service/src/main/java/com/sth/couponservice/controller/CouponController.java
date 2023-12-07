@@ -4,11 +4,13 @@ import com.sth.couponservice.model.dto.CouponDTO;
 import com.sth.couponservice.model.dto.UserCouponDTO;
 import com.sth.couponservice.service.CouponService;
 import com.sth.couponservice.service.UserCouponService;
+import com.sth.couponservice.vo.CouponException;
+import com.sth.couponservice.vo.RequestCoupon;
+import com.sth.couponservice.vo.RequestUserCoupon;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,6 +26,10 @@ public class CouponController {
         this.userCouponService = userCouponService;
     }
 
+    @GetMapping("/")
+    public String hello() {
+        return "This is Coupon Service!!";
+    }
     
     // 쿠폰 리스트 조회
     @GetMapping("/coupons")
@@ -31,15 +37,30 @@ public class CouponController {
         return couponService.listCoupon();
     }
 
-    // 쿠폰 등록
-    @PostMapping("/coupons")
-    public void createCoupon() {
+    // 쿠폰 생성
+    @PostMapping("/coupon")
+    public ResponseEntity<CouponDTO> createCoupon(@RequestBody RequestCoupon requestCoupon) {
+        CouponDTO couponDTO = couponService.createCoupon(requestCoupon.getCouponCode(), requestCoupon.getQuantity());
 
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponDTO);
     }
 
     // 유저 쿠폰 리스트 조회
     @GetMapping("/userCoupons")
     public List<UserCouponDTO> getUserCoupons() {
         return userCouponService.listUserCoupon();
+    }
+
+    // 쿠폰 발급
+    @PostMapping("/userCoupon")
+    public ResponseEntity<Object> createUserCoupon(@RequestBody RequestUserCoupon requestUserCoupon) {
+        UserCouponDTO userCouponDTO;
+        try {
+            userCouponDTO = userCouponService.issueCouponsToUser(requestUserCoupon.getCouponCode(), requestUserCoupon.getUserId());
+        } catch(CouponException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.toString());
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userCouponDTO);
     }
 }

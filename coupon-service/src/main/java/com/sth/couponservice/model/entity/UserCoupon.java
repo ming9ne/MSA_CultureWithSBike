@@ -16,7 +16,7 @@ public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userCouponID;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "couponID")
     private Coupon coupon;
     private String userID; // 사용자 ID만 저장 (외래 키 관계 없음)
