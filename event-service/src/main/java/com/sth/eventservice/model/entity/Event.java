@@ -8,6 +8,8 @@ import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,9 +28,9 @@ public class Event {
     @Column
     private String codename;
     @Column
-    private String strtdate;
+    private LocalDate strtdate;
     @Column
-    private String endDate;
+    private LocalDate endDate;
     @Column
     private String place;
     @Column
@@ -43,6 +45,8 @@ public class Event {
     private Double lat;
     @Column
     private String player;
+    @Column
+    private String mainImg;
 
 
     public EventDTO toDto() {
@@ -61,6 +65,7 @@ public class Event {
                 .lot(lot)
                 .lat(lat)
                 .player(player)
+                .mainImg(mainImg)
                 .build();
     }
 }

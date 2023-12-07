@@ -1,12 +1,15 @@
 package com.sth.sbikeservice.schedule;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.SbikeRepository;
+import com.sth.sbikeservice.repository.KaKaoRepository;
 import com.sth.sbikeservice.service.SbikeService;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,27 +17,33 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.*;
 
 @Slf4j
 @Component
 public class SbikeSchedule {
 
     private final SbikeService sbikeService;
-    @Autowired
-    public SbikeSchedule(SbikeService sbikeService){
-        this.sbikeService = sbikeService;
-    }
+    private final SbikeRepository sbikeRepository;
 
     @Autowired
-    private SbikeRepository sbikeRepository;
+    public SbikeSchedule(SbikeService sbikeService, SbikeRepository sbikeRepository) {
+        this.sbikeService = sbikeService;
+        this.sbikeRepository = sbikeRepository;
+    }
+
 
     @Scheduled(fixedDelay = 300000)
     public void hello() {
         log.info("Sbike Scheduler");
     }
+
     @Scheduled(fixedDelay = 300000)
     public void get_sbike() {
         int firstData = 1;
@@ -102,6 +111,4 @@ public class SbikeSchedule {
         sbike.setStationLongitude(sbikeDTO.getStationLongitude());
         sbike.setStationLatitude(sbikeDTO.getStationLatitude());
     }
-
 }
-

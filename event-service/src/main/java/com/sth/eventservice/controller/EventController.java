@@ -7,6 +7,8 @@ import com.sth.eventservice.service.EventService;
 import com.sth.eventservice.vo.AreaResponse;
 import com.sth.eventservice.vo.EventResponse;
 import com.sth.eventservice.vo.EventStts;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,19 @@ public class EventController {
         Iterable<EventDTO> eventList = eventService.listEvent();
         List<EventDTO> result = new ArrayList<>();
         eventList.forEach(result::add);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/events/{page}")
+    public ResponseEntity<List<EventDTO>> getEventByPage(@PathVariable int page) {
+        int size = 20;
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+
+        Iterable<EventDTO> eventList = eventService.listEventPaging(pageable);
+        List<EventDTO> result = new ArrayList<>();
+        eventList.forEach(result::add);
+
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

@@ -6,11 +6,14 @@ import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
 import com.sth.eventservice.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,12 +31,20 @@ public class EventService {
         this.restTemplate = restTemplate;
     }
 
+    // 전체 리스트
     public List<EventDTO> listEvent() {
         List<Event> list = eventRepository.findAll();
         List<EventDTO> resultList = new ArrayList<>();
         list.forEach(event -> resultList.add(event.toDto()));
         return resultList;
     }
+
+    // 페이징 처리
+    public Page<EventDTO> listEventPaging(Pageable pageable) {
+        Page<Event> page = eventRepository.findAll(pageable);
+        return page.map(Event::toDto);
+    }
+
 
     public void addEvent(EventDTO eventDTO) {
         eventRepository.save(eventDTO.toEntity());
@@ -48,7 +59,7 @@ public class EventService {
     public EventDTO getEventsByEventNm(String eventNm) {
         Event event = eventRepository.findByEventNm(eventNm);
 
-        if(event != null) {
+        if (event != null) {
             return event.toDto();
         }
 
@@ -60,7 +71,7 @@ public class EventService {
     public void saveEventsFromXml() {
         List<EventDTO> eventDTOList = callApiAndParseXml();
         for (EventDTO eventDTO : eventDTOList) {
-            if(eventDTO != null) {
+            if (eventDTO != null) {
                 eventRepository.save(eventDTO.toEntity());
             }
         }
@@ -136,16 +147,21 @@ public class EventService {
                                     EventDTO eventDTO = event.toDto();
                                     eventDTO.setTitle(eventdata.getTitle());
                                     eventDTO.setCodename(eventdata.getCodeName());
-                                    eventDTO.setStrtdate(eventdata.getStartDate());
-                                    eventDTO.setEndDate(eventdata.getEndDate());
+
+                                    LocalDate startDate = LocalDate.parse(eventdata.getStartDate().substring(0, 10));
+                                    LocalDate endDate = LocalDate.parse(eventdata.getEndDate().substring(0, 10));
+
+                                    eventDTO.setStrtdate(startDate);
+                                    eventDTO.setEndDate(endDate);
                                     eventDTO.setPlace(eventdata.getPlace());
                                     eventDTO.setUseFee(eventdata.getUseFee());
                                     eventDTO.setPlayer(eventdata.getPlayer());
                                     eventDTO.setProgram(eventdata.getProgram());
                                     eventDTO.setOrgLink(eventdata.getOrgLink());
-                                    eventDTO.setLot(eventdata.getLot());
-                                    eventDTO.setLat(eventdata.getLat());
+                                    eventDTO.setLot(eventdata.getLat());
+                                    eventDTO.setLat(eventdata.getLot());
                                     eventDTO.setGuname(eventdata.getGuname());
+                                    eventDTO.setMainImg(eventdata.getMainImg());
 
                                     return eventDTO;
                                 })

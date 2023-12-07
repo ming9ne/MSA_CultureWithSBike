@@ -5,6 +5,8 @@ import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +19,8 @@ public class EventDTO {
     private String guname;
     private String title;
     private String codename;
-    private String strtdate;
-    private String endDate;
+    private LocalDate strtdate = LocalDate.now();
+    private LocalDate endDate = LocalDate.now();
     private String place;
     private String program;
     private String useFee;
@@ -26,6 +28,7 @@ public class EventDTO {
     private Double lot;
     private Double lat;
     private String player;
+    private String mainImg;
 
     public Event toEntity() {
         return Event.builder()
@@ -33,8 +36,8 @@ public class EventDTO {
                 .areaNm(areaNm)
                 .guname(guname)
                 .codename(codename)
-                .strtdate(strtdate)
-                .endDate(endDate)
+                .strtdate(strtdate != null ? LocalDate.parse(strtdate.toString()) : null)  // null 체크 추가
+                .endDate(endDate != null ? LocalDate.parse(endDate.toString()) : null)    // null 체크 추가
                 .place(place)
                 .title(title)
                 .program(program)
@@ -43,6 +46,7 @@ public class EventDTO {
                 .lot(lot)
                 .lat(lat)
                 .player(player)
+                .mainImg(mainImg)
                 .build();
     }
 }

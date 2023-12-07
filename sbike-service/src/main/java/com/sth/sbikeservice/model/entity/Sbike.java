@@ -19,13 +19,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Sbike {
 
-    @Id
+    @Column
     private String stationId;
 
     @Column
     private String rackTotCnt;
 
-    @Column
+    @Id
     private String stationName;
 
     @Column
@@ -40,6 +40,18 @@ public class Sbike {
     @Column
     private String stationLongitude;
 
+    @Column
+    private String destination;
+
+    private String getDestinationString() {
+        return stationLongitude+","+stationLatitude;
+    }
+
+    public void updateDestination() {
+        String newDestination = getDestinationString();
+        this.destination = newDestination;
+    }
+
     public SbikeDTO toDto() {
         return SbikeDTO.builder()
                 .stationId(stationId)
@@ -49,6 +61,7 @@ public class Sbike {
                 .shared(shared)
                 .stationLatitude(stationLatitude)
                 .stationLongitude(stationLongitude)
+                .destination(destination)
                 .build();
     }
 }
