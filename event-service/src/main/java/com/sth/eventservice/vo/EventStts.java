@@ -27,6 +27,7 @@ public class EventStts {
     private Double LAT;
     private String USE_FEE;
     private String PLAYER;
+    private String MAIN_IMG;
 
 
 }

@@ -43,6 +43,8 @@ public class Event {
     private Double lat;
     @Column
     private String player;
+    @Column
+    private String mainImg;
 
 
     public EventDTO toDto() {
@@ -61,6 +63,7 @@ public class Event {
                 .lot(lot)
                 .lat(lat)
                 .player(player)
+                .mainImg(mainImg)
                 .build();
     }
 }

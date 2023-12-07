@@ -27,13 +27,14 @@ public class EventSchedule {
     private final EventService eventService;
     private final EventRepository eventRepository;
 
-//    @Scheduled(fixedDelay = 6 * 60 * 60 * 1000)
+    @Scheduled(fixedDelay = 6 * 60 * 60 * 1000)
     public void saveEvents() {
         log.info("Scheduled Task: saveEvents");
         eventService.saveEvents();
     }
 
-//    @Scheduled(initialDelay = 3 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
+    // 초기 지연 5분 후 6시간마다
+    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
     public void saveEventsFromXml() {
         log.info("Scheduled Task: saveEventsFromXml");
         eventService.saveEventsFromXml();

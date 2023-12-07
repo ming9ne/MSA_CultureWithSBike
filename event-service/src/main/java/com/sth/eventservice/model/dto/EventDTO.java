@@ -26,6 +26,7 @@ public class EventDTO {
     private Double lot;
     private Double lat;
     private String player;
+    private String mainImg;
 
     public Event toEntity() {
         return Event.builder()
@@ -43,6 +44,7 @@ public class EventDTO {
                 .lot(lot)
                 .lat(lat)
                 .player(player)
+                .mainImg(mainImg)
                 .build();
     }
 }

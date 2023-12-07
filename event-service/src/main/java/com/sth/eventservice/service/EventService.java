@@ -6,6 +6,8 @@ import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
 import com.sth.eventservice.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +30,17 @@ public class EventService {
         this.restTemplate = restTemplate;
     }
 
-    public List<EventDTO> listEvent() {
-        List<Event> list = eventRepository.findAll();
-        List<EventDTO> resultList = new ArrayList<>();
-        list.forEach(event -> resultList.add(event.toDto()));
-        return resultList;
+    //    public List<EventDTO> listEvent() {
+//        List<Event> list = eventRepository.findAll();
+//        List<EventDTO> resultList = new ArrayList<>();
+//        list.forEach(event -> resultList.add(event.toDto()));
+//        return resultList;
+//    }
+    public Page<EventDTO> listEvent(Pageable pageable) {
+        Page<Event> page = eventRepository.findAll(pageable);
+        return page.map(Event::toDto);
     }
+
 
     public void addEvent(EventDTO eventDTO) {
         eventRepository.save(eventDTO.toEntity());
@@ -146,6 +153,7 @@ public class EventService {
                                     eventDTO.setLot(eventdata.getLat());
                                     eventDTO.setLat(eventdata.getLot());
                                     eventDTO.setGuname(eventdata.getGuname());
+                                    eventDTO.setMainImg(eventdata.getMainImg());
 
                                     return eventDTO;
                                 })
