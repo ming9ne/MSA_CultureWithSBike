@@ -54,6 +54,15 @@ const Sidebar = (props) => {
   // creates the links that appear in the left menu / Sidebar
   const createLinks = (routes) => {
     return routes.map((prop, key) => {
+      if(prop.path == "/lists/:page") {
+        return (
+          <NavLink to="/admin/lists/1" tag={NavLinkRRD} onClick={closeCollapse}>
+           <i className={prop.icon} />
+            {prop.name}
+          </NavLink>
+        )
+      }
+
       return (
         <NavItem key={key}>
           <NavLink

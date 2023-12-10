@@ -9,6 +9,7 @@ import LeftSidebar from "components/Sidebar/LeftSidebar.js";
 import Details from "views/examples/Detail.js";
 import Coupons from "views/examples/Coupon.js";
 import routes from "routes.js";
+import Lists from "views/examples/List.js";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -74,6 +75,7 @@ const Admin = (props) => {
           brandText={getBrandText(props?.location?.pathname)}
         />
         <Routes>
+          {/* <Route path="/lists/:page" element={<Lists />}/> */}
           {getRoutes(routes)}
           <Route path="/details" element={<Details />} exact />
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
