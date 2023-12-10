@@ -1,47 +1,173 @@
+// ListPagenation.js
 import React from "react";
-import { Link } from "react-router-dom";
-import "./Pagebar.css";
-function Pagebar({ totalCount, page, perPage = 10 }) {
-    const PER_PAGE = perPage;
-    const totalPage = Math.ceil(totalCount / PER_PAGE);
 
-    page = page % 10 === 0 ? page - 1 : page;
+const Pagebar = ({
+  limit,
+  page,
+  setPage,
+  blockNum,
+  setBlockNum,
+  counts,
+}) => {
+    console.log(counts)
+  const createArr = (n) => {
+    const iArr = new Array(n);
+    for (let i = 0; i < n; i++) iArr[i] = i + 1;
+    return iArr;
+  };
 
-    const pages = Array.from(
-        Array(perPage),
-        (_, i) => Math.floor(page / 10) * 10 + i + 1
-    );
+  const pageLimit = 10;
 
-    let prev = pages[0] - 1 === 0 ? 1 : pages[0] - 1;
-    let next = pages[perPage - 1] + 1;
+  const totalPage = Math.ceil(counts / limit);
+  const blockArea = Number(blockNum * pageLimit);
+  const nArr = createArr(Number(totalPage));
+  let pArr = nArr?.slice(blockArea, Number(pageLimit) + blockArea);
 
-    pages.splice(0, 0, 1);
-    pages.splice(1, 0, prev);
-    pages.splice(pages.length, 0, totalPage);
-    pages.splice(pages.length - 1, 0, next);
+  const firstPage = () => {
+    setPage(1);
+    setBlockNum(0);
+  };
 
-    console.log(pages);
-    return (
-        <div className="pagingBar">
-            {pages.map((p, index) => {
-                let display = p;
-                if (index === 0) {
-                    display = "first";
-                } else if (index === 1) {
-                    display = "prev";
-                } else if (index === pages.length - 2) {
-                    display = "next";
-                } else if (index === pages.length - 1) {
-                    display = "last";
-                }
-                return (
-                    <span className="page_number" key={index}>
-                        <Link to={`/${p}`}>{display}</Link>
-                    </span>
-                );
-            })}
-        </div>
-    );
-}
+  const lastPage = () => {
+    setPage(totalPage);
+    setBlockNum(Math.ceil(totalPage / pageLimit) - 1);
+  };
+
+  const prevPage = () => {
+    if (page <= 1) {
+      return;
+    }
+    if (page - 1 <= pageLimit * blockNum) {
+      setBlockNum((n) => n - 1);
+    }
+    setPage((n) => n - 1);
+  };
+
+  const nextPage = () => {
+    if (page >= totalPage) {
+      return;
+    }
+    if (pageLimit * Number(blockNum + 1) < Number(page + 1)) {
+      setBlockNum((n) => n + 1);
+    }
+    setPage((n) => n + 1);
+  };
+
+  return (
+    <div className="ListPagenationWrapper">
+      <button
+        className="moveToFirstPage"
+        onClick={() => {
+          firstPage();
+        }}
+      >
+        &lt;&lt;
+      </button>
+      <button
+        className="moveToPreviousPage"
+        onClick={() => {
+          prevPage();
+        }}
+        disabled={page === 1}
+      >
+        &lt;
+      </button>
+      <div className="pageBtnWrapper">
+        {pArr.map((n) => (
+          <button
+            className="pageBtn"
+            key={n}
+            onClick={() => {
+              setPage(n);
+            }}
+            aria-current={page === n ? "page" : undefined}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+      <button
+        className="moveToNextPage"
+        onClick={() => {
+          nextPage();
+        }}
+        disabled={page === totalPage}
+      >
+        &gt;
+      </button>
+      <button
+        className="moveToLastPage"
+        onClick={() => {
+          lastPage();
+        }}
+      >
+        &gt;&gt;
+      </button>
+
+      <style jsx>
+        {`
+          .ListPagenationWrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 37px;
+            margin: 38px 94px 38px 88px;
+          }
+
+          .moveToPreviousPage,
+          .moveToNextPage {
+            color: #5a5a5a;
+            background-color: transparent;
+            border: none;
+            font-size: 25px;
+            cursor: pointer;
+          }
+
+          .moveToFirstPage,
+          .moveToLastPage {
+            width: 115px;
+            height: 37px;
+            margin: 0 0 0 0;
+            border: none;
+            color: black;
+            background-color: transparent;
+            cursor: pointer;
+          }
+
+          .pageBtn {
+            width: 49px;
+            height: 49px;
+            margin: 0 10px;
+            border: none;
+            color: black;
+            font-size: 20px;
+            opacity: 0.2;
+
+            &:hover {
+              background-color: #b42954;
+              cursor: pointer;
+              transform: translateY(-2px);
+            }
+
+            &[disabled] {
+              background-color: #e2e2e2;
+              cursor: revert;
+              transform: revert;
+            }
+
+            &[aria-current] {
+              background-color: #f5d3dd;
+              font-weight: bold;
+              cursor: revert;
+              transform: revert;
+              opacity: 1;
+            }
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 
 export default Pagebar;

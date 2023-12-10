@@ -11,17 +11,32 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import React, { useEffect, useState } from "react";
 // core components
 import UserHeader from "components/Headers/UserHeader.js";
 
 const Profile = () => {
+  const [coupons, setCoupons] = useState([]);
+  
+  useEffect(() => {
+    fetch(`http://localhost:8000/api/v1/coupon-service/userCoupons/${localStorage.getItem("id")}`)
+        .then(response => response.json())
+        .then(response => { 
+            setCoupons(response);
+            console.log(response);
+        })
+        .catch(e => {
+            console.log(e);
+    });
+  }, [])
+
   return (
     <>
       <UserHeader />
       {/* Page content */}
       <Container className="mt--7" fluid>
         <Row>
-          <Col className="order-xl-2 mb-5 mb-xl-0" xl="4">
+          <Col className="order-xl-1 mb-5 mb-xl-0" xl="4">
             <Card className="card-profile shadow">
               <Row className="justify-content-center">
                 <Col className="order-lg-2" lg="3">
@@ -43,12 +58,12 @@ const Profile = () => {
                 <Row>
                   <div className="col">
                     <div className="card-profile-stats d-flex justify-content-center mt-md-5">
-                      <div>
+                      {/* <div>
                         <span className="heading">22</span>
                         <span className="description">즐겨찾기</span>
-                      </div>
+                      </div> */}
                       <div>
-                        <span className="heading">22</span>
+                        <span className="heading">{coupons.length}</span>
                         <span className="description">쿠폰</span>
                       </div>
                     </div>
@@ -71,12 +86,12 @@ const Profile = () => {
               </CardBody>
             </Card>
           </Col>
-          <Col className="order-xl-1" xl="8">
+          <Col className="order-xl-2" xl="8">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">즐겨찾기</h3>
+                    <h3 className="mb-0">내 쿠폰</h3>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
@@ -91,7 +106,29 @@ const Profile = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                
+                {coupons.map(coupon => {
+                  return(
+                    <Card
+                      style={{
+                          margin: "30px",
+                          width: "300px"
+                      }}>
+                      <CardHeader tag="h3">
+                          <Row className="align-items-center">
+                              <Col xs="6">
+                                  {coupon.coupon.used ? 
+                                  <h3 className="mb-0" style={{ textDecoration: 'line-through', color: 'gray' }}>{coupon.coupon.couponCode}</h3> : 
+                                  <h3 className="mb-0">{coupon.coupon.couponCode}</h3>}
+                                  
+                              </Col>
+                          </Row>
+                      </CardHeader>
+                      <CardBody>
+                          
+                      </CardBody>
+                  </Card>
+                  )
+                })}
               </CardBody>
             </Card>
           </Col>

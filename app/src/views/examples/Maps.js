@@ -14,19 +14,20 @@ let map;
 const MapWrapper = () => {
   const location = useLocation();
   const mapRef = useRef(null);
-  let positions = [{
-      // content: '<div>카카오</div>',
-      content: `<div>카카오</div>`,
-      latlng: new kakao.maps.LatLng(37.566535, 126.9779692)
-    }];
-  console.log(location.state);
+  let positions = [{}];
+  // let positions = [{
+  //     // content: '<div>카카오</div>',
+  //     content: `<div>카카오</div>`,
+  //     latlng: new kakao.maps.LatLng(37.566535, 126.9779692)
+  //   }];
+  console.log("location.state", location.state);
  
   let lot = 37.566535;
   let lat = 126.9779692;
 
   useEffect(() => {
     if(location.state) {
-      console.log("location state is here!");
+      console.log("location state is here!", location.state);
       lot = location.state.lot;
       lat = location.state.lat;
       console.log(positions, positions.length);
@@ -113,7 +114,7 @@ const MapWrapper = () => {
 
 const Maps = () => {
   const location = useLocation();
-  // console.log("location", location);
+  console.log("location", location);
 
   return (
     <>

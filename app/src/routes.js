@@ -44,7 +44,7 @@ var routes = [
   {
     path: "/coupons",
     name: "Coupons",
-    icon: "ni ni-single-02 text-yellow",
+    icon: "ni ni-tag text-red",
     component: <Coupons />,
     layout: "/admin",
     requireToken: true,

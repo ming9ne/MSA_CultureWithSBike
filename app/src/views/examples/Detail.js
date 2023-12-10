@@ -20,7 +20,7 @@ function Detail() { // () 안에 정보들
                 .then(response => response.json())
                 .then(response => { 
                     setCongestion(response);
-                    // console.log(response);
+                    console.log(response);
                 })
                 .catch(e => {
                     console.log(e);
@@ -35,11 +35,11 @@ function Detail() { // () 안에 정보들
                 .catch(e => {
                     console.log(e);
                 })
-            };
+        };
 
-            console.log(congestion);
-        }
-    , [])
+        console.log(congestion);
+        
+    }, [])
 
     if(location.state) {
         return (
@@ -67,17 +67,15 @@ function Detail() { // () 안에 정보들
                                 width="100%"
                             />
                             <CardText>
-                                기간 : {location.state.startDate} ~ {location.state.endDate} <br />
-                                지역 : {location.state.guname} <br />
-                                장소 : {location.state.place} <br />
-                                이용요금 : {location.state.useFee} <br />
-                                출연자정보 : {location.state.player} <br />
+                                {location.state.startDate&&location.state.endDate ? <>기간 : {location.state.startDate} ~ {location.state.endDate} <br /></> : <>기간 : 미정</>}
+                                {location.state.guname ? <>지역 : {location.state.guname} <br /></> : ""}
+                                {location.state.place ? <>장소 : {location.state.place} <br /></> : ""}
+                                {location.state.useFee ? <>이용요금 : {location.state.useFee} <br /></> : ""}
+                                {location.state.player ? <>출연자정보 : {location.state.player} <br /></> : ""}
                                 {location.state.program ? <>프로그램소개 : {location.state.program}</> : ""}<br />
-                                {congestion == []? (<>
-                                    장소 혼잡도 지표 : {congestion.areaCongestLvl}<br />
-                                    장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br />
-                                    </>) : <></>}
-                                {population == []? (
+                                {congestion.areaCongestLvl ? (<>장소 혼잡도 지표 : {congestion.areaCongestLvl}<br /></>) : ""}
+                                {congestion.areaCongestMsg ? <>장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br /></> : ""}
+                                {population.areaPpltnMin && population.areaPpltnMax ? (
                                     <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
                                 ) : <></>}
                             </CardText>

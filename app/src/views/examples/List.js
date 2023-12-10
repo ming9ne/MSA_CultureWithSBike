@@ -27,73 +27,53 @@ import Event from "components/Event/Event.js"
 import Header from "components/Headers/Header.js";
 import Pagebar from "components/Event/Pagebar";
 
-const Tables = () => {
-  const [totalCount, setTotalCount] = useState(0);
+const List = () => {
+  const [allEvents, setAllEvents] = useState([]);
   const [events, setEvents] = useState([]);
+  const [limit, setLimit] = useState(20); // 한 페이지에 보여줄 데이터의 개수
+  const [page, setPage] = useState(1); // 페이지 초기 값은 1페이지
+  const [counts, setCounts] = useState(1); // 데이터의 총 개수를 setCounts 에 저장해서 사용
+  const [blockNum, setBlockNum] = useState(0); // 한 페이지에 보여 줄 페이지네이션의 개수를 block으로 지정하는 state. 초기 값은 0
   let params = useParams();
 
   useEffect(() => {
-    setEvents([{
-      id: 1,
-      title: "마포아트센터 M 레트로 시리즈 2024 신년맞이 어떤가요 #7",
-      strtdate: "2023-11-21",
-      endDate: "2023-11-22",
-      areaNm: "경복궁",
-      codename: "콘서트",
-      guname: "마포구",
-      place: "마포아트센터 아트홀 맥",
-      useFee: " R석 66,000원/ S석 55,000원/ A석 44,000원",
-      player: "조성모, 뱅크(정시로)",
-      program: "",
-      orgLink: "https://www.mfac.or.kr/performance/whole_view.jsp?sc_b_category=17&amp;sc_b_code=BOARD_1207683401&amp;pk_seq=2285&amp;page=1",
-      mainImg: "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=43bd8ae3612e4cb2bb3a7edf9186efbf&amp;thumb=Y",
-      lot: "37.5499060881738",
-      lat: "126.945533810385"
-    }, {
-      id: 2,
-      title: "마포아트센터 M 레트로 시리즈 2024 신년맞이 어떤가요 #7",
-      strtdate: "2023-11-21",
-      endDate: "2023-11-22",
-      areaNm: "경복궁",
-      codename: "콘서트",
-      guname: "마포구",
-      place: "마포아트센터 아트홀 맥",
-      useFee: " R석 66,000원/ S석 55,000원/ A석 44,000원",
-      player: "조성모, 뱅크(정시로)",
-      program: "",
-      orgLink: "https://www.mfac.or.kr/performance/whole_view.jsp?sc_b_category=17&amp;sc_b_code=BOARD_1207683401&amp;pk_seq=2285&amp;page=1",
-      mainImg: "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=43bd8ae3612e4cb2bb3a7edf9186efbf&amp;thumb=Y",
-      lot: "37.5499060881738",
-      lat: "126.945533810385"
-    }, {
-      id: 2,
-      title: "마포아트센터 M 레트로 시리즈 2024 신년맞이 어떤가요 #7",
-      strtdate: "2023-11-21",
-      endDate: "2023-11-22",
-      areaNm: "경복궁",
-      codename: "콘서트",
-      guname: "마포구",
-      place: "마포아트센터 아트홀 맥",
-      useFee: " R석 66,000원/ S석 55,000원/ A석 44,000원",
-      player: "조성모, 뱅크(정시로)",
-      program: "",
-      orgLink: "https://www.mfac.or.kr/performance/whole_view.jsp?sc_b_category=17&amp;sc_b_code=BOARD_1207683401&amp;pk_seq=2285&amp;page=1",
-      mainImg: "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=43bd8ae3612e4cb2bb3a7edf9186efbf&amp;thumb=Y",
-      lot: "37.5499060881738",
-      lat: "126.945533810385"
-    }])
-
+    // const page = params.page || 1;
+    console.log("page", page);
     fetch(`http://localhost:8000/api/v1/event-service/events`)
       .then(response => response.json())
       .then(response => {
         console.log(response);
-        setEvents(response);
+        setAllEvents(response);
+        setCounts(response.length);
       })
       .catch(e => {
         console.log(e);
       })
     
+    console.log("events", events);
+    setCounts(events.length);
+
+    
+
+    // fetch(`http://localhost:8000/api/v1/event-service/events/${page}`)
+    //   .then(response => response.json())
+    //   .then(response => {
+    //     // console.log(response);
+    //     setEvents(response);
+    //   })
+    //   .catch(e => {
+    //     console.log(e);
+    //   })
+    
   }, []);
+
+  useEffect(() => {
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const slicedEvents = allEvents.slice(startIndex, endIndex);
+    setEvents(slicedEvents);
+    window.scrollTo(0, 0);
+  }, [page, limit, allEvents]);
 
   return (
     <>
@@ -101,11 +81,9 @@ const Tables = () => {
       {/* Page content */}
       <Container className="mt--7" fluid>
         {/* Table */}
-        <h1>123</h1>
-        <Pagebar totalCount={totalCount} page={params.page} perPage={10} />
         <Row>
           {events.map((event) => {
-              console.log(event);
+              // console.log(event);
               return (
                 // <Col sm="6">
                   <div className="events">
@@ -132,9 +110,18 @@ const Tables = () => {
               );
           })}
         </Row>
+        {/* <Pagebar totalCount={totalCount} page={params.page} perPage={10} /> */}
+        <Pagebar
+        limit={limit}
+        page={page}
+        setPage={setPage}
+        blockNum={blockNum}
+        setBlockNum={setBlockNum}
+        counts={counts}
+      />
       </Container>
     </>
   );
 };
 
-export default Tables;
+export default List;
