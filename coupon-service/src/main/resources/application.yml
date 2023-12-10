@@ -30,7 +30,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
   data:
     redis:
       port: 6379

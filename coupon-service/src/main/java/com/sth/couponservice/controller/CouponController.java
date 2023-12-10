@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/coupon-service")
@@ -39,10 +41,13 @@ public class CouponController {
 
     // 쿠폰 생성
     @PostMapping("/coupon")
-    public ResponseEntity<CouponDTO> createCoupon(@RequestBody RequestCoupon requestCoupon) {
-        CouponDTO couponDTO = couponService.createCoupon(requestCoupon.getCouponCode(), requestCoupon.getQuantity());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(couponDTO);
+    public ResponseEntity<Object> createCoupon(@RequestBody RequestCoupon requestCoupon) {
+        try {
+            CouponDTO couponDTO = couponService.createCoupon(requestCoupon.getCouponCode(), requestCoupon.getQuantity());
+            return ResponseEntity.status(HttpStatus.CREATED).body(couponDTO);
+        } catch (CouponException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     // 유저 쿠폰 리스트 조회
@@ -60,13 +65,15 @@ public class CouponController {
     // 쿠폰 발급
     @PostMapping("/userCoupon")
     public ResponseEntity<Object> createUserCoupon(@RequestBody RequestUserCoupon requestUserCoupon) {
-        UserCouponDTO userCouponDTO;
         try {
-            userCouponDTO = userCouponService.issueCouponsToUser(requestUserCoupon.getCouponCode(), requestUserCoupon.getUserId());
+            UserCouponDTO userCouponDTO = userCouponService.issueCouponsToUser(requestUserCoupon.getCouponCode(), requestUserCoupon.getUserId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(userCouponDTO);
         } catch(CouponException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.toString());
+//            e.printStackTrace();
+            System.out.println("bad");
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(userCouponDTO);
     }
 }
