@@ -35,12 +35,10 @@ public class EventSchedule {
     }
 
     // 초기 지연 5분 후 6시간마다
-    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
-    public void saveEventsFromXml() {
-        log.info("Scheduled Task: saveEventsFromXml");
-        eventService.saveEventsFromXml();
-    }
-
-
+//    @Scheduled(initialDelay = 5 * 60 * 1000, fixedDelay = 6 * 60 * 60 * 1000)
+//    public void saveEventsFromXml() {
+//        log.info("Scheduled Task: saveEventsFromXml");
+//        eventService.saveEventsFromXml();
+//    }
 
 }

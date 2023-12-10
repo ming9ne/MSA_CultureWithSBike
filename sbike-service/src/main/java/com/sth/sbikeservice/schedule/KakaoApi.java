@@ -9,6 +9,7 @@ import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.KaKaoRepository;
 import com.sth.sbikeservice.repository.SbikeRepository;
 import com.sth.sbikeservice.service.SbikeService;
+import com.sth.sbikeservice.vo.EventResponse;
 import com.sth.sbikeservice.vo.RentBikeStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,8 @@ public class KakaoApi {
     private final SbikeService sbikeService;
     private final KaKaoRepository kaKaoRepository;
     private final RestTemplate restTemplate;
+
+
     @Autowired
     public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository,RestTemplate restTemplate) {
         this.sbikeService = sbikeService;
@@ -43,6 +46,72 @@ public class KakaoApi {
         this.kaKaoRepository = kaKaoRepository;
         this.restTemplate = restTemplate;
     }
+//    public void getDistanceAndSaveToDB() {
+//        try {
+//            RestTemplate restTemplate = new RestTemplate();
+//            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
+//            EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
+//            List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+//
+//            if (!sbikeDTOList.isEmpty()) {
+//                List<KaKao> kaKaoList = new ArrayList<>();
+//
+//                for (EventResponse eventResponse : eventResponses) {
+//                    double eventLongitude = eventResponse.getLot();
+//                    double eventLatitude = eventResponse.getLat();
+//                    String eventName = eventResponse.getEventNm();
+//
+//                    String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
+//
+//                    System.out.println("Origin value: " + origin);
+//
+//                    // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
+//                    List<KaKao> eventKaKaoList = new ArrayList<>();
+//
+//                    for (SbikeDTO sbikeDTO : sbikeDTOList) {
+//                        double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
+//                        double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
+//
+//                        // 범위 내의 데이터만 처리
+//                        if (stationLongitude >= eventLongitude - 0.025 && stationLongitude <= eventLongitude + 0.025
+//                                && stationLatitude >= eventLatitude - 0.025 && stationLatitude <= eventLatitude + 0.025) {
+//
+//                            String destination = stationLongitude + "," + stationLatitude;
+//                            String stationName = sbikeDTO.getStationName();
+//                            int distance = getDistance(origin, destination);
+//
+//                            KaKao kaKao = KaKao.builder()
+//                                    .stationName(stationName)
+//                                    .origin(origin)
+//                                    .destination(destination)
+//                                    .distance(distance)
+//                                    .stationLatitude(String.valueOf(eventLatitude))
+//                                    .stationLongitude(String.valueOf(eventLongitude))
+//                                    .build();
+//
+//                            eventKaKaoList.add(kaKao);
+//                        }
+//                    }
+//
+//                    // 거리를 기준으로 정렬
+//                    eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
+//
+//                    // 상위 3개의 데이터만 선택
+//                    List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
+//
+//                    kaKaoList.addAll(selectedKaKaoList);
+//                }
+//
+//                // 최종 결과를 DB에 저장
+//                kaKaoRepository.saveAll(kaKaoList);
+//            } else {
+//                System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
+//        }
+//    }
 
 
 
@@ -75,6 +144,7 @@ public class KakaoApi {
                     String destination = stationLongitude + "," + stationLatitude;
                     String stationName = sbikeDTO.getStationName();
                     int distance = getDistance(customOrigin, destination);
+
 
                     KaKao kaKao = KaKao.builder()
                             .stationName(stationName)
@@ -151,7 +221,7 @@ public class KakaoApi {
                     }
 
                     // 응답 내용 출력
-                    System.out.println("Response:\n" + response.toString());
+//                    System.out.println("Response:\n" + response.toString());
 
                     // JSON 파싱하여 distance 값 추출
                     ObjectMapper objectMapper = new ObjectMapper();
