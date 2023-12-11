@@ -3,6 +3,7 @@ package com.sth.userservice.service;
 import com.sth.userservice.model.dto.UserDTO;
 import com.sth.userservice.model.entity.User;
 import com.sth.userservice.repository.UserRepository;
+import com.sth.userservice.vo.RequestUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,13 +41,18 @@ public class UserService implements UserDetailsService {
     }
 
     // 유저 회원가입
-    public void createUser(UserDTO userDto) {
-        userDto.setUid(UUID.randomUUID().toString());
-
-        User user = userDto.toEntity();
-        user.setEncryptedPwd(passwordEncoder.encode(userDto.getPassword()));
+    public UserDTO createUser(RequestUser requestUser) {
+        User user = User.builder()
+                .id(requestUser.getId())
+                .username(requestUser.getUsername())
+                .email(requestUser.getEmail())
+                .uid(UUID.randomUUID().toString())
+                .encryptedPwd(passwordEncoder.encode(requestUser.getPassword()))
+                .build();
 
         userRepository.save(user);
+
+        return user.toDto();
     }
 
     // 유저 디테일 by 아이디

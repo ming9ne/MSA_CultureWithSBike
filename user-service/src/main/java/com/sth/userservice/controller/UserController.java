@@ -44,19 +44,13 @@ public class UserController {
     // 유저 등록
     @PostMapping("/users")
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
-        UserDTO userDto = UserDTO.builder()
-                .id(user.getId())
-                .password(user.getPassword())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .build();
-        userService.createUser(userDto);
+        UserDTO userDTO = userService.createUser(user);
 
         ResponseUser responseUser = ResponseUser.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .email(userDto.getEmail())
-                .uid(userDto.getUid())
+                .id(userDTO.getId())
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .uid(userDTO.getUid())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
