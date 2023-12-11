@@ -35,10 +35,16 @@ public class UserController {
         return "This is user service!";
     }
 
-    // 유저 조회
+    // 유저 전체 조회
     @GetMapping("/users")
     public List<UserDTO> listUsers() {
         return userService.listUser();
+    }
+
+    // 유저 조회
+    @GetMapping("/user")
+    public UserDTO findUser(@RequestBody String id) {
+        return userService.getUserDetailsById(id);
     }
 
     // 유저 등록
