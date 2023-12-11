@@ -28,6 +28,7 @@ import Header from "components/Headers/Header.js";
 import Pagebar from "components/Event/Pagebar";
 
 const List = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const [allEvents, setAllEvents] = useState([]);
   const [events, setEvents] = useState([]);
   const [limit, setLimit] = useState(20); // 한 페이지에 보여줄 데이터의 개수
@@ -45,6 +46,7 @@ const List = () => {
         console.log(response);
         setAllEvents(response);
         setCounts(response.length);
+        setIsLoading(false);
       })
       .catch(e => {
         console.log(e);
@@ -52,8 +54,6 @@ const List = () => {
     
     console.log("events", events);
     setCounts(events.length);
-
-    
 
     // fetch(`http://localhost:8000/api/v1/event-service/events/${page}`)
     //   .then(response => response.json())
@@ -64,7 +64,7 @@ const List = () => {
     //   .catch(e => {
     //     console.log(e);
     //   })
-    
+
   }, []);
 
   useEffect(() => {
@@ -82,6 +82,13 @@ const List = () => {
       <Container className="mt--7" fluid>
         {/* Table */}
         <Row>
+          {isLoading ? (
+                    <div className="loader">
+                        <Card>
+                          <CardHeader>로딩중</CardHeader>
+                        </Card>
+                    </div>
+                ) : (<>
           {events.map((event) => {
               // console.log(event);
               return (
@@ -108,7 +115,7 @@ const List = () => {
                   </div>
                 // </Col>
               );
-          })}
+          })}</>)}
         </Row>
         {/* <Pagebar totalCount={totalCount} page={params.page} perPage={10} /> */}
         <Pagebar

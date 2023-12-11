@@ -43,7 +43,14 @@ public class CouponController {
     @PostMapping("/coupon")
     public ResponseEntity<Object> createCoupon(@RequestBody RequestCoupon requestCoupon) {
         try {
-            CouponDTO couponDTO = couponService.createCoupon(requestCoupon.getCouponCode(), requestCoupon.getQuantity());
+            CouponDTO couponDTO;
+            // 만료일 여부 체크
+            if(requestCoupon.getExpirationDate() == null) {
+                couponDTO = couponService.createCoupon(requestCoupon.getCouponName(), requestCoupon.getQuantity());
+            } else {
+                couponDTO = couponService.createCoupon(requestCoupon.getCouponName(), requestCoupon.getQuantity(), requestCoupon.getExpirationDate());
+            }
+            
             return ResponseEntity.status(HttpStatus.CREATED).body(couponDTO);
         } catch (CouponException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

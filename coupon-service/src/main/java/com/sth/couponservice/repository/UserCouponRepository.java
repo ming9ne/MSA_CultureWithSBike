@@ -9,6 +9,6 @@ import java.util.List;
 
 @Repository
 public interface UserCouponRepository extends JpaRepository<UserCoupon, Long> {
-    boolean existsByCouponAndUserID(Coupon coupon, String userId);
-    List<UserCoupon> findAllByUserID(String userId);
+    boolean existsByCouponAndUserId(Coupon coupon, String userId);
+    List<UserCoupon> findAllByUserId(String userId);
 }

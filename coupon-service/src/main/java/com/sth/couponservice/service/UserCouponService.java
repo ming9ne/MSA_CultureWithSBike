@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class UserCouponService {
         // userId 체크 하는 기능
 
         // 이미 발급 받았으면
-        if (userCouponRepository.existsByCouponAndUserID(couponDTO.toEntity(), userId)) {
+        if (userCouponRepository.existsByCouponAndUserId(couponDTO.toEntity(), userId)) {
             throw new CouponException("You have already claimed this coupon. Duplicate issuance is not allowed.");
         }
 
@@ -47,28 +48,29 @@ public class UserCouponService {
         try {
             checkRedis(couponCode, couponCountKey);
         } catch (CouponException e) {
-            e.printStackTrace();
-            return null;
+            throw new CouponException("Coupon does not exists");
         }
 
         // 선착순 발급
         int issuedCouponCount = redisLongTemplate.opsForValue().increment(couponCountKey, -1L).intValue();
 
+        // 쿠폰 발급 수 감소 후 음수가 되면 예외 처리
         if (issuedCouponCount < 0) {
-            // 쿠폰 발급 수 감소 후 음수가 되면 예외 처리
+            // 롤백
+            redisLongTemplate.opsForValue().increment(couponCountKey, 1); // 다시 증가
             throw new CouponException("Failed to issue coupon.");
-//            redisTemplate.opsForValue().increment(couponCountKey, 1); // 다시 증가
-//            return null;
         }
 
         // 쿠폰 발급
-        couponService.issueCoupon(couponCode);
+        couponDTO = couponService.issueCoupon(couponCode, issuedCouponCount);
 
         // 유저 쿠폰 생성
         UserCoupon userCoupon = UserCoupon.builder()
                 .coupon(couponDTO.toEntity())
-                .userID(userId)
+                .userId(userId)
                 .isUsed(false)
+                .issueDate(LocalDate.now())
+                .expirationDate(couponDTO.getExpirationDate())
                 .build();
 
         userCouponRepository.save(userCoupon);
@@ -106,7 +108,7 @@ public class UserCouponService {
 
     // 해당 유저의 쿠폰 조회
     public List<UserCouponDTO> getUserCoupons(String userId) {
-        List<UserCoupon> userCouponList = userCouponRepository.findAllByUserID(userId);
+        List<UserCoupon> userCouponList = userCouponRepository.findAllByUserId(userId);
         List<UserCouponDTO> userCouponDTOList = new ArrayList<>();
 
         userCouponList.forEach(userCoupon -> {

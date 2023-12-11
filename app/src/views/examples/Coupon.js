@@ -16,7 +16,7 @@ function Coupon() {
                 console.log(response);
                 return response.json()
             })
-            .then(response => { 
+            .then(response => {
                 setCoupons(response);
                 console.log(response);
             })
@@ -41,7 +41,7 @@ function Coupon() {
                                 <CardHeader tag="h3">
                                     <Row className="align-items-center">
                                         <Col xs="6">
-                                            <h3 className="mb-0">{coupon.couponCode}</h3>
+                                            <h3 className="mb-0">{coupon.couponName}</h3>
                                         </Col>
                                         <Col className="text-right" xs="6">
                                             <Button
@@ -67,7 +67,7 @@ function Coupon() {
                                                     }).then(data => {
                                                         console.log(data);
                                                         alert("쿠폰이 발급되었습니다.");
-                                                        navigate("/admin/coupons");
+                                                        window.location.reload();
                                                     })
                                                     .catch(e => {
                                                         alert(e.error);
@@ -81,8 +81,8 @@ function Coupon() {
                                     </Row>
                                 </CardHeader>
                                 <CardBody>
+                                    <h2>{coupon.couponCode}</h2><br/>
                                     남은 개수 : {coupon.quantity} <br />
-                                    
                                 </CardBody>
                             </Card>
                         )

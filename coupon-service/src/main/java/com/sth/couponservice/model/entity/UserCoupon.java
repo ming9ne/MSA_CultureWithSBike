@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Builder
@@ -15,19 +17,27 @@ import lombok.NoArgsConstructor;
 public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userCouponID;
+    private Long userCouponId;
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "couponID")
+    @JoinColumn(name = "coupon_id", nullable = false)
     private Coupon coupon;
-    private String userID; // 사용자 ID만 저장 (외래 키 관계 없음)
+    @Column(nullable = false)
+    private String userId; // 사용자 ID만 저장 (외래 키 관계 없음)
+    @Column(columnDefinition = "boolean default false")
     private boolean isUsed;
+    @Column(nullable = false)
+    private LocalDate issueDate;  // 발급 일자
+    @Column(nullable = false)
+    private LocalDate expirationDate;  // 만료 기간
 
     public UserCouponDTO toDTO() {
         return UserCouponDTO.builder()
-                .userCouponID(userCouponID)
+                .userCouponId(userCouponId)
                 .coupon(coupon)
-                .userID(userID)
+                .userId(userId)
                 .isUsed(isUsed)
+                .issueDate(issueDate)
+                .expirationDate(expirationDate)
                 .build();
     }
 }

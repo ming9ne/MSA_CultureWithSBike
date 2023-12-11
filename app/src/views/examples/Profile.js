@@ -80,7 +80,7 @@ const Profile = () => {
                   </div>
                   <hr className="my-4" />
                   <p>
-                    {localStorage.getItem("userId")};
+                    {localStorage.getItem("uid")}
                   </p>
                 </div>
               </CardBody>
@@ -106,29 +106,32 @@ const Profile = () => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {coupons.map(coupon => {
-                  return(
-                    <Card
-                      style={{
-                          margin: "30px",
-                          width: "300px"
-                      }}>
-                      <CardHeader tag="h3">
-                          <Row className="align-items-center">
-                              <Col xs="6">
-                                  {coupon.coupon.used ? 
-                                  <h3 className="mb-0" style={{ textDecoration: 'line-through', color: 'gray' }}>{coupon.coupon.couponCode}</h3> : 
-                                  <h3 className="mb-0">{coupon.coupon.couponCode}</h3>}
-                                  
-                              </Col>
-                          </Row>
-                      </CardHeader>
-                      <CardBody>
-                          
-                      </CardBody>
-                  </Card>
-                  )
-                })}
+                <Row>
+                  {coupons.map(coupon => {
+                    return( 
+                      <Card
+                        style={{
+                            margin: "30px",
+                            width: "300px"
+                        }}>
+                        <CardHeader tag="h3">
+                            <Row className="align-items-center">
+                                <Col xs="6">
+                                    {coupon.coupon.used ? 
+                                    <h3 className="mb-0" style={{ textDecoration: 'line-through', color: 'gray' }}>{coupon.coupon.couponCode}</h3> : 
+                                    <h3 className="mb-0">{coupon.coupon.couponName}</h3>}
+                                    
+                                </Col>
+                            </Row>
+                        </CardHeader>
+                        <CardBody>
+                            <h2>{coupon.coupon.couponCode}</h2><br/>
+                            {coupon.coupon.issueDate} ~ {coupon.coupon.expirationDate}
+                        </CardBody>
+                      </Card>
+                    )
+                  })}
+                </Row>
               </CardBody>
             </Card>
           </Col>

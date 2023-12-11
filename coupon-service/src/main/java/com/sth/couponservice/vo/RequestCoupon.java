@@ -2,8 +2,11 @@ package com.sth.couponservice.vo;
 
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class RequestCoupon {
-    String couponCode;
+    String couponName;
     private int quantity;
+    LocalDate expirationDate;
 }
