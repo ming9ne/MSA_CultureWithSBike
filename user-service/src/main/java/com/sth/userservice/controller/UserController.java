@@ -56,7 +56,7 @@ public class UserController {
                 .id(userDto.getId())
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
-                .userId(userDto.getUid())
+                .uid(userDto.getUid())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
@@ -75,7 +75,7 @@ public class UserController {
                 .id(userDto.getId())
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
-                .userId(userDto.getUid())
+                .uid(userDto.getUid())
                 .build();
 
         HttpHeaders httpHeaders = new HttpHeaders();
