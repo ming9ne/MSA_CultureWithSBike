@@ -37,7 +37,7 @@ function Coupon() {
                                 style={{
                                     margin: "30px",
                                     width: "300px"
-                            }}>
+                            }}key={coupon.couponCode}>
                                 <CardHeader tag="h3">
                                     <Row className="align-items-center">
                                         <Col xs="6">
@@ -46,9 +46,9 @@ function Coupon() {
                                         <Col className="text-right" xs="6">
                                             <Button
                                                 color="primary"
-                                                href="#pablo"
                                                 onClick={(e) => {
                                                     e.preventDefault();
+                                                    e.target.hidden=true;
                                                     fetch(`http://localhost:8000/api/v1/coupon-service/userCoupon`, {
                                                         method: "POST",
                                                         headers: {
@@ -71,6 +71,7 @@ function Coupon() {
                                                     })
                                                     .catch(e => {
                                                         alert(e.error);
+                                                        window.location.reload();
                                                     })
                                                 }}
                                                 size="sm"
@@ -82,6 +83,7 @@ function Coupon() {
                                 </CardHeader>
                                 <CardBody>
                                     <h2>{coupon.couponCode}</h2><br/>
+                                    기한 : {coupon.issueDate} ~ {coupon.expirationDate}<br/>
                                     남은 개수 : {coupon.quantity} <br />
                                 </CardBody>
                             </Card>

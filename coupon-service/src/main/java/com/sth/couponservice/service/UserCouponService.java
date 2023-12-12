@@ -7,12 +7,18 @@ import com.sth.couponservice.repository.UserCouponRepository;
 import com.sth.couponservice.vo.CouponException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserCouponService {
@@ -33,22 +39,27 @@ public class UserCouponService {
     // 쿠폰 발급
     @Transactional
     public UserCouponDTO issueCouponsToUser(String couponCode, String userId) {
-        CouponDTO couponDTO = couponService.getCouponByCode(couponCode);
-        
         // userId 체크 하는 기능
-
-        // 이미 발급 받았으면
-        if (userCouponRepository.existsByCouponAndUserId(couponDTO.toEntity(), userId)) {
-            throw new CouponException("You have already claimed this coupon. Duplicate issuance is not allowed.");
+        try {
+            checkUserId(userId);
+        } catch (CouponException e) {
+            throw new CouponException(e.getMessage());
         }
 
-        String couponCountKey = String.format(COUPON_COUNT_KEY_TEMPLATE, couponDTO.getCouponCode());
+        String couponCountKey = String.format(COUPON_COUNT_KEY_TEMPLATE, couponCode);
 
         // 쿠폰 체크
         try {
             checkRedis(couponCode, couponCountKey);
         } catch (CouponException e) {
             throw new CouponException("Coupon does not exists");
+        }
+
+        CouponDTO couponDTO = couponService.getCouponByCode(couponCode);
+
+        // 이미 발급 받았으면
+        if (userCouponRepository.existsByCouponAndUserId(couponDTO.toEntity(), userId)) {
+            throw new CouponException("You have already claimed this coupon. Duplicate issuance is not allowed.");
         }
 
         // 선착순 발급
@@ -88,6 +99,29 @@ public class UserCouponService {
         return userCouponDTOList;
     }
 
+    // 유저 체크
+    public void checkUserId(String userId) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // 유저 조회 API 엔드포인트 URL
+        String userApiUrl = "http://localhost:8000/api/v1/user-service/user";
+        try {
+            // 유저 조회 API 호출
+            ResponseEntity<Map> response = restTemplate.getForEntity(userApiUrl + "?id=" + userId, Map.class);
+
+            // 응답에서 데이터를 가져올 수 있는지 확인
+            if (response.getStatusCode() != HttpStatus.OK) {
+                throw new CouponException("유저 조회에 실패하였습니다. HTTP 상태코드: " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new CouponException("유저가 존재하지 않습니다.");
+            } else {
+                throw new CouponException("유저 조회에 실패하였습니다. HTTP 상태코드: " + e.getStatusCode());
+            }
+        }
+    }
+
     // 쿠폰 체크
     public void checkRedis(String couponCode, String redisKey) {
         Long quantity = redisLongTemplate.opsForValue().get(redisKey);
@@ -116,5 +150,14 @@ public class UserCouponService {
         });
 
         return userCouponDTOList;
+    }
+    
+    // 일별 발급된 쿠폰 수 조회
+    public HashMap<LocalDate, Integer> countUserCoupons(LocalDate date) {
+        HashMap<LocalDate, Integer> map = new HashMap<>();
+        for(int i = 0; i < 7; i++) {
+            map.put(date.minusDays(i), userCouponRepository.countAllByIssueDate(date.minusDays(i)));
+        }
+        return map;
     }
 }

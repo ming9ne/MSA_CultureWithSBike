@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,11 +77,18 @@ public class CouponController {
             UserCouponDTO userCouponDTO = userCouponService.issueCouponsToUser(requestUserCoupon.getCouponCode(), requestUserCoupon.getUserId());
             return ResponseEntity.status(HttpStatus.CREATED).body(userCouponDTO);
         } catch(CouponException e) {
-//            e.printStackTrace();
             System.out.println("bad");
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+    }
+
+    // 발급된 쿠폰 통계
+    @GetMapping("/statistics")
+    public ResponseEntity<Object> statistics() {
+        HashMap<LocalDate, Integer> map = userCouponService.countUserCoupons(LocalDate.now());
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 }
