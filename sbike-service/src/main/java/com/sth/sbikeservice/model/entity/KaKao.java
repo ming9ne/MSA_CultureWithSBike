@@ -1,6 +1,8 @@
 // KaKao.java
 package com.sth.sbikeservice.model.entity;
 
+import com.sth.sbikeservice.model.dto.KakoDTO;
+import com.sth.sbikeservice.model.dto.SbikeDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,5 +33,15 @@ public class KaKao {
 
     @Column
     private String stationLongitude;
+
+    public KakoDTO toDto() {
+        return KakoDTO.builder()
+                .origin(origin)
+                .stationName(stationName)
+                .distance(String.valueOf(distance))
+                .stationLatitude(stationLatitude)
+                .stationLongitude(stationLongitude)
+                .build();
+    }
 
 }

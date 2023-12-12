@@ -1,7 +1,10 @@
 package com.sth.sbikeservice.service;
 
+import com.sth.sbikeservice.model.dto.KakoDTO;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.model.entity.Sbike;
+import com.sth.sbikeservice.repository.KaKaoRepository;
 import com.sth.sbikeservice.repository.SbikeRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ public class SbikeService {
 
     @Autowired
     private SbikeRepository sbikeRepository;
+    private KaKaoRepository kaKaoRepository;
 
     public List<SbikeDTO> listSbike() {
         List<Sbike> list = sbikeRepository.findAll();
@@ -25,6 +29,11 @@ public class SbikeService {
         list.forEach(sbike -> resultList.add(sbike.toDto()));
         return resultList;
     }
-
+    public List<KakoDTO> listKakao() {
+        List<KaKao> list = kaKaoRepository.findAll();
+        List<KakoDTO> resultList = new ArrayList<>();
+        list.forEach(kaKao -> resultList.add(kaKao.toDto()));
+        return resultList;
+    }
 
 }
