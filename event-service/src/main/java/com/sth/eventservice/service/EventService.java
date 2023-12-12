@@ -5,25 +5,32 @@ import com.sth.eventservice.model.dto.EventDTO;
 import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
 import com.sth.eventservice.vo.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.time.DayOfWeek;
+import java.time.format.TextStyle;
+import java.util.stream.Stream;
 
 @Service
 public class EventService {
+    private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
     private final RestTemplate restTemplate;
+
 
     @Autowired
     public EventService(EventRepository eventRepository, RestTemplate restTemplate) {
@@ -98,14 +105,20 @@ public class EventService {
                                         .build())
                                 .collect(Collectors.toList());
                         eventDTOList.addAll(eventsFromPage);
-                        System.out.println("API 호출 성공 - 페이지: " + startPage);
+                        logger.info("API 호출 시작");
+                        System.out.println("API 호출 중");
+                        logger.info("API 호출 끝");
+
                     } else {
-                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
+                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+//                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
                     }
                 } else {
+                    logger.warn("API 호출 실패");
                     System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
                 }
             } catch (Exception e) {
+                logger.warn("API 호출 중 오류 발생");
                 System.out.println("API 호출 중 오류 발생: " + e.getMessage());
                 e.printStackTrace();
             }
@@ -153,11 +166,14 @@ public class EventService {
                                 })
                                 .collect(Collectors.toList());
                         eventDTOList.addAll(eventsFromPage);
+                        logger.info("DB 저장 완료");
                     }
                 } else {
+                    logger.warn("API 호출 실패");
                     System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
                 }
             } catch (Exception e) {
+                logger.warn("API 호출 실패");
                 System.out.println("API 호출 중 오류 발생: " + e.getMessage());
                 e.printStackTrace();
             }
@@ -165,4 +181,165 @@ public class EventService {
         }
         return eventDTOList;
     }
+
+
+    //////////////////////////////////////////////////////////////////////
+
+
+
+//    public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
+//        Map<String, Object> result = new HashMap<>();
+//
+//        // 현재 날짜 구하기
+//        LocalDate currentDate = LocalDate.now();
+//
+//        // 현재 월 포함하여 7개의 월 계산
+//        List<String> monthList = new ArrayList<>();
+//        for (int i = 0; i < 7; i++) {
+//            Month month = currentDate.getMonth().plus(i);
+//            String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+//            monthList.add(monthName);
+//        }
+//
+//        // 현재 주의 시작 날짜와 끝나는 날짜 계산
+//        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+//        LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
+//
+//        // 일별 이벤트 건수를 저장할 Map 초기화 (요일 순서대로)
+//        Map<String, Integer> eventCountByDayOfWeek = new LinkedHashMap<>();
+//        eventCountByDayOfWeek.put("월요일", 0);
+//        eventCountByDayOfWeek.put("화요일", 0);
+//        eventCountByDayOfWeek.put("수요일", 0);
+//        eventCountByDayOfWeek.put("목요일", 0);
+//        eventCountByDayOfWeek.put("금요일", 0);
+//        eventCountByDayOfWeek.put("토요일", 0);
+//        eventCountByDayOfWeek.put("일요일", 0);
+//
+//        // 월별 이벤트 건수를 저장할 Map 초기화
+//        Map<String, Integer> eventCountByMonth = new LinkedHashMap<>();
+//
+//        Iterable<EventDTO> eventList = listEvent();
+//
+//        // 각 이벤트의 시작 날짜와 끝나는 날짜를 기준으로 요일 및 월을 계산하고 건수를 집계
+//        for (EventDTO event : eventList) {
+//            LocalDate startDate = event.getStrtdate();
+//            LocalDate endDate = event.getEndDate();
+//            if (startDate != null && endDate != null) {
+//                // 현재 주에 해당하는 이벤트만 집계
+//                if (!startDate.isAfter(endOfWeek) || !endDate.isBefore(startOfWeek)) {
+//                    // 요일 계산
+//                    DayOfWeek dayOfWeek = startDate.getDayOfWeek();
+//                    String dayOfWeekName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+//
+//                    // 해당 요일의 이벤트 건수 증가
+//                    eventCountByDayOfWeek.put(dayOfWeekName, eventCountByDayOfWeek.get(dayOfWeekName) + 1);
+//
+//                    // 월 계산
+//                    Month month = startDate.getMonth();
+//                    String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+//
+//                    // 현재 월부터 7개의 월까지의 이벤트 건수 증가
+//                    if (monthList.contains(monthName)) {
+//                        eventCountByMonth.put(monthName, eventCountByMonth.getOrDefault(monthName, 0) + 1);
+//                    }
+//                }
+//            }
+//        }
+//
+//        // 결과 맵에 현재 월부터 7개의 월까지의 월별 이벤트 건수와 현재 주의 일별 이벤트 건수를 추가
+//        result.put("월별 문화행사 건수", eventCountByMonth);
+//        result.put("현재 주의 일별 문화행사 건수", eventCountByDayOfWeek);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(result);
+//    }
+
+    public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
+        Map<String, Object> result = new HashMap<>();
+
+        // 현재 날짜 구하기
+        LocalDate currentDate = LocalDate.now();
+
+        // 현재 월 포함하여 7개의 월 계산
+        List<String> monthList = new ArrayList<>();
+        int currentMonthValue = currentDate.getMonthValue();
+        for (int i = 0; i < 7; i++) {
+            Month month = Month.of((currentMonthValue + i - 1) % 12 + 1); // 1부터 12까지 순환
+            String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+            monthList.add(monthName);
+        }
+
+        // 현재 주의 시작 날짜와 끝나는 날짜 계산
+        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
+        LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
+
+        // 일별 이벤트 건수를 저장할 Map 초기화 (요일 순서대로)
+        Map<String, Integer> eventCountByDayOfWeek = new LinkedHashMap<>();
+        eventCountByDayOfWeek.put("월요일", 0);
+        eventCountByDayOfWeek.put("화요일", 0);
+        eventCountByDayOfWeek.put("수요일", 0);
+        eventCountByDayOfWeek.put("목요일", 0);
+        eventCountByDayOfWeek.put("금요일", 0);
+        eventCountByDayOfWeek.put("토요일", 0);
+        eventCountByDayOfWeek.put("일요일", 0);
+
+        // 월별 이벤트 건수를 저장할 Map 초기화 (월 순서대로)
+        Map<String, Integer> eventCountByMonth = new LinkedHashMap<>();
+        for (String monthName : monthList) {
+            eventCountByMonth.put(monthName, 0);
+        }
+
+        Iterable<EventDTO> eventList = listEvent();
+
+        // 각 이벤트의 시작 날짜와 끝나는 날짜를 기준으로 요일 및 월을 계산하고 건수를 집계
+        for (EventDTO event : eventList) {
+            LocalDate startDate = event.getStrtdate();
+            LocalDate endDate = event.getEndDate();
+            if (startDate != null && endDate != null) {
+                // 현재 주에 해당하는 이벤트만 집계
+                if (!startDate.isAfter(endOfWeek) || !endDate.isBefore(startOfWeek)) {
+                    // 요일 계산
+                    DayOfWeek dayOfWeek = startDate.getDayOfWeek();
+                    String dayOfWeekName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+
+                    // 해당 요일의 이벤트 건수 증가
+                    eventCountByDayOfWeek.put(dayOfWeekName, eventCountByDayOfWeek.get(dayOfWeekName) + 1);
+
+                    // 월 계산
+                    Month month = startDate.getMonth();
+                    String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
+
+                    // 현재 월부터 7개의 월까지의 이벤트 건수 증가
+                    if (monthList.contains(monthName)) {
+                        eventCountByMonth.put(monthName, eventCountByMonth.getOrDefault(monthName, 0) + 1);
+                    }
+                }
+            }
+        }
+
+        // 결과 맵에 현재 월부터 7개의 월까지의 월별 이벤트 건수와 현재 주의 일별 이벤트 건수를 추가
+        result.put("Monthly Event", eventCountByMonth);
+        result.put("Weekly Event", eventCountByDayOfWeek);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+
+    private Map<String, Integer> initializeEventCountMap() {
+        Map<String, Integer> eventCountByDayOfWeek = new HashMap<>();
+        eventCountByDayOfWeek.put("월요일", 0);
+        eventCountByDayOfWeek.put("화요일", 0);
+        eventCountByDayOfWeek.put("수요일", 0);
+        eventCountByDayOfWeek.put("목요일", 0);
+        eventCountByDayOfWeek.put("금요일", 0);
+        eventCountByDayOfWeek.put("토요일", 0);
+        eventCountByDayOfWeek.put("일요일", 0);
+
+        Map<String, Integer> eventCountByMonth = new HashMap<>();
+        for (int i = 1; i <= 12; i++) {
+            eventCountByMonth.put(i + "월", 0);
+        }
+
+        return eventCountByDayOfWeek;
+    }
+
 }

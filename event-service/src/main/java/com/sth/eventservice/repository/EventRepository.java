@@ -12,7 +12,6 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
     public Event findByEventNm(String eventNm);
-    @Query("SELECT e FROM Event e ORDER BY e.id ASC")
-    List<Event> findPageableEvents(@Param("startIndex") int startIndex, @Param("size") int size);
+
 
 }
