@@ -7,6 +7,7 @@ import com.sth.userservice.service.UserService;
 import com.sth.userservice.vo.RequestLogin;
 import com.sth.userservice.vo.RequestUser;
 import com.sth.userservice.vo.ResponseUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,28 +38,43 @@ public class UserController {
         return "This is user service!";
     }
 
-    // 유저 조회
+    // 유저 전체 조회
     @GetMapping("/users")
     public List<UserDTO> listUsers() {
         return userService.listUser();
     }
 
+    // 유저 조회
+    @GetMapping("/user")
+    public ResponseEntity<Object> findUser(@RequestParam("id") String id) {
+        UserDTO userDTO;
+
+        try {
+            userDTO =  userService.getUserDetailsById(id);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        ResponseUser responseUser = ResponseUser.builder()
+                .id(userDTO.getId())
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .uid(userDTO.getUid())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
+    }
+
     // 유저 등록
     @PostMapping("/users")
     public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
-        UserDTO userDto = UserDTO.builder()
-                .id(user.getId())
-                .password(user.getPassword())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .build();
-        userService.createUser(userDto);
+        UserDTO userDTO = userService.createUser(user);
 
         ResponseUser responseUser = ResponseUser.builder()
-                .id(userDto.getId())
-                .username(userDto.getUsername())
-                .email(userDto.getEmail())
-                .userId(userDto.getUid())
+                .id(userDTO.getId())
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .uid(userDTO.getUid())
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseUser);
@@ -70,17 +88,33 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
 
+        try{
+            tokenProvider.validateToken(jwt);
+        } catch (Exception e) {
+            System.out.println("123");
+        }
+
         UserDTO userDto = userService.getUserDetailsById(authenticationToken.getName());
         ResponseUser responseUser = ResponseUser.builder()
                 .id(userDto.getId())
                 .username(userDto.getUsername())
                 .email(userDto.getEmail())
-                .userId(userDto.getUid())
+                .uid(userDto.getUid())
                 .build();
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         return new ResponseEntity<>(responseUser, httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/valid")
+    public HttpStatus valid(HttpServletRequest httpServletRequest) {
+        String jwt = httpServletRequest.getHeader("Authorization");
+        if(tokenProvider.validateToken(jwt)) {
+            return HttpStatus.OK;
+        } else {
+            return HttpStatus.FORBIDDEN;
+        }
     }
 }

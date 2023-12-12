@@ -7,6 +7,7 @@ import Header from "components/Headers/Header.js";
 function Detail() { // () 안에 정보들
     const[congestion, setCongestion] = useState([]);
     const[population, setPopulation] = useState([]);
+    const[sbikes, setSbikes] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
     console.log(location.state);
@@ -35,6 +36,8 @@ function Detail() { // () 안에 정보들
                 .catch(e => {
                     console.log(e);
                 })
+
+            // fetch(`http://localhost:8000/api/v1/sbike-service/`)
         };
 
         console.log(congestion);

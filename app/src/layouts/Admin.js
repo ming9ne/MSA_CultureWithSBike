@@ -24,7 +24,7 @@ const Admin = (props) => {
   const getRoutes = (routes) => {
     return routes.map((prop, key) => {
       if (prop.layout === "/admin") {
-        if (prop.requireToken) {
+        if (prop.requireLogin) {
           if(localStorage.getItem("login-token")) {
             return (
               <Route path={prop.path} element={prop.component} key={key} exact />

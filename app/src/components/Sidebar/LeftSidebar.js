@@ -63,6 +63,10 @@ const Sidebar = (props) => {
         )
       }
 
+      if(localStorage.getItem("login-token") && (prop.path=="/login" || prop.path=="/register")) {
+        return;
+      }
+
       return (
         <NavItem key={key}>
           <NavLink
@@ -120,21 +124,6 @@ const Sidebar = (props) => {
         {/* User */}
         <Nav className="align-items-center d-md-none">
           <UncontrolledDropdown nav>
-            <DropdownToggle nav className="nav-link-icon">
-              <i className="ni ni-bell-55" />
-            </DropdownToggle>
-            <DropdownMenu
-              aria-labelledby="navbar-default_dropdown_1"
-              className="dropdown-menu-arrow"
-              right
-            >
-              <DropdownItem>Action</DropdownItem>
-              <DropdownItem>Another action</DropdownItem>
-              <DropdownItem divider />
-              <DropdownItem>Something else here</DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-          <UncontrolledDropdown nav>
             {localStorage.getItem("login-token")?
               <>
                 <DropdownToggle className="pr-0" nav>
@@ -160,10 +149,10 @@ const Sidebar = (props) => {
                     <i className="ni ni-single-02" />
                     <span>My profile</span>
                   </DropdownItem>
-                  <DropdownItem to="/admin/user-profile" tag={Link}>
+                  {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                     <i className="ni ni-settings-gear-65" />
                     <span>Settings</span>
-                  </DropdownItem>
+                  </DropdownItem> */}
                   {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                     <i className="ni ni-calendar-grid-58" />
                     <span>Activity</span>
@@ -205,10 +194,10 @@ const Sidebar = (props) => {
                       <i className="ni ni-single-02" />
                       <span>My profile</span>
                     </DropdownItem>
-                    <DropdownItem to="/admin/user-profile" tag={Link}>
+                    {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                       <i className="ni ni-settings-gear-65" />
                       <span>Settings</span>
-                    </DropdownItem>
+                    </DropdownItem> */}
                     {/* <DropdownItem to="/admin/user-profile" tag={Link}>
                       <i className="ni ni-calendar-grid-58" />
                       <span>Activity</span>
@@ -257,24 +246,26 @@ const Sidebar = (props) => {
               </Col>
             </Row>
           </div>
-          {/* Form */}
-          <Form className="mt-4 mb-3 d-md-none">
-            <InputGroup className="input-group-rounded input-group-merge">
-              <Input
-                aria-label="Search"
-                className="form-control-rounded form-control-prepended"
-                placeholder="Search"
-                type="search"
-              />
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <span className="fa fa-search" />
-                </InputGroupText>
-              </InputGroupAddon>
-            </InputGroup>
-          </Form>
           {/* Navigation */}
           <Nav navbar>{createLinks(routes)}</Nav>
+          {localStorage.getItem("login-token") ? 
+            <Nav navbar>
+              <NavItem>
+                <NavLink
+                  to={"/"}
+                  tag={NavLinkRRD}
+                  onClick={e => {
+                    closeCollapse();
+                    localStorage.clear();
+                    alert("로그아웃 되었습니다.");
+                  }}
+                >
+                  <i className="ni ni-user-run text-blue" />
+                  logout
+                </NavLink>
+              </NavItem>
+            </Nav> : <></>}
+          
           {/* Divider */}
           <hr className="my-3" />
           {/* Heading */}

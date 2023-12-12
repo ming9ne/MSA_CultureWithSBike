@@ -3,6 +3,9 @@ package com.sth.userservice.model.entity;
 import com.sth.userservice.model.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -11,23 +14,24 @@ import lombok.*;
 @Entity
 public class User {
     @Id
+    @Size(max = 50, message = "id must be at most 50 characters")
     private String id;
-    @Column(nullable = false)
+    @NotBlank(message = "username cannot be blank")
+    @Size(max = 10, message = "username must be at most 10 characters")
     private String username;
-    @Column
-    private String password;
-    @Column
+    @Email(message = "email should be valid")
+    @Size(max = 50, message = "email must be at most 50 characters")
     private String email;
-    @Column
+    @Size(max = 100, message = "uid must be at most 100 characters")
     private String uid;
-    @Column
+    @Size(max = 100, message = "EncryptedPassword must be at most 100 characters")
+    @Column(name = "EncryptedPassword")
     private String encryptedPwd;
 
     public UserDTO toDto() {
         return UserDTO.builder()
             .id(id)
             .username(username)
-            .password(password)
             .email(email)
             .uid(uid)
             .encryptedPwd(encryptedPwd)

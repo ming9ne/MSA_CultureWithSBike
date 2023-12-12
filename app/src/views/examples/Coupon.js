@@ -11,12 +11,16 @@ function Coupon() {
     // console.log(location.state);
     
     useEffect(() => {
-        fetch(`http://localhost:8000/api/v1/coupon-service/coupons`)
+        fetch(`http://localhost:8000/api/v1/coupon-service/coupons`, {
+            headers: {
+                "Authorization" : localStorage.getItem("login-token")
+            }
+        })
             .then(response => {
                 console.log(response);
                 return response.json()
             })
-            .then(response => { 
+            .then(response => {
                 setCoupons(response);
                 console.log(response);
             })
@@ -37,22 +41,23 @@ function Coupon() {
                                 style={{
                                     margin: "30px",
                                     width: "300px"
-                            }}>
+                            }}key={coupon.couponCode}>
                                 <CardHeader tag="h3">
                                     <Row className="align-items-center">
                                         <Col xs="6">
-                                            <h3 className="mb-0">{coupon.couponCode}</h3>
+                                            <h3 className="mb-0">{coupon.couponName}</h3>
                                         </Col>
                                         <Col className="text-right" xs="6">
                                             <Button
                                                 color="primary"
-                                                href="#pablo"
                                                 onClick={(e) => {
                                                     e.preventDefault();
+                                                    e.target.hidden=true;
                                                     fetch(`http://localhost:8000/api/v1/coupon-service/userCoupon`, {
                                                         method: "POST",
                                                         headers: {
                                                         "Content-Type": "application/json",
+                                                        "Authorization" : localStorage.getItem("login-token")
                                                         },
                                                         body: JSON.stringify({
                                                             couponCode: coupon.couponCode, userId: localStorage.getItem("id")
@@ -67,10 +72,11 @@ function Coupon() {
                                                     }).then(data => {
                                                         console.log(data);
                                                         alert("쿠폰이 발급되었습니다.");
-                                                        navigate("/admin/coupons");
+                                                        window.location.reload();
                                                     })
                                                     .catch(e => {
                                                         alert(e.error);
+                                                        window.location.reload();
                                                     })
                                                 }}
                                                 size="sm"
@@ -81,8 +87,9 @@ function Coupon() {
                                     </Row>
                                 </CardHeader>
                                 <CardBody>
+                                    <h2>{coupon.couponCode}</h2><br/>
+                                    기한 : {coupon.issueDate} ~ {coupon.expirationDate}<br/>
                                     남은 개수 : {coupon.quantity} <br />
-                                    
                                 </CardBody>
                             </Card>
                         )

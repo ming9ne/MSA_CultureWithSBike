@@ -13,5 +13,5 @@ public class ResponseUser {
     private String id;
     private String username;
     private String email;
-    private String userId;
+    private String uid;
 }

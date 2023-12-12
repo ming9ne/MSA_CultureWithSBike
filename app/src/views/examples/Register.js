@@ -16,7 +16,6 @@ import {
 import {useState} from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const Register = () => {
   const[id, setId] = useState("");
   const[password, setPassword] = useState("");
@@ -40,10 +39,44 @@ const Register = () => {
     setEmail(e.target.value);
   }
 
+  const isIdValid = (id) => {
+    // 이메일 형식을 확인하는 정규표현식
+    const idRegex = /^[a-z]+[a-z0-9]{3,19}$/g;
+    
+    return idRegex.test(id);
+  };
+
+  const isPasswordValid = (password) => {
+    // 이메일 형식을 확인하는 정규표현식
+    const passwordRegex = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{8,16}$/;
+    
+    return passwordRegex.test(password);
+  }; 
+
+  const isUsernameValid = (username) => {
+    // 이메일 형식을 확인하는 정규표현식
+    const usernameRegex = /^[a-zA-Zㄱ-힣][a-zA-Zㄱ-힣 ]*$/;
+    
+    return usernameRegex.test(username);
+  };
+
+  const isEmailValid = (email) => {
+    // 이메일 형식을 확인하는 정규표현식
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    return emailRegex.test(email);
+  };
+
   const registerConfirm = e => {
     e.preventDefault();
-    if(id.length === 0 || password.length === 0 || username.length === 0 || email.length === 0) {
-      window.alert("!!!");
+    if(!isIdValid(id)) {
+      window.alert("아이디는 영문자로 시작하는 영문자 또는 숫자 4~20자여야 합니다!");
+    } else if(!isPasswordValid(password)) {
+      window.alert("비밀번호는 8 ~ 16자 영문, 숫자 조합이여야 합니다!");
+    } else if(!isUsernameValid(username)) {
+      window.alert("유저 이름은 한글 또는 영문이여야 합니다!");
+    } else if(!isEmailValid(email)) {
+      window.alert("올바른 이메일 주소를 입력하세요!");
     } else {
       fetch(`http://localhost:8000/api/v1/user-service/users`, {
         method: "POST",
