@@ -63,6 +63,10 @@ spring:
         - id: coupon-service
           uri: lb://COUPON-SERVICE
           predicates:
+            - Path=/api/v1/coupon-service/statistics
+        - id: coupon-service
+          uri: lb://COUPON-SERVICE
+          predicates:
             - Path=/api/v1/coupon-service/**
           filters:
             - RemoveRequestHeader=Cookie
