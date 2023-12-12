@@ -16,8 +16,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
@@ -33,7 +35,7 @@ public class TokenProvider implements InitializingBean {
     private final long tokenValidityInMilliseconds;
 //    private final UserService userService;
 
-    private Key key;
+    private SecretKey key;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
@@ -47,6 +49,8 @@ public class TokenProvider implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
+        // 키를 Base64 인코딩
+//        String keyBase64Encoded = Base64.getEncoder().encodeToString(secret.getBytes());
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -63,10 +67,11 @@ public class TokenProvider implements InitializingBean {
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
+//                .claim(AUTHORITIES_KEY, authorities)
 //                .claim("username", userDTO.getUsername())
 //                .claim("email", userDTO.getEmail())
                 .signWith(key, SignatureAlgorithm.HS512)
+//                .signWith(Keys.secretKeyFor(SignatureAlgorithm.HS256))
                 .setExpiration(validity)
                 .compact();
     }

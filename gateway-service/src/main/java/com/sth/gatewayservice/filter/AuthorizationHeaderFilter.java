@@ -1,8 +1,11 @@
 package com.sth.gatewayservice.filter;
 
 import com.google.common.net.HttpHeaders;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.Logger;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
@@ -12,6 +15,9 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import javax.crypto.SecretKey;
+import java.security.Key;
 
 @Component
 @Slf4j
@@ -39,11 +45,6 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
             String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
             String jwt = authorizationHeader.replace("Bearer", "");
 
-            // Create a cookie object
-//            ServerHttpResponse response = exchange.getResponse();
-//            ResponseCookie c1 = ResponseCookie.from("my_token", "test1234").maxAge(60 * 60 * 24).build();
-//            response.addCookie(c1);
-
             if (!isJwtValid(jwt)) {
                 return onError(exchange, "JWT token is not valid", HttpStatus.UNAUTHORIZED);
             }
@@ -63,19 +64,22 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Auth
     private boolean isJwtValid(String jwt) {
         boolean returnValue = true;
 
-        String subject = null;
+        byte[] keyBytes = Decoders.BASE64.decode(env.getProperty("token.secret"));
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
         try {
-            subject = Jwts.parserBuilder().setSigningKey(env.getProperty("token.secret"))
-                    .build().parseClaimsJws(jwt).getBody().getSubject();
-//            subject = Jwts.parser().setSigningKey(env.getProperty("token.secret"))
-//                    .parseClaimsJws(jwt).getBody()
-//                    .getSubject();
-        } catch (Exception ex) {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(jwt);
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
             returnValue = false;
-        }
-
-        if (subject == null || subject.isEmpty()) {
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다.");
+            returnValue = false;
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다.");
+            returnValue = false;
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
             returnValue = false;
         }
 

@@ -64,6 +64,9 @@ spring:
           uri: lb://COUPON-SERVICE
           predicates:
             - Path=/api/v1/coupon-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - AuthorizationHeaderFilter
         # 유저
         - id: user-service
           uri: lb://USER-SERVICE

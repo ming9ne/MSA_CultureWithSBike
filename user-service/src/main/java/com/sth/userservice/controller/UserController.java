@@ -7,6 +7,7 @@ import com.sth.userservice.service.UserService;
 import com.sth.userservice.vo.RequestLogin;
 import com.sth.userservice.vo.RequestUser;
 import com.sth.userservice.vo.ResponseUser;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -43,8 +46,23 @@ public class UserController {
 
     // 유저 조회
     @GetMapping("/user")
-    public UserDTO findUser(@RequestBody String id) {
-        return userService.getUserDetailsById(id);
+    public ResponseEntity<Object> findUser(@RequestParam("id") String id) {
+        UserDTO userDTO;
+
+        try {
+            userDTO =  userService.getUserDetailsById(id);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        ResponseUser responseUser = ResponseUser.builder()
+                .id(userDTO.getId())
+                .username(userDTO.getUsername())
+                .email(userDTO.getEmail())
+                .uid(userDTO.getUid())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseUser);
     }
 
     // 유저 등록
@@ -70,6 +88,12 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.createToken(authentication);
 
+        try{
+            tokenProvider.validateToken(jwt);
+        } catch (Exception e) {
+            System.out.println("123");
+        }
+
         UserDTO userDto = userService.getUserDetailsById(authenticationToken.getName());
         ResponseUser responseUser = ResponseUser.builder()
                 .id(userDto.getId())
@@ -82,5 +106,15 @@ public class UserController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         return new ResponseEntity<>(responseUser, httpHeaders, HttpStatus.OK);
+    }
+
+    @PostMapping("/valid")
+    public HttpStatus valid(HttpServletRequest httpServletRequest) {
+        String jwt = httpServletRequest.getHeader("Authorization");
+        if(tokenProvider.validateToken(jwt)) {
+            return HttpStatus.OK;
+        } else {
+            return HttpStatus.FORBIDDEN;
+        }
     }
 }

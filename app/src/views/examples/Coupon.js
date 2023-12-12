@@ -11,7 +11,11 @@ function Coupon() {
     // console.log(location.state);
     
     useEffect(() => {
-        fetch(`http://localhost:8000/api/v1/coupon-service/coupons`)
+        fetch(`http://localhost:8000/api/v1/coupon-service/coupons`, {
+            headers: {
+                "Authorization" : localStorage.getItem("login-token")
+            }
+        })
             .then(response => {
                 console.log(response);
                 return response.json()
@@ -53,6 +57,7 @@ function Coupon() {
                                                         method: "POST",
                                                         headers: {
                                                         "Content-Type": "application/json",
+                                                        "Authorization" : localStorage.getItem("login-token")
                                                         },
                                                         body: JSON.stringify({
                                                             couponCode: coupon.couponCode, userId: localStorage.getItem("id")

@@ -35,7 +35,10 @@ const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
   const [couponData, setCouponData] = useState([]);
-  const [couponChartData, setCouponChartData] = useState([]);
+  const [couponChartData, setCouponChartData] = useState({ datasets:[], labels:[] });
+  const [populations, setPopulations] = useState([]);
+  const [populationData, setPopulationData] = useState([]);
+  
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -55,25 +58,31 @@ const Index = (props) => {
       })
       .catch(e => console.log(e))
 
-    fetch(`http://localhost:8000/api/v1/congestion-service/statistics`)
-      
+    fetch(`http://localhost:8000/api/v1/congestion-service/populations`)
+      .then(response => response.json())
+      .then(data => {
+        // console.log(data);
+        setPopulations(data.sort(function(a, b) {
+          return b.areaPpltnMax - a.areaPpltnMax;
+        }));
+        // console.log(populations);
+      })
+      .catch(e => console.log(e))
     
+      
   }, [])
 
+  // 쿠폰 데이터
   useEffect(() => {
-    // console.log(Object.keys(couponData))
-    // console.log("couponData", couponData);
-    // console.log(Object.keys(couponData).length);
-
+    let labels = [];
     let datas = [];
-    Object.keys(couponData).map(data => {
+    Object.keys(couponData).reverse().map(data => {
+      labels = [...labels, data];
       datas = [...datas, couponData[data]];
     })
-    console.log(Object.keys(couponData).reverse());
-    console.log(datas.reverse());
 
     setCouponChartData({
-      labels: Object.keys(couponData).reverse(), 
+      labels, 
       datasets: [
         {
           label: "Sales",
@@ -83,6 +92,12 @@ const Index = (props) => {
       ],
     })
   }, [couponData])
+
+  // 인구 데이터
+  useEffect(() => {
+    // console.log(populationData);
+    setPopulationData(populations.slice(0, 5));
+  }, [populations])
 
   return (
     <>
@@ -151,7 +166,7 @@ const Index = (props) => {
                     <h6 className="text-uppercase text-muted ls-1 mb-1">
                       Performance
                     </h6>
-                    <h2 className="mb-0">Daily issued Coupons</h2>
+                    <h2 className="mb-0">Daily Issued Coupons</h2>
                   </div>
                 </Row>
               </CardHeader>
@@ -255,10 +270,14 @@ const Index = (props) => {
                     <Button
                       color="primary"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        const reversedPopulations = [...populations].reverse();
+                        setPopulations(reversedPopulations);
+                      }}
                       size="sm"
                     >
-                      See all
+                      정렬 기준 변경
                     </Button>
                   </div>
                 </Row>
@@ -272,82 +291,25 @@ const Index = (props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="row">Facebook</th>
-                    <td>1,480</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">60%</span>
-                        <div>
-                          <Progress
-                            max="100"
-                            value="60"
-                            barClassName="bg-gradient-danger"
-                          />
+                {populationData.map(population => {
+                  return (
+                    <tr key={population.areaNm}>
+                      <th scope="row">{population.areaNm}</th>
+                      <td>{population.areaPpltnMax}</td>
+                      <td>
+                        <div className="d-flex align-items-center">
+                          <span className="mr-2">{population.areaPpltnMax / 100000 * 100}%</span>
+                          <div>
+                            <Progress
+                              max="100"
+                              value={population.areaPpltnMax / 100000 * 100}
+                              barClassName="bg-gradient-danger"
+                            />
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Facebook</th>
-                    <td>5,480</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">70%</span>
-                        <div>
-                          <Progress
-                            max="100"
-                            value="70"
-                            barClassName="bg-gradient-success"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Google</th>
-                    <td>4,807</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">80%</span>
-                        <div>
-                          <Progress max="100" value="80" />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Instagram</th>
-                    <td>3,678</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">75%</span>
-                        <div>
-                          <Progress
-                            max="100"
-                            value="75"
-                            barClassName="bg-gradient-info"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">twitter</th>
-                    <td>2,645</td>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">30%</span>
-                        <div>
-                          <Progress
-                            max="100"
-                            value="30"
-                            barClassName="bg-gradient-warning"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
+                      </td>
+                    </tr>)
+                })}
                 </tbody>
               </Table>
             </Card>
