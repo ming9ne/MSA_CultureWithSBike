@@ -19,38 +19,41 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Sbike {
 
-    @Column
+    @Id
+    private int id;
+
+    @Column(length = 255)
     private String stationId;
 
-    @Column
+    @Column(length = 255)
     private String rackTotCnt;
 
-    @Id
+    @Column(length = 255)
     private String stationName;
 
-    @Column
+    @Column(length = 255)
     private String parkingBikeTotCnt;
 
-    @Column
+    @Column(length = 255)
     private String shared;
 
     @Column
-    private String stationLatitude;
+    private double stationLatitude;
 
     @Column
-    private String stationLongitude;
+    private double stationLongitude;
 
-    @Column
-    private String destination;
-
-    private String getDestinationString() {
-        return stationLongitude+","+stationLatitude;
-    }
-
-    public void updateDestination() {
-        String newDestination = getDestinationString();
-        this.destination = newDestination;
-    }
+//    @Column
+//    private String destination;
+//
+//    private String getDestinationString() {
+//        return stationLongitude+","+stationLatitude;
+//    }
+//
+//    public void updateDestination() {
+//        String newDestination = getDestinationString();
+//        this.destination = newDestination;
+//    }
 
     public SbikeDTO toDto() {
         return SbikeDTO.builder()
@@ -59,9 +62,9 @@ public class Sbike {
                 .stationName(stationName)
                 .parkingBikeTotCnt(parkingBikeTotCnt)
                 .shared(shared)
-                .stationLatitude(stationLatitude)
-                .stationLongitude(stationLongitude)
-                .destination(destination)
+                .stationLatitude(String.valueOf(stationLatitude))
+                .stationLongitude(String.valueOf(stationLongitude))
+//                .destination(destination)
                 .build();
     }
 }

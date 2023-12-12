@@ -1,6 +1,8 @@
 // KaKao.java
 package com.sth.sbikeservice.model.entity;
 
+import com.sth.sbikeservice.model.dto.KakoDTO;
+import com.sth.sbikeservice.model.dto.SbikeDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,23 +15,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KaKao {
-
     @Id
+    private int id;
+
+    @Column(length = 255)
     private String stationName;
 
-    @Column
+    @Column(length = 1000)
     private String origin;
 
-    @Column
+    @Column(length = 1000)
     private String destination;
 
     @Column
     private int distance;
 
     @Column
-    private String stationLatitude;
+    private double stationLatitude;
 
     @Column
-    private String stationLongitude;
+    private double stationLongitude;
+
+    public KakoDTO toDto() {
+        return KakoDTO.builder()
+                .origin(origin)
+                .stationName(stationName)
+                .distance(String.valueOf(distance))
+                .stationLatitude(String.valueOf(stationLatitude))
+                .stationLongitude(String.valueOf(stationLongitude))
+                .build();
+    }
 
 }

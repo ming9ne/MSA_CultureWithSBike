@@ -37,9 +37,9 @@ public class SbikeDTO {
     @XmlElement(name = "stationLongitude")
     private String stationLongitude;
 
-    private String destination;
-
-    private String origin;
+//    private String destination;
+//
+//    private String origin;
 
 
 
@@ -50,9 +50,9 @@ public class SbikeDTO {
                 .stationName(stationName)
                 .parkingBikeTotCnt(parkingBikeTotCnt)
                 .shared(shared)
-                .stationLatitude(stationLatitude)
-                .stationLongitude(stationLongitude)
-                .destination(destination)
+                .stationLatitude(Double.parseDouble(stationLatitude))
+                .stationLongitude(Double.parseDouble(stationLongitude))
+//                .destination(destination)
                 .build();
     }
 

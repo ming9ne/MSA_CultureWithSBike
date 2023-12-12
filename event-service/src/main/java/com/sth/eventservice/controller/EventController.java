@@ -4,20 +4,16 @@ package com.sth.eventservice.controller;
 import com.sth.eventservice.model.dto.EventDTO;
 import com.sth.eventservice.schedule.EventSchedule;
 import com.sth.eventservice.service.EventService;
-import com.sth.eventservice.vo.AreaResponse;
-import com.sth.eventservice.vo.EventResponse;
-import com.sth.eventservice.vo.EventStts;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/event-service")
@@ -43,6 +39,22 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    @GetMapping("/days")
+    public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
+        return eventService.getEventCountByDayAndMonth();
+    }
+
+
+
+    @GetMapping("/area")
+    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea(@RequestParam int month) {
+        return eventService.getMonthlyEventByArea(month);
+    }
+
+
+
+
+
     @GetMapping("/events/{page}")
     public ResponseEntity<List<EventDTO>> getEventByPage(@PathVariable int page) {
         int size = 20;
@@ -59,8 +71,4 @@ public class EventController {
     @GetMapping("/saveEvents")
     public void saveEvents(){eventSchedule.saveEvents();}
 
-    @GetMapping("/saveEventsFromXml")
-    public void saveEventsFromXml() {
-        eventSchedule.saveEventsFromXml();
-    }
 }

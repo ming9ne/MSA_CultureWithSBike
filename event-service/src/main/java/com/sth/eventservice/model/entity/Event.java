@@ -19,33 +19,43 @@ import java.time.LocalDate;
 public class Event {
     @Id
     private String eventNm;
-    @Column
+
+    @Column(nullable = false,length = 20)
     private String areaNm;
-    @Column
+
+    @Column(length = 255)
     private String guname;
-    @Column
+
+    @Column(length = 255)
     private String title;
-    @Column
+
+    @Column(length = 255)
     private String codename;
-    @Column
+
     private LocalDate strtdate;
-    @Column
+
     private LocalDate endDate;
-    @Column
+
+    @Column(length = 255)
     private String place;
-    @Column
+
+    @Column(length = 1000)
     private String program;
-    @Column
+
+    @Column(length = 255)
     private String useFee;
-    @Column
+
+    @Column(length = 1000)
     private String orgLink;
-    @Column
+
     private Double lot;
-    @Column
+
     private Double lat;
-    @Column
+
+    @Column(length = 1000)
     private String player;
-    @Column
+
+    @Column(length = 1000)
     private String mainImg;
 
 

@@ -17,12 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.*;
 
 @Slf4j
@@ -44,6 +38,7 @@ public class SbikeSchedule {
         log.info("Sbike Scheduler");
     }
 
+    //5분마다 호출
     @Scheduled(fixedDelay = 300000)
     public void get_sbike() {
         int firstData = 1;
@@ -108,7 +103,7 @@ public class SbikeSchedule {
         sbike.setStationName(sbikeDTO.getStationName());
         sbike.setParkingBikeTotCnt(sbikeDTO.getParkingBikeTotCnt());
         sbike.setShared(sbikeDTO.getShared());
-        sbike.setStationLongitude(sbikeDTO.getStationLongitude());
-        sbike.setStationLatitude(sbikeDTO.getStationLatitude());
+        sbike.setStationLongitude(Double.parseDouble(sbikeDTO.getStationLongitude()));
+        sbike.setStationLatitude(Double.parseDouble(sbikeDTO.getStationLatitude()));
     }
 }
