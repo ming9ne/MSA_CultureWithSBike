@@ -28,8 +28,8 @@ public class KakoDTO {
         return KaKao.builder()
                 .stationName(stationName)
                 .distance(Integer.parseInt(distance))
-                .stationLatitude(stationLatitude)
-                .stationLongitude(stationLongitude)
+                .stationLatitude(Double.parseDouble(stationLatitude))
+                .stationLongitude(Double.parseDouble(stationLongitude))
                 .build();
     }
 

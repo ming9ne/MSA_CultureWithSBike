@@ -14,16 +14,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
-import java.util.stream.Stream;
 
 @Service
 public class EventService {
@@ -185,74 +184,6 @@ public class EventService {
 
     //////////////////////////////////////////////////////////////////////
 
-
-
-//    public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
-//        Map<String, Object> result = new HashMap<>();
-//
-//        // 현재 날짜 구하기
-//        LocalDate currentDate = LocalDate.now();
-//
-//        // 현재 월 포함하여 7개의 월 계산
-//        List<String> monthList = new ArrayList<>();
-//        for (int i = 0; i < 7; i++) {
-//            Month month = currentDate.getMonth().plus(i);
-//            String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
-//            monthList.add(monthName);
-//        }
-//
-//        // 현재 주의 시작 날짜와 끝나는 날짜 계산
-//        LocalDate startOfWeek = currentDate.with(DayOfWeek.MONDAY);
-//        LocalDate endOfWeek = currentDate.with(DayOfWeek.SUNDAY);
-//
-//        // 일별 이벤트 건수를 저장할 Map 초기화 (요일 순서대로)
-//        Map<String, Integer> eventCountByDayOfWeek = new LinkedHashMap<>();
-//        eventCountByDayOfWeek.put("월요일", 0);
-//        eventCountByDayOfWeek.put("화요일", 0);
-//        eventCountByDayOfWeek.put("수요일", 0);
-//        eventCountByDayOfWeek.put("목요일", 0);
-//        eventCountByDayOfWeek.put("금요일", 0);
-//        eventCountByDayOfWeek.put("토요일", 0);
-//        eventCountByDayOfWeek.put("일요일", 0);
-//
-//        // 월별 이벤트 건수를 저장할 Map 초기화
-//        Map<String, Integer> eventCountByMonth = new LinkedHashMap<>();
-//
-//        Iterable<EventDTO> eventList = listEvent();
-//
-//        // 각 이벤트의 시작 날짜와 끝나는 날짜를 기준으로 요일 및 월을 계산하고 건수를 집계
-//        for (EventDTO event : eventList) {
-//            LocalDate startDate = event.getStrtdate();
-//            LocalDate endDate = event.getEndDate();
-//            if (startDate != null && endDate != null) {
-//                // 현재 주에 해당하는 이벤트만 집계
-//                if (!startDate.isAfter(endOfWeek) || !endDate.isBefore(startOfWeek)) {
-//                    // 요일 계산
-//                    DayOfWeek dayOfWeek = startDate.getDayOfWeek();
-//                    String dayOfWeekName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
-//
-//                    // 해당 요일의 이벤트 건수 증가
-//                    eventCountByDayOfWeek.put(dayOfWeekName, eventCountByDayOfWeek.get(dayOfWeekName) + 1);
-//
-//                    // 월 계산
-//                    Month month = startDate.getMonth();
-//                    String monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault());
-//
-//                    // 현재 월부터 7개의 월까지의 이벤트 건수 증가
-//                    if (monthList.contains(monthName)) {
-//                        eventCountByMonth.put(monthName, eventCountByMonth.getOrDefault(monthName, 0) + 1);
-//                    }
-//                }
-//            }
-//        }
-//
-//        // 결과 맵에 현재 월부터 7개의 월까지의 월별 이벤트 건수와 현재 주의 일별 이벤트 건수를 추가
-//        result.put("월별 문화행사 건수", eventCountByMonth);
-//        result.put("현재 주의 일별 문화행사 건수", eventCountByDayOfWeek);
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(result);
-//    }
-
     public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
         Map<String, Object> result = new HashMap<>();
 
@@ -342,4 +273,36 @@ public class EventService {
         return eventCountByDayOfWeek;
     }
 
+    /////////////////////////////////////////////////////////////////////////////////
+
+    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea(int month) {
+        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Integer> monthlyEventByArea = new LinkedHashMap<>();
+
+        // 입력된 월(month)을 기준으로 해당 월의 지역별 문화행사 건수를 계산
+        LocalDate startDateOfMonth = LocalDate.of(LocalDate.now().getYear(), month, 1);
+        LocalDate endDateOfMonth = startDateOfMonth.withDayOfMonth(startDateOfMonth.lengthOfMonth());
+
+        Iterable<EventDTO> eventList = listEvent();
+
+        for (EventDTO event : eventList) {
+            String areaName = event.getAreaNm();
+            LocalDate eventStartDate = event.getStrtdate();
+            LocalDate eventEndDate = event.getEndDate();
+
+            if (eventStartDate != null && eventEndDate != null) {
+                // 이벤트가 해당 월에 포함되는지 확인
+                if (!eventEndDate.isBefore(startDateOfMonth) && !eventStartDate.isAfter(endDateOfMonth)) {
+                    // 해당 지역구의 이벤트 건수 증가
+                    int currentCount = monthlyEventByArea.getOrDefault(areaName, 0);
+                    monthlyEventByArea.put(areaName, currentCount + 1);
+                }
+            }
+        }
+
+        // 결과 맵에 지역구별 월별 이벤트 건수 추가
+        result.put(month + "월 지역구별 문화행사", monthlyEventByArea);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
 }

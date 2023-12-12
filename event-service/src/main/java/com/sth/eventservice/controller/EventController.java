@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,15 @@ public class EventController {
     public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
         return eventService.getEventCountByDayAndMonth();
     }
+
+
+
+    @GetMapping("/area")
+    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea(@RequestParam int month) {
+        return eventService.getMonthlyEventByArea(month);
+    }
+
+
 
 
 

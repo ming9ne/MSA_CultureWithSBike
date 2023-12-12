@@ -15,32 +15,34 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class KaKao {
-
     @Id
+    private int id;
+
+    @Column(length = 255)
     private String stationName;
 
-    @Column
+    @Column(length = 1000)
     private String origin;
 
-    @Column
+    @Column(length = 1000)
     private String destination;
 
     @Column
     private int distance;
 
     @Column
-    private String stationLatitude;
+    private double stationLatitude;
 
     @Column
-    private String stationLongitude;
+    private double stationLongitude;
 
     public KakoDTO toDto() {
         return KakoDTO.builder()
                 .origin(origin)
                 .stationName(stationName)
                 .distance(String.valueOf(distance))
-                .stationLatitude(stationLatitude)
-                .stationLongitude(stationLongitude)
+                .stationLatitude(String.valueOf(stationLatitude))
+                .stationLongitude(String.valueOf(stationLongitude))
                 .build();
     }
 
