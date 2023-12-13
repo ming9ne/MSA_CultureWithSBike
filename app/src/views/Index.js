@@ -34,6 +34,7 @@ import Header from "components/Headers/Header.js";
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [chartExample1Data, setChartExample1Data] = useState("data1");
+  const [eventData, setEventData] = useState([]);
   const [couponData, setCouponData] = useState([]);
   const [couponChartData, setCouponChartData] = useState({ datasets:[], labels:[] });
   const [populations, setPopulations] = useState([]);
@@ -51,6 +52,14 @@ const Index = (props) => {
   };
 
   useEffect(() => {
+    fetch(`http://localhost:8000/api/v1/event-service/statistics`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setEventData(data);
+      })
+
+
     fetch(`http://localhost:8000/api/v1/coupon-service/statistics`)
       .then(response => response.json())
       .then(data => {
