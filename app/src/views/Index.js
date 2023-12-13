@@ -33,10 +33,11 @@ import Header from "components/Headers/Header.js";
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  const [chart, setChart] = useState("Data1");
+  const [chart, setChart] = useState("data1");
   const [eventData, setEventData] = useState([]);
   const [eventChartData, setEventChartData] = useState({data1: { datasets:[], labels:[] }, data2: { datasets:[], labels:[] }});
   const [eventAreaData, setEventAreaData] = useState([]);
+  const [eventAreaStatistics, setEventAreaStatistics] = useState([]);
   const [couponData, setCouponData] = useState([]);
   const [couponChartData, setCouponChartData] = useState({ datasets:[], labels:[] });
   const [populations, setPopulations] = useState([]);
@@ -50,7 +51,7 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setChart("Data"+index);
+    setChart("data"+index);
   };
 
   useEffect(() => {
@@ -97,40 +98,102 @@ const Index = (props) => {
         datas2 = [...datas2, eventData["Weekly Event"][data]];
       })
 
-      setEventChartData(
-        {
-          Data1: {
-            labels: labels1, 
+      console.log("data1", datas1);
+      console.log("data2", datas2);
+      
+      let data = {
+        data1: (canvas) => {
+          return {
+            labels: labels1,
             datasets: [
               {
                 label: "Performance",
                 data: datas1,
               },
             ],
-          },
-          Data2: {
-          labels: labels2, 
-          datasets: [
-            {
-              label: "Performance",
-              data: datas2,
-            },
-          ]}
+          };
+        },
+        data2: (canvas) => {
+          return {
+            labels: labels2,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas2,
+              },
+            ],
+          };
         }
-      )
+      };
+      
+      console.log(data);
 
+      setEventChartData(data);
+
+      let areaData = [];
       let keys = Object.keys(eventData["areas"])
-      console.log(keys);
-      console.log(eventData["areas"]);
-      // console.log(eventData["areas"].slice(0, 5));
-      setEventAreaData(eventData["areas"]);
 
-      for(let i = 0; i < 5; i++) {
-        setEventAreaData(...eventAreaData, eventData["areas"][keys[i]]);
-        console.log(eventData["areas"][keys[i]]);
+      for(let i = 0; i < keys.length; i++) {
+        areaData = [...areaData, {areaNm: keys[i], count: eventData["areas"][keys[i]]}];
       }
+
+      setEventAreaData(areaData.sort(function(a, b) {
+        return b.count - a.count;
+      }));
     }
   }, [eventData])
+
+  // 문화행사 차트
+  useEffect(() => {
+    if(eventData["Monthly Event"]) {
+      let labels1 = [];
+      let datas1 = [];
+
+      let labels2 = [];
+      let datas2 = [];
+
+      Object.keys(eventData["Monthly Event"]).map(data => {
+        labels1 = [...labels1, data];
+        datas1 = [...datas1, eventData["Monthly Event"][data]];
+      })
+
+      Object.keys(eventData["Weekly Event"]).map(data => {
+        labels2 = [...labels2, data];
+        datas2 = [...datas2, eventData["Weekly Event"][data]];
+      })
+
+      let data = {
+        data1: (canvas) => {
+          return {
+            labels: labels1,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas1,
+              },
+            ],
+          };
+        },
+        data2: (canvas) => {
+          return {
+            labels: labels2,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas2,
+              },
+            ],
+          };
+        }
+      };
+      setEventChartData(data);
+    }
+  }, [chart])
+
+  // 문화행사 데이터
+  useEffect(() => {
+    setEventAreaStatistics(eventAreaData.slice(0, 5))
+  }, [eventAreaData])
 
   // 쿠폰 데이터
   useEffect(() => {
@@ -155,7 +218,6 @@ const Index = (props) => {
 
   // 인구 데이터
   useEffect(() => {
-    // console.log(populationData);
     setPopulationData(populations.slice(0, 5));
   }, [populations])
 
@@ -210,12 +272,12 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    // data={chartExample1[chartExample1Data]}
+                    // data={chartExample1[chart]}
                     data={eventChartData[chart]}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
-                </div>
+                </div> : null
               </CardBody>
             </Card>
           </Col>
@@ -255,10 +317,14 @@ const Index = (props) => {
                     <Button
                       color="primary"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const reversedEventAreas = [...eventAreaData].reverse();
+                        setEventAreaData(reversedEventAreas);
+                      }}
                       size="sm"
                     >
-                      See all
+                      정렬 기준 변경
                     </Button>
                   </div>
                 </Row>
@@ -266,57 +332,19 @@ const Index = (props) => {
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                   <tr>
-                    <th scope="col">Page name</th>
-                    <th scope="col">Visitors</th>
+                    <th scope="col">문화행사 명</th>
+                    <th scope="col">개최수</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {eventAreaData.map(area => {
-                    <tr>
-                    <th scope="row">/argon/</th>
-                    <td>4,569</td>
-                    <td>340</td>
-                    <td>
-                      <i className="fas fa-arrow-up text-success mr-3" /> 46,53%
-                    </td>
-                  </tr>
+                  {eventAreaStatistics.map((area) => {
+                    return (
+                      <tr key={area.areaNm}>
+                        <th scope="row">{area.areaNm}</th>
+                        <td>{area.count}</td>
+                      </tr>
+                    )
                   })}
-                  
-                  <tr>
-                    <th scope="row">/argon/index.html</th>
-                    <td>3,985</td>
-                    <td>319</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-warning mr-3" />{" "}
-                      46,53%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/charts.html</th>
-                    <td>3,513</td>
-                    <td>294</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-warning mr-3" />{" "}
-                      36,49%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/tables.html</th>
-                    <td>2,050</td>
-                    <td>147</td>
-                    <td>
-                      <i className="fas fa-arrow-up text-success mr-3" /> 50,87%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/profile.html</th>
-                    <td>1,795</td>
-                    <td>190</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-danger mr-3" />{" "}
-                      46,53%
-                    </td>
-                  </tr>
                 </tbody>
               </Table>
             </Card>
