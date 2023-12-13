@@ -37,11 +37,16 @@ function Detail() { // () 안에 정보들
                     console.log(e);
                 })
 
-            // fetch(`http://localhost:8000/api/v1/sbike-service/`)
-        };
-
-        console.log(congestion);
-        
+            fetch(`http://localhost:8000/api/v1/sbike-service/listkakao/${location.state.title}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    setSbikes(data);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
+        };        
     }, [])
 
     if(location.state) {
@@ -56,7 +61,7 @@ function Detail() { // () 안에 정보들
                             width: "600px"
                         }}>
                         <CardHeader tag="h3">
-                            <Link to="/admin/maps" state={location.state}>{location.state.title}</Link>
+                            <Link to="/admin/maps" state={location.state} sbike={sbikes} >{location.state.title}</Link>
                         </CardHeader>
                         <CardBody>
                             <CardImg 
@@ -70,17 +75,28 @@ function Detail() { // () 안에 정보들
                                 width="100%"
                             />
                             <CardText>
+                                <h1>장소</h1>
                                 {location.state.startDate&&location.state.endDate ? <>기간 : {location.state.startDate} ~ {location.state.endDate} <br /></> : <>기간 : 미정</>}
                                 {location.state.guname ? <>지역 : {location.state.guname} <br /></> : ""}
                                 {location.state.place ? <>장소 : {location.state.place} <br /></> : ""}
                                 {location.state.useFee ? <>이용요금 : {location.state.useFee} <br /></> : ""}
                                 {location.state.player ? <>출연자정보 : {location.state.player} <br /></> : ""}
                                 {location.state.program ? <>프로그램소개 : {location.state.program}</> : ""}<br />
+                                <h1>혼잡도</h1>
                                 {congestion.areaCongestLvl ? (<>장소 혼잡도 지표 : {congestion.areaCongestLvl}<br /></>) : ""}
                                 {congestion.areaCongestMsg ? <>장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br /></> : ""}
                                 {population.areaPpltnMin && population.areaPpltnMax ? (
                                     <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
-                                ) : <></>}
+                                ) : <></>}<br />
+                                <h1>가까운 따릉이 대여소</h1>
+                                {sbikes.map((sbike) => {
+                                    return (
+                                        <>
+                                            대여소 명 : {sbike.stationName}<br/>
+                                            거리 : {sbike.distance}<br/>
+                                        </>
+                                    );
+                                })}
                             </CardText>
                         </CardBody>
                         <CardFooter>
