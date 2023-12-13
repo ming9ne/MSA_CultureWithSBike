@@ -33,8 +33,10 @@ import Header from "components/Headers/Header.js";
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  const [chartExample1Data, setChartExample1Data] = useState("data1");
+  const [chart, setChart] = useState("Data1");
   const [eventData, setEventData] = useState([]);
+  const [eventChartData, setEventChartData] = useState({data1: { datasets:[], labels:[] }, data2: { datasets:[], labels:[] }});
+  const [eventAreaData, setEventAreaData] = useState([]);
   const [couponData, setCouponData] = useState([]);
   const [couponChartData, setCouponChartData] = useState({ datasets:[], labels:[] });
   const [populations, setPopulations] = useState([]);
@@ -48,17 +50,16 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setChartExample1Data("data" + index);
+    setChart("Data"+index);
   };
 
   useEffect(() => {
     fetch(`http://localhost:8000/api/v1/event-service/statistics`)
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         setEventData(data);
       })
-
+      .catch(e => console.log(e))
 
     fetch(`http://localhost:8000/api/v1/coupon-service/statistics`)
       .then(response => response.json())
@@ -70,16 +71,66 @@ const Index = (props) => {
     fetch(`http://localhost:8000/api/v1/congestion-service/populations`)
       .then(response => response.json())
       .then(data => {
-        // console.log(data);
         setPopulations(data.sort(function(a, b) {
           return b.areaPpltnMax - a.areaPpltnMax;
         }));
-        // console.log(populations);
       })
-      .catch(e => console.log(e))
-    
-      
+      .catch(e => console.log(e))     
   }, [])
+
+  // 문화행사 데이터
+  useEffect(() => {
+    if(eventData["Monthly Event"]) {
+      let labels1 = [];
+      let datas1 = [];
+
+      let labels2 = [];
+      let datas2 = [];
+
+      Object.keys(eventData["Monthly Event"]).map(data => {
+        labels1 = [...labels1, data];
+        datas1 = [...datas1, eventData["Monthly Event"][data]];
+      })
+
+      Object.keys(eventData["Weekly Event"]).map(data => {
+        labels2 = [...labels2, data];
+        datas2 = [...datas2, eventData["Weekly Event"][data]];
+      })
+
+      setEventChartData(
+        {
+          Data1: {
+            labels: labels1, 
+            datasets: [
+              {
+                label: "Performance",
+                data: datas1,
+              },
+            ],
+          },
+          Data2: {
+          labels: labels2, 
+          datasets: [
+            {
+              label: "Performance",
+              data: datas2,
+            },
+          ]}
+        }
+      )
+
+      let keys = Object.keys(eventData["areas"])
+      console.log(keys);
+      console.log(eventData["areas"]);
+      // console.log(eventData["areas"].slice(0, 5));
+      setEventAreaData(eventData["areas"]);
+
+      for(let i = 0; i < 5; i++) {
+        setEventAreaData(...eventAreaData, eventData["areas"][keys[i]]);
+        console.log(eventData["areas"][keys[i]]);
+      }
+    }
+  }, [eventData])
 
   // 쿠폰 데이터
   useEffect(() => {
@@ -159,7 +210,8 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    data={chartExample1[chartExample1Data]}
+                    // data={chartExample1[chartExample1Data]}
+                    data={eventChartData[chart]}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
@@ -216,12 +268,11 @@ const Index = (props) => {
                   <tr>
                     <th scope="col">Page name</th>
                     <th scope="col">Visitors</th>
-                    <th scope="col">Unique users</th>
-                    <th scope="col">Bounce rate</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  {eventAreaData.map(area => {
+                    <tr>
                     <th scope="row">/argon/</th>
                     <td>4,569</td>
                     <td>340</td>
@@ -229,6 +280,8 @@ const Index = (props) => {
                       <i className="fas fa-arrow-up text-success mr-3" /> 46,53%
                     </td>
                   </tr>
+                  })}
+                  
                   <tr>
                     <th scope="row">/argon/index.html</th>
                     <td>3,985</td>
