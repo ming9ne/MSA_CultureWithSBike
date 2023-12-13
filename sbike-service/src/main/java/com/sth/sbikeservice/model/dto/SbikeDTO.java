@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @XmlRootElement(name = "row")
 public class SbikeDTO {
 
+    private long id;
     @XmlElement(name = "stationId")
     private String stationId;
 
@@ -45,6 +46,7 @@ public class SbikeDTO {
 
     public Sbike toEntity() {
         return Sbike.builder()
+                .id(id)
                 .stationId(stationId)
                 .rackTotCnt(rackTotCnt)
                 .stationName(stationName)
