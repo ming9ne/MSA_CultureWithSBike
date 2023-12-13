@@ -16,4 +16,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     public Event findByEventNm(String eventNm);
     public Event findByAreaNm(String areaNm);
 
+    public boolean existsByAreaNm(String areaNm);
+    public boolean existsByTitle(String title);
+
 }

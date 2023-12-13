@@ -83,9 +83,8 @@ public class EventService {
         }
     }
 
-
-
-    public void saveEvents() {
+//
+        public void saveEvents() {
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
@@ -98,29 +97,30 @@ public class EventService {
             String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
 
             try {
-                // 데이터가 이미 존재하면 실행하지 않음
-                if (eventRepository.findByAreaNm(areaname) == null) {
-                    ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
-                    if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                        EventResponse response = responseEntity.getBody();
-                        if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
-                            List<EventStts> eventSttsList = response.getCitydata().getEvents();
-                            List<EventDTO> eventsFromPage = eventSttsList.stream()
-                                    .map(eventStts -> EventDTO.builder()
-                                            .areaNm(areaname)
-                                            .eventNm(eventStts.getEVENT_NM())
-                                            .build())
-                                    .collect(Collectors.toList());
-                            eventDTOList.addAll(eventsFromPage);
-                            System.out.println("API 호출 중");
-                        } else {
-                            logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-                        }
+                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    EventResponse response = responseEntity.getBody();
+                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
+                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
+                        // 이미 존재하면 pass
+                        List<EventDTO> eventsFromPage = eventSttsList.stream()
+                                .map(eventStts -> EventDTO.builder()
+                                        .areaNm(areaname)
+                                        .eventNm(eventStts.getEVENT_NM())
+                                        .build())
+                                .collect(Collectors.toList());
+                        eventDTOList.addAll(eventsFromPage);
+
+                        System.out.println("API 호출 중");
+
+
                     } else {
-                        logger.info("이미 데이터가 존재합니다. (areaNm: " + areaname + ")");
+                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+//                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
                     }
                 } else {
-                    logger.info("이미 데이터가 존재합니다. (areaNm: " + areaname + ")");
+                    logger.warn("API 호출 실패");
+                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
                 }
             } catch (Exception e) {
                 logger.warn("API 호출 중 오류 발생");
@@ -131,54 +131,6 @@ public class EventService {
         logger.info("도시 데이터 호출 끝");
         addEvents(eventDTOList);
     }
-
-//    public void saveEvents() {
-//        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
-//        AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
-//
-//        List<EventDTO> eventDTOList = new ArrayList<>();
-//        logger.info("도시 데이터 호출 시작");
-//        for (AreaResponse area : areas) {
-//            int startPage = 1;
-//            int pageSize = 100;
-//            String areaname = area.getAreaNm();
-//            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
-//
-//            try {
-//                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
-//                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//                    EventResponse response = responseEntity.getBody();
-//                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
-//                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
-//                        // 이미 존재하면 pass
-//                        List<EventDTO> eventsFromPage = eventSttsList.stream()
-//                                .map(eventStts -> EventDTO.builder()
-//                                        .areaNm(areaname)
-//                                        .eventNm(eventStts.getEVENT_NM())
-//                                        .build())
-//                                .collect(Collectors.toList());
-//                        eventDTOList.addAll(eventsFromPage);
-//
-//                        System.out.println("API 호출 중");
-//
-//
-//                    } else {
-//                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-////                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-//                    }
-//                } else {
-//                    logger.warn("API 호출 실패");
-//                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-//                }
-//            } catch (Exception e) {
-//                logger.warn("API 호출 중 오류 발생");
-//                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-//                e.printStackTrace();
-//            }
-//        }
-//        logger.info("도시 데이터 호출 끝");
-//        addEvents(eventDTOList);
-//    }
 
     private List<EventDTO> callApiAndParseXml() {
         int firstPage = 1;
@@ -236,6 +188,51 @@ public class EventService {
         logger.info("문화행사 API 호출 끝");
         return eventDTOList;
     }
+
+//    private List<EventDTO> callApiAndParseXml() {
+//        int firstPage = 1;
+//        int lastPage = 1000;
+//        int maxPage = 4000;
+//        List<EventDTO> eventDTOList = new ArrayList<>();
+//        RestTemplate restTemplate = new RestTemplate();
+//        logger.info("문화 행사 API 호출 시작");
+//        while (firstPage <= maxPage) {
+//            String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + firstPage + "/" + (firstPage + lastPage - 1);
+//            try {
+//                ResponseEntity<EventResponseTotal> responseEntity = restTemplate.getForEntity(apiUrl, EventResponseTotal.class);
+//                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+//                    EventResponseTotal response = responseEntity.getBody();
+//                    if (response != null && response.getEvents() != null && !response.getEvents().isEmpty()) {
+//                        List<EventDTO> eventsFromPage = response.getEvents().stream()
+//                                .map(eventdata -> {
+//                                    // title에 해당하는 데이터가 이미 존재하는지 확인
+//                                    if (eventRepository.existsByTitle(eventdata.getTitle())) {
+//                                        return null;
+//                                    }
+//                                    EventDTO eventDTO = new EventDTO();
+//                                    eventDTO.setTitle(eventdata.getTitle());
+//                                    // 이하 데이터 매핑 생략
+//                                    return eventDTO;
+//                                })
+//                                .filter(Objects::nonNull) // null이 아닌 EventDTO만 필터링
+//                                .collect(Collectors.toList());
+//                        eventDTOList.addAll(eventsFromPage);
+//                        logger.info("DB 저장 완료");
+//                    }
+//                } else {
+//                    logger.warn("API 호출 실패");
+//                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+//                }
+//            } catch (Exception e) {
+//                logger.warn("API 호출 실패");
+//                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//            firstPage += lastPage;
+//        }
+//        logger.info("문화행사 API 호출 끝");
+//        return eventDTOList;
+//    }
 
     //통계
     //////////////////////////////////////////////////////////////////////
