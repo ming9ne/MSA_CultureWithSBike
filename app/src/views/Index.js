@@ -33,7 +33,7 @@ import Header from "components/Headers/Header.js";
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  const [chart, setChart] = useState("Data1");
+  const [chart, setChart] = useState("data1");
   const [eventData, setEventData] = useState([]);
   const [eventChartData, setEventChartData] = useState({data1: { datasets:[], labels:[] }, data2: { datasets:[], labels:[] }});
   const [eventAreaData, setEventAreaData] = useState([]);
@@ -51,7 +51,7 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setChart("Data"+index);
+    setChart("data"+index);
   };
 
   useEffect(() => {
@@ -98,39 +98,44 @@ const Index = (props) => {
         datas2 = [...datas2, eventData["Weekly Event"][data]];
       })
 
-      setEventChartData(
-        {
-          Data1: {
-            labels: labels1, 
+      console.log("data1", datas1);
+      console.log("data2", datas2);
+      
+      let data = {
+        data1: (canvas) => {
+          return {
+            labels: labels1,
             datasets: [
               {
                 label: "Performance",
                 data: datas1,
               },
             ],
-          },
-          Data2: {
-          labels: labels2, 
-          datasets: [
-            {
-              label: "Performance",
-              data: datas2,
-            },
-          ]}
+          };
+        },
+        data2: (canvas) => {
+          return {
+            labels: labels2,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas2,
+              },
+            ],
+          };
         }
-      )
+      };
+      
+      console.log(data);
+
+      setEventChartData(data);
 
       let areaData = [];
       let keys = Object.keys(eventData["areas"])
-      console.log(keys.length);
 
       for(let i = 0; i < keys.length; i++) {
         areaData = [...areaData, {areaNm: keys[i], count: eventData["areas"][keys[i]]}];
       }
-
-      // console.log(areaData.sort(function(a, b) {
-      //   return b.count - a.count;
-      // }));
 
       setEventAreaData(areaData.sort(function(a, b) {
         return b.count - a.count;
@@ -138,9 +143,55 @@ const Index = (props) => {
     }
   }, [eventData])
 
+  // 문화행사 차트
+  useEffect(() => {
+    if(eventData["Monthly Event"]) {
+      let labels1 = [];
+      let datas1 = [];
+
+      let labels2 = [];
+      let datas2 = [];
+
+      Object.keys(eventData["Monthly Event"]).map(data => {
+        labels1 = [...labels1, data];
+        datas1 = [...datas1, eventData["Monthly Event"][data]];
+      })
+
+      Object.keys(eventData["Weekly Event"]).map(data => {
+        labels2 = [...labels2, data];
+        datas2 = [...datas2, eventData["Weekly Event"][data]];
+      })
+
+      let data = {
+        data1: (canvas) => {
+          return {
+            labels: labels1,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas1,
+              },
+            ],
+          };
+        },
+        data2: (canvas) => {
+          return {
+            labels: labels2,
+            datasets: [
+              {
+                label: "Performance",
+                data: datas2,
+              },
+            ],
+          };
+        }
+      };
+      setEventChartData(data);
+    }
+  }, [chart])
+
   // 문화행사 데이터
   useEffect(() => {
-    console.log(eventAreaData.slice(0, 5));
     setEventAreaStatistics(eventAreaData.slice(0, 5))
   }, [eventAreaData])
 
@@ -221,12 +272,12 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    // data={chartExample1[chartExample1Data]}
+                    // data={chartExample1[chart]}
                     data={eventChartData[chart]}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
-                </div>
+                </div> : null
               </CardBody>
             </Card>
           </Col>

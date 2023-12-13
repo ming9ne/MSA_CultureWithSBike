@@ -37,15 +37,15 @@ function Detail() { // () 안에 정보들
                     console.log(e);
                 })
 
-            fetch(`http://localhost:8000/api/v1/sbike-service/listkakao/${location.state.title}`)
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    setSbikes(data);
-                })
-                .catch(e => {
-                    console.log(e);
-                })
+            // fetch(`http://localhost:8000/api/v1/sbike-service/listkakao/${location.state.title}`)
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         console.log(data);
+            //         setSbikes(data);
+            //     })
+            //     .catch(e => {
+            //         console.log(e);
+            //     })
         };        
     }, [])
 
