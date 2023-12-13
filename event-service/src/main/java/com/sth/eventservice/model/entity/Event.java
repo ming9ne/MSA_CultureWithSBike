@@ -20,7 +20,7 @@ public class Event {
     @Id
     private String eventNm;
 
-    @Column(nullable = false,length = 20)
+    @Column(nullable = false,length = 20)  //2023.12.13.13:49
     private String areaNm;
 
     @Column(length = 255)
