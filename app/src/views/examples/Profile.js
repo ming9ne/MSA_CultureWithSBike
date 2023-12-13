@@ -19,7 +19,12 @@ const Profile = () => {
   const [coupons, setCoupons] = useState([]);
   
   useEffect(() => {
-    fetch(`http://localhost:8000/api/v1/coupon-service/userCoupons/${localStorage.getItem("id")}`)
+    fetch(`http://localhost:8000/api/v1/coupon-service/userCoupons/${localStorage.getItem("id")}`, {
+      method: "GET",
+      headers: {
+      "Content-Type": "application/json",
+      "Authorization" : localStorage.getItem("login-token")
+      }})
         .then(response => response.json())
         .then(response => { 
             setCoupons(response);
