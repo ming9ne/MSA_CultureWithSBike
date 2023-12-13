@@ -9,7 +9,9 @@ import com.sth.congestionservice.vo.AreaResponse;
 import com.sth.congestionservice.vo.Citydata;
 import com.sth.congestionservice.vo.CongestionResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ import java.util.List;
 public class CongestionSchedule {
     private final CongestionService congestionService;
     private final PopulationService populationService;
+    private final Environment env;
 
     @Scheduled(fixedDelay = 300000)
     public void hello() {
@@ -32,6 +35,9 @@ public class CongestionSchedule {
 
     @Scheduled(fixedDelay = 300000)
     public void saveCongestions() {
+        if(!env.getProperty("server.port").equals("8300")) {
+            return;
+        }
         RestTemplate restTemplate = new RestTemplate();
 
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
