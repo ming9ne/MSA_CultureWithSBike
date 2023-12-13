@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/event-service")
@@ -47,9 +44,30 @@ public class EventController {
 
 
     @GetMapping("/area")
-    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea(@RequestParam int month) {
-        return eventService.getMonthlyEventByArea(month);
+    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea() {
+        return eventService.getMonthlyEventByArea();
     }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<Map<String, Object>> getCombinedEventData() {
+        ResponseEntity<Map<String, Object>> dayAndMonthResponse = eventService.getEventCountByDayAndMonth();
+        ResponseEntity<Map<String, Object>> monthlyByAreaResponse = eventService.getMonthlyEventByArea();
+
+        Map<String, Object> responseData = new HashMap<>();
+
+        if (dayAndMonthResponse != null && monthlyByAreaResponse != null) {
+            Map<String, Object> dayAndMonthData = dayAndMonthResponse.getBody();
+            Map<String, Object> monthlyByAreaData = monthlyByAreaResponse.getBody();
+
+            responseData.putAll(dayAndMonthData);
+            responseData.putAll(monthlyByAreaData);
+        }
+
+        return ResponseEntity.ok(responseData);
+    }
+
+
+
 
 
 
@@ -68,7 +86,11 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+
     @GetMapping("/saveEvents")
-    public void saveEvents(){eventSchedule.saveEvents();}
+    public void saveEvents() {
+        eventService.saveEvents();
+        eventService.saveEventsFromXml();
+    }
 
 }

@@ -1,6 +1,7 @@
 // EventService.java
 package com.sth.eventservice.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.eventservice.model.dto.EventDTO;
 import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
@@ -29,6 +30,9 @@ public class EventService {
     private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private final EventRepository eventRepository;
     private final RestTemplate restTemplate;
+//    public ResponseEntity<List<Object>> getEventCountByDayAndMonth;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
 
     @Autowired
@@ -79,12 +83,14 @@ public class EventService {
         }
     }
 
+
+
     public void saveEvents() {
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
         List<EventDTO> eventDTOList = new ArrayList<>();
-
+        logger.info("도시 데이터 호출 시작");
         for (AreaResponse area : areas) {
             int startPage = 1;
             int pageSize = 100;
@@ -92,29 +98,29 @@ public class EventService {
             String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
 
             try {
-                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
-                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                    EventResponse response = responseEntity.getBody();
-                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
-                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
-                        List<EventDTO> eventsFromPage = eventSttsList.stream()
-                                .map(eventStts -> EventDTO.builder()
-                                        .areaNm(areaname)
-                                        .eventNm(eventStts.getEVENT_NM())
-                                        .build())
-                                .collect(Collectors.toList());
-                        eventDTOList.addAll(eventsFromPage);
-                        logger.info("API 호출 시작");
-                        System.out.println("API 호출 중");
-                        logger.info("API 호출 끝");
-
+                // 데이터가 이미 존재하면 실행하지 않음
+                if (eventRepository.findByAreaNm(areaname) == null) {
+                    ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
+                    if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                        EventResponse response = responseEntity.getBody();
+                        if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
+                            List<EventStts> eventSttsList = response.getCitydata().getEvents();
+                            List<EventDTO> eventsFromPage = eventSttsList.stream()
+                                    .map(eventStts -> EventDTO.builder()
+                                            .areaNm(areaname)
+                                            .eventNm(eventStts.getEVENT_NM())
+                                            .build())
+                                    .collect(Collectors.toList());
+                            eventDTOList.addAll(eventsFromPage);
+                            System.out.println("API 호출 중");
+                        } else {
+                            logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+                        }
                     } else {
-                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-//                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+                        logger.info("이미 데이터가 존재합니다. (areaNm: " + areaname + ")");
                     }
                 } else {
-                    logger.warn("API 호출 실패");
-                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+                    logger.info("이미 데이터가 존재합니다. (areaNm: " + areaname + ")");
                 }
             } catch (Exception e) {
                 logger.warn("API 호출 중 오류 발생");
@@ -122,9 +128,57 @@ public class EventService {
                 e.printStackTrace();
             }
         }
-
+        logger.info("도시 데이터 호출 끝");
         addEvents(eventDTOList);
     }
+
+//    public void saveEvents() {
+//        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
+//        AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
+//
+//        List<EventDTO> eventDTOList = new ArrayList<>();
+//        logger.info("도시 데이터 호출 시작");
+//        for (AreaResponse area : areas) {
+//            int startPage = 1;
+//            int pageSize = 100;
+//            String areaname = area.getAreaNm();
+//            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
+//
+//            try {
+//                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
+//                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+//                    EventResponse response = responseEntity.getBody();
+//                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
+//                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
+//                        // 이미 존재하면 pass
+//                        List<EventDTO> eventsFromPage = eventSttsList.stream()
+//                                .map(eventStts -> EventDTO.builder()
+//                                        .areaNm(areaname)
+//                                        .eventNm(eventStts.getEVENT_NM())
+//                                        .build())
+//                                .collect(Collectors.toList());
+//                        eventDTOList.addAll(eventsFromPage);
+//
+//                        System.out.println("API 호출 중");
+//
+//
+//                    } else {
+//                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+////                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
+//                    }
+//                } else {
+//                    logger.warn("API 호출 실패");
+//                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
+//                }
+//            } catch (Exception e) {
+//                logger.warn("API 호출 중 오류 발생");
+//                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
+//                e.printStackTrace();
+//            }
+//        }
+//        logger.info("도시 데이터 호출 끝");
+//        addEvents(eventDTOList);
+//    }
 
     private List<EventDTO> callApiAndParseXml() {
         int firstPage = 1;
@@ -132,6 +186,7 @@ public class EventService {
         int maxPage = 4000;
         List<EventDTO> eventDTOList = new ArrayList<>();
         RestTemplate restTemplate = new RestTemplate();
+        logger.info("문화 행사 API 호출 시작");
         while (firstPage <= maxPage) {
             String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + firstPage + "/" + (firstPage + lastPage - 1);
             try {
@@ -178,10 +233,11 @@ public class EventService {
             }
             firstPage += lastPage;
         }
+        logger.info("문화행사 API 호출 끝");
         return eventDTOList;
     }
 
-
+    //통계
     //////////////////////////////////////////////////////////////////////
 
     public ResponseEntity<Map<String, Object>> getEventCountByDayAndMonth() {
@@ -254,55 +310,39 @@ public class EventService {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////
 
-    private Map<String, Integer> initializeEventCountMap() {
-        Map<String, Integer> eventCountByDayOfWeek = new HashMap<>();
-        eventCountByDayOfWeek.put("월요일", 0);
-        eventCountByDayOfWeek.put("화요일", 0);
-        eventCountByDayOfWeek.put("수요일", 0);
-        eventCountByDayOfWeek.put("목요일", 0);
-        eventCountByDayOfWeek.put("금요일", 0);
-        eventCountByDayOfWeek.put("토요일", 0);
-        eventCountByDayOfWeek.put("일요일", 0);
+    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea() {
+        // 현재 월을 가져오기
+        Month currentMonth = LocalDate.now().getMonth();
 
-        Map<String, Integer> eventCountByMonth = new HashMap<>();
-        for (int i = 1; i <= 12; i++) {
-            eventCountByMonth.put(i + "월", 0);
-        }
+        // eventService를 사용하여 모든 이벤트 데이터를 가져옵니다.
+        List<EventDTO> eventList = listEvent();
 
-        return eventCountByDayOfWeek;
-    }
+        // 현재 월에 해당하는 이벤트 데이터 필터링
+        List<EventDTO> currentMonthEvents = eventList.stream()
+                .filter(event -> event.getStrtdate() != null && event.getEndDate() != null)
+                .filter(event -> {
+                    LocalDate startDateOfMonth = LocalDate.of(LocalDate.now().getYear(), currentMonth, 1);
+                    LocalDate endDateOfMonth = startDateOfMonth.withDayOfMonth(startDateOfMonth.lengthOfMonth());
+                    return !event.getEndDate().isBefore(startDateOfMonth) && !event.getStrtdate().isAfter(endDateOfMonth);
+                })
+                .collect(Collectors.toList());
 
-    /////////////////////////////////////////////////////////////////////////////////
-
-    public ResponseEntity<Map<String, Object>> getMonthlyEventByArea(int month) {
-        Map<String, Object> result = new LinkedHashMap<>();
-        Map<String, Integer> monthlyEventByArea = new LinkedHashMap<>();
-
-        // 입력된 월(month)을 기준으로 해당 월의 지역별 문화행사 건수를 계산
-        LocalDate startDateOfMonth = LocalDate.of(LocalDate.now().getYear(), month, 1);
-        LocalDate endDateOfMonth = startDateOfMonth.withDayOfMonth(startDateOfMonth.lengthOfMonth());
-
-        Iterable<EventDTO> eventList = listEvent();
-
-        for (EventDTO event : eventList) {
+        // 현재 월에 해당하는 지역별 이벤트 건수 계산
+        Map<String, Integer> monthlyEventByArea = new HashMap<>();
+        for (EventDTO event : currentMonthEvents) {
             String areaName = event.getAreaNm();
-            LocalDate eventStartDate = event.getStrtdate();
-            LocalDate eventEndDate = event.getEndDate();
-
-            if (eventStartDate != null && eventEndDate != null) {
-                // 이벤트가 해당 월에 포함되는지 확인
-                if (!eventEndDate.isBefore(startDateOfMonth) && !eventStartDate.isAfter(endDateOfMonth)) {
-                    // 해당 지역구의 이벤트 건수 증가
-                    int currentCount = monthlyEventByArea.getOrDefault(areaName, 0);
-                    monthlyEventByArea.put(areaName, currentCount + 1);
-                }
-            }
+            int currentCount = monthlyEventByArea.getOrDefault(areaName, 0);
+            monthlyEventByArea.put(areaName, currentCount + 1);
         }
 
         // 결과 맵에 지역구별 월별 이벤트 건수 추가
-        result.put(month + "월 지역구별 문화행사", monthlyEventByArea);
+        Map<String, Object> result = new HashMap<>();
+        result.put("areas", monthlyEventByArea);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.ok(result);
     }
+
+
 }
