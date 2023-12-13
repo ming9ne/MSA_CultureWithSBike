@@ -85,8 +85,8 @@ public class KakaoApi {
                                     .origin(eventName)
                                     .destination(destination)
                                     .distance(distance)
-                                    .stationLatitude(String.valueOf(eventLatitude))
-                                    .stationLongitude(String.valueOf(eventLongitude))
+                                    .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
+                                    .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
                                     .build();
 
                             eventKaKaoList.add(kaKao);
