@@ -37,6 +37,7 @@ const Index = (props) => {
   const [eventData, setEventData] = useState([]);
   const [eventChartData, setEventChartData] = useState({data1: { datasets:[], labels:[] }, data2: { datasets:[], labels:[] }});
   const [eventAreaData, setEventAreaData] = useState([]);
+  const [eventAreaStatistics, setEventAreaStatistics] = useState([]);
   const [couponData, setCouponData] = useState([]);
   const [couponChartData, setCouponChartData] = useState({ datasets:[], labels:[] });
   const [populations, setPopulations] = useState([]);
@@ -119,18 +120,29 @@ const Index = (props) => {
         }
       )
 
+      let areaData = [];
       let keys = Object.keys(eventData["areas"])
-      console.log(keys);
-      console.log(eventData["areas"]);
-      // console.log(eventData["areas"].slice(0, 5));
-      setEventAreaData(eventData["areas"]);
+      console.log(keys.length);
 
-      for(let i = 0; i < 5; i++) {
-        setEventAreaData(...eventAreaData, eventData["areas"][keys[i]]);
-        console.log(eventData["areas"][keys[i]]);
+      for(let i = 0; i < keys.length; i++) {
+        areaData = [...areaData, {areaNm: keys[i], count: eventData["areas"][keys[i]]}];
       }
+
+      // console.log(areaData.sort(function(a, b) {
+      //   return b.count - a.count;
+      // }));
+
+      setEventAreaData(areaData.sort(function(a, b) {
+        return b.count - a.count;
+      }));
     }
   }, [eventData])
+
+  // 문화행사 데이터
+  useEffect(() => {
+    console.log(eventAreaData.slice(0, 5));
+    setEventAreaStatistics(eventAreaData.slice(0, 5))
+  }, [eventAreaData])
 
   // 쿠폰 데이터
   useEffect(() => {
@@ -155,7 +167,6 @@ const Index = (props) => {
 
   // 인구 데이터
   useEffect(() => {
-    // console.log(populationData);
     setPopulationData(populations.slice(0, 5));
   }, [populations])
 
@@ -255,10 +266,14 @@ const Index = (props) => {
                     <Button
                       color="primary"
                       href="#pablo"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const reversedEventAreas = [...eventAreaData].reverse();
+                        setEventAreaData(reversedEventAreas);
+                      }}
                       size="sm"
                     >
-                      See all
+                      정렬 기준 변경
                     </Button>
                   </div>
                 </Row>
@@ -266,57 +281,19 @@ const Index = (props) => {
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                   <tr>
-                    <th scope="col">Page name</th>
-                    <th scope="col">Visitors</th>
+                    <th scope="col">문화행사 명</th>
+                    <th scope="col">개최수</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {eventAreaData.map(area => {
-                    <tr>
-                    <th scope="row">/argon/</th>
-                    <td>4,569</td>
-                    <td>340</td>
-                    <td>
-                      <i className="fas fa-arrow-up text-success mr-3" /> 46,53%
-                    </td>
-                  </tr>
+                  {eventAreaStatistics.map((area) => {
+                    return (
+                      <tr key={area.areaNm}>
+                        <th scope="row">{area.areaNm}</th>
+                        <td>{area.count}</td>
+                      </tr>
+                    )
                   })}
-                  
-                  <tr>
-                    <th scope="row">/argon/index.html</th>
-                    <td>3,985</td>
-                    <td>319</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-warning mr-3" />{" "}
-                      46,53%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/charts.html</th>
-                    <td>3,513</td>
-                    <td>294</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-warning mr-3" />{" "}
-                      36,49%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/tables.html</th>
-                    <td>2,050</td>
-                    <td>147</td>
-                    <td>
-                      <i className="fas fa-arrow-up text-success mr-3" /> 50,87%
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">/argon/profile.html</th>
-                    <td>1,795</td>
-                    <td>190</td>
-                    <td>
-                      <i className="fas fa-arrow-down text-danger mr-3" />{" "}
-                      46,53%
-                    </td>
-                  </tr>
                 </tbody>
               </Table>
             </Card>
