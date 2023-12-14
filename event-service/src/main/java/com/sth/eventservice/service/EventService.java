@@ -9,6 +9,7 @@ import com.sth.eventservice.vo.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -27,17 +28,20 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
 public class EventService {
+
+    Environment env;
     private static final Logger logger = LoggerFactory.getLogger(EventService.class);
     private static final ObjectMapper objectMapper = new ObjectMapper();
     private final EventRepository eventRepository;
-//    public ResponseEntity<List<Object>> getEventCountByDayAndMonth;
+    //    public ResponseEntity<List<Object>> getEventCountByDayAndMonth;
     private final RestTemplate restTemplate;
 
 
     @Autowired
-    public EventService(EventRepository eventRepository, RestTemplate restTemplate) {
+    public EventService(EventRepository eventRepository, RestTemplate restTemplate, Environment env) {
         this.eventRepository = eventRepository;
         this.restTemplate = restTemplate;
+        this.env = env;
     }
 
     public List<EventDTO> listEvent() {
@@ -84,7 +88,9 @@ public class EventService {
 
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForSaveEvents")
     public void saveEvents() {
-        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
+
+//        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
+        String areaApiUrl = "http://"+env.getProperty("gateway")+"/v1/area-service/areas";
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
         List<EventDTO> eventDTOList = new ArrayList<>();
