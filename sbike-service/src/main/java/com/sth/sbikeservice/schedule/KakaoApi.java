@@ -95,7 +95,7 @@ public class KakaoApi {
 
                             KaKao kaKao = KaKao.builder()
                                     .stationName(stationName)
-                                    .origin(eventName)
+                                    .eventName(eventName)
                                     .destination(destination)
                                     .distance(distance)
                                     .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))

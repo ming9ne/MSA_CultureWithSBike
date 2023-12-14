@@ -16,11 +16,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KakoDTO {
 
-    private String origin;
+    private String eventName;
     private String stationName;
     private String stationLatitude;
     private String stationLongitude;
     private String distance;
+    private String uniqueIdentifier;
 
 
 

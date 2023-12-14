@@ -76,7 +76,7 @@ public class SbikeController {
     public ResponseEntity<List<KakoDTO>> listKakaoByOrigin(@PathVariable String origin) {
         List<KakoDTO> allKakaoData = kakaoService.listKakao();
         List<KakoDTO> filteredKakaoData = allKakaoData.stream()
-                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
+                .filter(kakaoDTO -> kakaoDTO.getEventName().equals(origin))
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
@@ -93,7 +93,7 @@ public class SbikeController {
 
 
     @PostMapping("/addDistance")
-    public void addDistance(@RequestParam String origin) {
+    public void addDistance(@RequestParam String eventName) {
         // 전체 정류장 정보를 읽어옴
         List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
@@ -103,18 +103,18 @@ public class SbikeController {
             String stationName = sbikeDTO.getStationName();
 
             // 거리를 호출하고 저장하는 메서드 추가
-            saveDistanceForStation(origin, destination, stationName);
+            saveDistanceForStation(eventName, destination, stationName);
         }
     }
 
-    private void saveDistanceForStation(String origin, String destination, String stationName) {
+    private void saveDistanceForStation(String eventName, String destination, String stationName) {
         // 거리를 호출하고 반환
-        int distance = kakaoApi.getDistance(origin, destination);
+        int distance = kakaoApi.getDistance(eventName, destination);
 
         // 거리를 이용하여 KaKao 엔티티 생성
         KaKao kaKao = KaKao.builder()
                 .stationName(stationName)
-                .origin(origin)
+                .eventName(eventName)
                 .destination(destination)
                 .distance(distance)
                 .build();

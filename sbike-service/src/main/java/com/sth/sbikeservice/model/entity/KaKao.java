@@ -23,7 +23,7 @@ public class KaKao {
     private String stationName;
 
     @Column(length = 1000)
-    private String origin;
+    private String eventName;
 
     @Column(length = 1000)
     private String destination;
@@ -40,7 +40,7 @@ public class KaKao {
 
     public KakoDTO toDto() {
         return KakoDTO.builder()
-                .origin(origin)
+                .eventName(eventName)
                 .stationName(stationName)
                 .distance(String.valueOf(distance))
                 .stationLatitude(String.valueOf(stationLatitude))
