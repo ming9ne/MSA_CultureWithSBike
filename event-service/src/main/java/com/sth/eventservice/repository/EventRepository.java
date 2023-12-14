@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 import java.util.Optional;
@@ -18,5 +19,5 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
 
     public boolean existsByAreaNm(String areaNm);
     public boolean existsByTitle(String title);
-
+    List<Event> findByStrtdateLessThanEqualAndEndDateGreaterThanEqual(LocalDate startDate, LocalDate endDate);
 }

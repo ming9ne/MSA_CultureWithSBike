@@ -20,8 +20,8 @@ import java.util.UUID;
 public class Sbike {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // 자동 증가 형태로 설정
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(length = 255)
     private String stationId;
@@ -29,7 +29,7 @@ public class Sbike {
     @Column(length = 255)
     private String rackTotCnt;
 
-    @Column(length=255)
+    @Column(length = 255)
     private String stationName;
 
     @Column(length = 255)
@@ -47,7 +47,6 @@ public class Sbike {
 
     public SbikeDTO toDto() {
         return SbikeDTO.builder()
-                .id(id)
                 .stationId(stationId)
                 .rackTotCnt(rackTotCnt)
                 .stationName(stationName)

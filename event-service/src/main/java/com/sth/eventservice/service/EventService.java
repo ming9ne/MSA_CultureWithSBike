@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -340,6 +339,9 @@ public class EventService {
 
         return ResponseEntity.ok(result);
     }
+    ////////////////////////////당일 문화행사 조회
 
-
+    public List<Event> listEventsWithCurrentDateStartDate(LocalDate currentDate) {
+        return eventRepository.findByStrtdateLessThanEqualAndEndDateGreaterThanEqual(currentDate, currentDate);
+    }
 }
