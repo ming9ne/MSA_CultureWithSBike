@@ -17,7 +17,8 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
     public Event findByEventNm(String eventNm);
     public Event findByAreaNm(String areaNm);
 
-    public boolean existsByAreaNm(String areaNm);
-    public boolean existsByTitle(String title);
+//    public boolean existsByAreaNm(String areaNm);
+//    public boolean existsByTitle(String title);
     List<Event> findByStrtdateLessThanEqualAndEndDateGreaterThanEqual(LocalDate startDate, LocalDate endDate);
+    boolean existsByEventNm(String eventNm);
 }
