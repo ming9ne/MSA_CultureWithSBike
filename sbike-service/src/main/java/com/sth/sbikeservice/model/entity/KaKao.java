@@ -16,9 +16,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KaKao {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(length = 255)
+//    @Column(length = 255)
+    @Column(name = "station_name", unique = true)
     private String stationName;
 
     @Column(length = 1000)

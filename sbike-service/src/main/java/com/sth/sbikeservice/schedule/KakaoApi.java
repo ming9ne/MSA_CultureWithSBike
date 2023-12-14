@@ -1,6 +1,8 @@
 package com.sth.sbikeservice.schedule;
 
-//import com.ctc.wstx.shaded.msv_core.datatype.xsd.Comparator;
+import jakarta.annotation.PreDestroy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
@@ -16,18 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import java.util.Comparator;
+
+import java.io.*;
+import java.util.*;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,81 +37,172 @@ public class KakaoApi {
     private final SbikeService sbikeService;
     private final KaKaoRepository kaKaoRepository;
     private final RestTemplate restTemplate;
+    private final Set<String> alreadyFetchedEvents = new HashSet<>();
+
 
 
     @Autowired
-    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository,RestTemplate restTemplate) {
+    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository, RestTemplate restTemplate) {
         this.sbikeService = sbikeService;
-
         this.kaKaoRepository = kaKaoRepository;
         this.restTemplate = restTemplate;
+
+        loadAlreadyFetchedEvents();
     }
-    public void getDistanceAndSaveToDB() {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
-            EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
-            List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
-            if (!sbikeDTOList.isEmpty()) {
-                List<KaKao> kaKaoList = new ArrayList<>();
+//    public void getDistanceAndSaveToDB() {
+//        try {
+//            RestTemplate restTemplate = new RestTemplate();
+//            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
+//            EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
+//            List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+//
+//            if (!sbikeDTOList.isEmpty()) {
+//                List<KaKao> kaKaoList = new ArrayList<>();
+//
+//                for (EventResponse eventResponse : eventResponses) {
+//                    double eventLongitude = eventResponse.getLot();
+//                    double eventLatitude = eventResponse.getLat();
+//                    String eventName = eventResponse.getEventNm();
+//
+//                    String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
+//
+//                    System.out.println("Origin value: " + origin);
+//
+//                    // 이미 해당 stationName이 DB에 존재하는지 확인
+//                    Optional<KaKao> existingKaKaoData = kaKaoRepository.findByStationName(eventName);
+//
+//                    if (existingKaKaoData.isPresent()) {
+//                        // 이미 존재하면 건너뛰고 다음 이벤트로 진행
+//                        log.info("이미 존재하는 데이터입니다 ");
+//                        System.out.println("이벤트 데이터 이미 존재함. 건너뜀.");
+//                        continue;
+//                    }
+//
+//                    // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
+//                    List<KaKao> eventKaKaoList = new ArrayList<>();
+//
+//                    for (SbikeDTO sbikeDTO : sbikeDTOList) {
+//                        double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
+//                        double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
+//
+//                        // 범위 내의 데이터만 처리
+//                        if (stationLongitude >= eventLongitude - 0.015 && stationLongitude <= eventLongitude + 0.015
+//                                && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
+//
+//                            String destination = stationLongitude + "," + stationLatitude;
+//                            String stationName = sbikeDTO.getStationName();
+//                            int distance = getDistance(origin, destination);
+//
+//                            KaKao kaKao = KaKao.builder()
+//                                    .stationName(stationName)
+//                                    .origin(eventName)
+//                                    .destination(destination)
+//                                    .distance(distance)
+//                                    .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
+//                                    .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
+//                                    .build();
+//
+//                            eventKaKaoList.add(kaKao);
+//                        }
+//                    }
+//
+//                    // 거리를 기준으로 정렬
+//                    eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
+//
+//                    // 상위 3개의 데이터만 선택
+//                    List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
+//
+//                    kaKaoList.addAll(selectedKaKaoList);
+//                }
+//
+//                // 최종 결과를 DB에 저장
+//                kaKaoRepository.saveAll(kaKaoList);
+//            } else {
+//                System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
+//        }
+//    }
+public void getDistanceAndSaveToDB() {
+    try {
+        RestTemplate restTemplate = new RestTemplate();
+        String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
+        EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
+        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
-                for (EventResponse eventResponse : eventResponses) {
-                    double eventLongitude = eventResponse.getLot();
-                    double eventLatitude = eventResponse.getLat();
-                    String eventName = eventResponse.getEventNm();
+        if (!sbikeDTOList.isEmpty()) {
+            List<KaKao> kaKaoList = new ArrayList<>();
 
-                    String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
+            for (EventResponse eventResponse : eventResponses) {
+                double eventLongitude = eventResponse.getLot();
+                double eventLatitude = eventResponse.getLat();
+                String eventName = eventResponse.getEventNm();
 
-                    System.out.println("Origin value: " + origin);
+                String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
 
-                    // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
-                    List<KaKao> eventKaKaoList = new ArrayList<>();
+                System.out.println("Origin value: " + origin);
 
-                    for (SbikeDTO sbikeDTO : sbikeDTOList) {
-                        double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
-                        double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
-
-                        // 범위 내의 데이터만 처리
-                        if (stationLongitude >= eventLongitude - 0.025 && stationLongitude <= eventLongitude + 0.025
-                                && stationLatitude >= eventLatitude - 0.025 && stationLatitude <= eventLatitude + 0.025) {
-
-                            String destination = stationLongitude + "," + stationLatitude;
-                            String stationName = sbikeDTO.getStationName();
-                            int distance = getDistance(origin, destination);
-
-                            KaKao kaKao = KaKao.builder()
-                                    .stationName(stationName)
-                                    .origin(eventName)
-                                    .destination(destination)
-                                    .distance(distance)
-                                    .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
-                                    .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
-                                    .build();
-
-                            eventKaKaoList.add(kaKao);
-                        }
-                    }
-
-                    // 거리를 기준으로 정렬
-                    eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
-
-                    // 상위 3개의 데이터만 선택
-                    List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
-
-                    kaKaoList.addAll(selectedKaKaoList);
+                // 이미 해당 이벤트가 가져온 이벤트 목록에 있는지 확인
+                if (alreadyFetchedEvents.contains(eventName)) {
+                    // 이미 가져온 이벤트면 건너뛰고 다음 이벤트로 진행
+                    log.info("이미 존재하는 데이터입니다 ");
+                    System.out.println("이벤트 데이터 이미 존재함. 건너뜀.");
+                    continue;
                 }
 
-                // 최종 결과를 DB에 저장
-                kaKaoRepository.saveAll(kaKaoList);
-            } else {
-                System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
+                // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
+                List<KaKao> eventKaKaoList = new ArrayList<>();
+
+                for (SbikeDTO sbikeDTO : sbikeDTOList) {
+                    double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
+                    double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
+
+                    // 범위 내의 데이터만 처리
+                    if (stationLongitude >= eventLongitude - 0.015 && stationLongitude <= eventLongitude + 0.015
+                            && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
+
+                        String destination = stationLongitude + "," + stationLatitude;
+                        String stationName = sbikeDTO.getStationName();
+                        int distance = getDistance(origin, destination);
+
+                        KaKao kaKao = KaKao.builder()
+                                .stationName(stationName)
+                                .origin(eventName)
+                                .destination(destination)
+                                .distance(distance)
+                                .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
+                                .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
+                                .build();
+
+                        eventKaKaoList.add(kaKao);
+                    }
+                }
+
+                // 거리를 기준으로 정렬
+                eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
+
+                // 상위 3개의 데이터만 선택
+                List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
+
+                kaKaoList.addAll(selectedKaKaoList);
+
+                // 이벤트 데이터를 가져왔다고 표시
+                alreadyFetchedEvents.add(eventName);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
+
+            // 최종 결과를 DB에 저장
+            kaKaoRepository.saveAll(kaKaoList);
+        } else {
+            System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
         }
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
     }
+}
 
 
     public int getDistance(String origin, String destination) {
@@ -192,4 +283,30 @@ public class KakaoApi {
             return -1; // 예외 발생 시 -1 반환 또는 다른 방식으로 처리
         }
     }
+    @PreDestroy
+    public void saveAlreadyFetchedEvents() {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("alreadyFetchedEvents.ser"));
+            out.writeObject(alreadyFetchedEvents);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 서비스 시작 시 파일에서 데이터를 읽어옴
+    private void loadAlreadyFetchedEvents() {
+        try {
+            File file = new File("alreadyFetchedEvents.ser");
+            if (file.exists()) {
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+                alreadyFetchedEvents.addAll((Set<String>) in.readObject());
+                in.close();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
