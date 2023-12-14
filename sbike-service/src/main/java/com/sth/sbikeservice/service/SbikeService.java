@@ -29,11 +29,6 @@ public class SbikeService {
         list.forEach(sbike -> resultList.add(sbike.toDto()));
         return resultList;
     }
-    public List<KakoDTO> listKakao() {
-        List<KaKao> list = kaKaoRepository.findAll();
-        List<KakoDTO> resultList = new ArrayList<>();
-        list.forEach(kaKao -> resultList.add(kaKao.toDto()));
-        return resultList;
-    }
+
 
 }

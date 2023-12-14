@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.util.*;
 
@@ -40,6 +41,7 @@ public class SbikeSchedule {
 
     //5분마다 호출
     @Scheduled(fixedDelay = 300000)
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackGetSbike")
     public void get_sbike() {
         int firstData = 1;
         int lastData = 1000; // 한 페이지당 가져올 이벤트 수
@@ -78,11 +80,17 @@ public class SbikeSchedule {
         }
     }
 
+    public void fallbackGetSbike(Exception e) {
+        log.error("GetSbike 실행 중 예외 발생: " + e.getMessage());
+    }
 
     @Transactional
     public void saveSbikeToDatabase(List<SbikeDTO> sbikeDTOList) {
-        // DTO를 Entity로 변환하여 저장
         for (SbikeDTO sbikeDTO : sbikeDTOList) {
+            // stationName에서 숫자. 패턴을 제거
+            String stationName = sbikeDTO.getStationName().replaceAll("^\\d+\\.\\s*", "");
+            sbikeDTO.setStationName(stationName);
+
             Optional<Sbike> existingSbike = sbikeRepository.findByStationId(sbikeDTO.getStationId());
 
             if (existingSbike.isPresent()) {
@@ -97,6 +105,7 @@ public class SbikeSchedule {
             }
         }
     }
+
 
     private void updateSbikeFromDTO(Sbike sbike, SbikeDTO sbikeDTO) {
         sbike.setRackTotCnt(sbikeDTO.getRackTotCnt());

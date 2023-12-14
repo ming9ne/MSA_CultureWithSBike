@@ -40,6 +40,13 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
+
+
+    implementation 'io.github.resilience4j:resilience4j-spring-boot2:2.1.0'
+    implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.0.2'
+
+
+
 }
 
 dependencyManagement {

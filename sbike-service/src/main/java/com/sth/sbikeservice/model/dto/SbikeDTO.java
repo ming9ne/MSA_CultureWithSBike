@@ -46,7 +46,7 @@ public class SbikeDTO {
 
     public Sbike toEntity() {
         return Sbike.builder()
-                .id(id)
+                .id((int) id)
                 .stationId(stationId)
                 .rackTotCnt(rackTotCnt)
                 .stationName(stationName)

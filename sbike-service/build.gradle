@@ -39,6 +39,9 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
     implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.1'
+
+    implementation 'io.github.resilience4j:resilience4j-spring-boot2:2.1.0'
+    implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.0.2'
 }
 
 dependencyManagement {
@@ -49,4 +52,8 @@ dependencyManagement {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+jar {
+    enabled = false
 }
