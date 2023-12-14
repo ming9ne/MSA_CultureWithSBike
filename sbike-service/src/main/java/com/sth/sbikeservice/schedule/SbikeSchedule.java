@@ -100,10 +100,16 @@ public class SbikeSchedule {
 
     private void updateSbikeFromDTO(Sbike sbike, SbikeDTO sbikeDTO) {
         sbike.setRackTotCnt(sbikeDTO.getRackTotCnt());
-        sbike.setStationName(sbikeDTO.getStationName());
+
+        String stationName = sbikeDTO.getStationName().replaceAll("^\\d+\\.\\s*", "");
+
+        sbike.setStationName(stationName);
+
+
         sbike.setParkingBikeTotCnt(sbikeDTO.getParkingBikeTotCnt());
         sbike.setShared(sbikeDTO.getShared());
         sbike.setStationLongitude(Double.parseDouble(sbikeDTO.getStationLongitude()));
         sbike.setStationLatitude(Double.parseDouble(sbikeDTO.getStationLatitude()));
     }
+
 }

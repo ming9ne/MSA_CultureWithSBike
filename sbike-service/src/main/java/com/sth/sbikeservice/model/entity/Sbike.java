@@ -20,6 +20,7 @@ import java.util.UUID;
 public class Sbike {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(length = 255)
@@ -43,17 +44,6 @@ public class Sbike {
     @Column
     private double stationLongitude;
 
-//    @Column
-//    private String destination;
-//
-//    private String getDestinationString() {
-//        return stationLongitude+","+stationLatitude;
-//    }
-//
-//    public void updateDestination() {
-//        String newDestination = getDestinationString();
-//        this.destination = newDestination;
-//    }
 
     public SbikeDTO toDto() {
         return SbikeDTO.builder()

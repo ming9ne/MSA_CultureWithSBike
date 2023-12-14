@@ -18,6 +18,7 @@ import com.sth.sbikeservice.service.KakaoService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -77,17 +78,37 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/kakao/{origin}")
-    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@PathVariable String origin) {
-        List<KakoDTO> allKakaoData = kakaoService.listKakao();
+//    @GetMapping("/kakao/{origin}")
+//    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@PathVariable String origin) {
+//        List<KakoDTO> allKakaoData = kakaoService.listKakao();
+//        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
+//                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
+//                .collect(Collectors.toList());
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
+//    }
 
-        // origin 값과 일치하는 데이터만 필터링
+//@GetMapping("/listKakao")
+//public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@RequestParam String origin) {
+//    List<KakoDTO> allKakaoData = kakaoService.listKakao();
+//    List<KakoDTO> filteredKakaoData = allKakaoData.stream()
+//            .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
+//            .collect(Collectors.toList());
+//
+//    return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
+//}
+
+    @PostMapping("/listKakao")
+    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@RequestBody String origin) {
+        List<KakoDTO> allKakaoData = kakaoService.listKakao();
         List<KakoDTO> filteredKakaoData = allKakaoData.stream()
                 .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
     }
+
+
 
 
 
