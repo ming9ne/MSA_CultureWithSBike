@@ -2,6 +2,7 @@
 package com.sth.eventservice.controller;
 
 import com.sth.eventservice.model.dto.EventDTO;
+import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.schedule.EventSchedule;
 import com.sth.eventservice.service.EventService;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -65,6 +67,14 @@ public class EventController {
 
         return ResponseEntity.ok(responseData);
     }
+
+    @GetMapping("/events/listCurrent")
+    public ResponseEntity<List<Event>> getEventsWithCurrentDateStartDate() {
+        LocalDate currentDate = LocalDate.now();
+        List<Event> events = eventService.listEventsWithCurrentDateStartDate(currentDate);
+        return ResponseEntity.status(HttpStatus.OK).body(events);
+    }
+
 
 
 
