@@ -29,4 +29,5 @@ public class KakaoService {
         return resultList;
     }
 
+
 }

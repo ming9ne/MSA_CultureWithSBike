@@ -23,15 +23,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.time.DayOfWeek;
 import java.time.format.TextStyle;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
 public class EventService {
     private static final Logger logger = LoggerFactory.getLogger(EventService.class);
-    private final EventRepository eventRepository;
-    private final RestTemplate restTemplate;
-//    public ResponseEntity<List<Object>> getEventCountByDayAndMonth;
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final EventRepository eventRepository;
+//    public ResponseEntity<List<Object>> getEventCountByDayAndMonth;
+    private final RestTemplate restTemplate;
 
 
     @Autowired
@@ -82,8 +82,8 @@ public class EventService {
         }
     }
 
-//
-        public void saveEvents() {
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForSaveEvents")
+    public void saveEvents() {
         String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
@@ -101,21 +101,41 @@ public class EventService {
                     EventResponse response = responseEntity.getBody();
                     if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
                         List<EventStts> eventSttsList = response.getCitydata().getEvents();
-                        // 이미 존재하면 pass
-                        List<EventDTO> eventsFromPage = eventSttsList.stream()
-                                .map(eventStts -> EventDTO.builder()
+
+                        for (EventStts eventStts : eventSttsList) {
+                            String eventName = eventStts.getEVENT_NM();
+
+                            // 중복 검사: 이벤트 이름이 이미 데이터베이스에 존재하는지 확인
+                            if (!eventRepository.existsByEventNm(eventName)) {
+                                EventDTO eventDTO = EventDTO.builder()
                                         .areaNm(areaname)
-                                        .eventNm(eventStts.getEVENT_NM())
-                                        .build())
-                                .collect(Collectors.toList());
-                        eventDTOList.addAll(eventsFromPage);
+                                        .eventNm(eventName)
+                                        .build();
+                                eventDTOList.add(eventDTO);
+                            } else {
+                                // 이미 존재하는 이벤트인 경우 콘솔과 로그에 메시지 출력
+                                System.out.println("중복 이벤트 발견: " + eventName);
+                                logger.info("중복 이벤트 발견: " + eventName);
+                            }
+                        }
+//                        for (EventStts eventStts : eventSttsList) {
+//                            // 중복 검사: 이벤트 이름이 이미 데이터베이스에 존재하는지 확인
+//                            if (!eventRepository.existsByEventNm(eventStts.getEVENT_NM())) {
+//                                EventDTO eventDTO = EventDTO.builder()
+//                                        .areaNm(areaname)
+//                                        .eventNm(eventStts.getEVENT_NM())
+//                                        .build();
+//                                eventDTOList.add(eventDTO);
+//                            }else{
+//                                // 이미 존재하는 이벤트인 경우 콘솔과 로그에 메시지 출력
+//                                System.out.println("중복 이벤트 발견: ");
+//                                logger.info("중복 이벤트 발견: ");
+//                            }
+//                        }
 
                         System.out.println("API 호출 중");
-
-
                     } else {
                         logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-//                        System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
                     }
                 } else {
                     logger.warn("API 호출 실패");
@@ -130,7 +150,11 @@ public class EventService {
         logger.info("도시 데이터 호출 끝");
         addEvents(eventDTOList);
     }
+    public void fallbackForSaveEvents(Exception e) {
+        logger.error("saveEvents 실행 중 예외 발생: " + e.getMessage());
+    }
 
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForCallApiAndParseXml")
     private List<EventDTO> callApiAndParseXml() {
         int firstPage = 1;
         int lastPage = 1000;
@@ -187,51 +211,9 @@ public class EventService {
         logger.info("문화행사 API 호출 끝");
         return eventDTOList;
     }
-
-//    private List<EventDTO> callApiAndParseXml() {
-//        int firstPage = 1;
-//        int lastPage = 1000;
-//        int maxPage = 4000;
-//        List<EventDTO> eventDTOList = new ArrayList<>();
-//        RestTemplate restTemplate = new RestTemplate();
-//        logger.info("문화 행사 API 호출 시작");
-//        while (firstPage <= maxPage) {
-//            String apiUrl = "http://openapi.seoul.go.kr:8088/71684451416f75723738574b486156/xml/culturalEventInfo/" + firstPage + "/" + (firstPage + lastPage - 1);
-//            try {
-//                ResponseEntity<EventResponseTotal> responseEntity = restTemplate.getForEntity(apiUrl, EventResponseTotal.class);
-//                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//                    EventResponseTotal response = responseEntity.getBody();
-//                    if (response != null && response.getEvents() != null && !response.getEvents().isEmpty()) {
-//                        List<EventDTO> eventsFromPage = response.getEvents().stream()
-//                                .map(eventdata -> {
-//                                    // title에 해당하는 데이터가 이미 존재하는지 확인
-//                                    if (eventRepository.existsByTitle(eventdata.getTitle())) {
-//                                        return null;
-//                                    }
-//                                    EventDTO eventDTO = new EventDTO();
-//                                    eventDTO.setTitle(eventdata.getTitle());
-//                                    // 이하 데이터 매핑 생략
-//                                    return eventDTO;
-//                                })
-//                                .filter(Objects::nonNull) // null이 아닌 EventDTO만 필터링
-//                                .collect(Collectors.toList());
-//                        eventDTOList.addAll(eventsFromPage);
-//                        logger.info("DB 저장 완료");
-//                    }
-//                } else {
-//                    logger.warn("API 호출 실패");
-//                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-//                }
-//            } catch (Exception e) {
-//                logger.warn("API 호출 실패");
-//                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-//                e.printStackTrace();
-//            }
-//            firstPage += lastPage;
-//        }
-//        logger.info("문화행사 API 호출 끝");
-//        return eventDTOList;
-//    }
+    public void fallbackForCallApiAndParseXml(Exception e) {
+        logger.error("callApiAndParseXml 실행 중 예외 발생: " + e.getMessage());
+    }
 
     //통계
     //////////////////////////////////////////////////////////////////////

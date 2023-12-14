@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Slf4j
 @Component
@@ -46,6 +47,7 @@ public class KakaoApi {
         this.kaKaoRepository = kaKaoRepository;
         this.restTemplate = restTemplate;
     }
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistanceAndSaveToDB")
     public void getDistanceAndSaveToDB() {
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -112,8 +114,13 @@ public class KakaoApi {
             System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
         }
     }
+    public void fallbackForGetDistanceAndSaveToDB(Exception e) {
+        log.error("GetDistanceAndSaveToDB 실행 중 예외 발생: " + e.getMessage());
+    }
 
 
+
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistance")
     public int getDistance(String origin, String destination) {
         try {
             // 카카오디벨로퍼스에서 발급 받은 REST API 키
@@ -191,5 +198,8 @@ public class KakaoApi {
             e.printStackTrace();
             return -1; // 예외 발생 시 -1 반환 또는 다른 방식으로 처리
         }
+    }
+    public void fallbackForGetDistance(Exception e) {
+        log.error("GetDistance 실행 중 예외 발생: " + e.getMessage());
     }
 }

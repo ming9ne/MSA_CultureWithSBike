@@ -78,8 +78,18 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-//    @GetMapping("/kakao/{origin}")
-//    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@PathVariable String origin) {
+    @GetMapping("/kakao/{origin}")
+    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@PathVariable String origin) {
+        List<KakoDTO> allKakaoData = kakaoService.listKakao();
+        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
+                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
+    }
+
+//    @PostMapping("/kakao/filterByOrigin")
+//    public ResponseEntity<List<KakoDTO>> filterKakaoByOrigin(@RequestBody String origin) {
 //        List<KakoDTO> allKakaoData = kakaoService.listKakao();
 //        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
 //                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
@@ -88,25 +98,7 @@ public class SbikeController {
 //        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
 //    }
 
-//@GetMapping("/listKakao")
-//public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@RequestParam String origin) {
-//    List<KakoDTO> allKakaoData = kakaoService.listKakao();
-//    List<KakoDTO> filteredKakaoData = allKakaoData.stream()
-//            .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
-//            .collect(Collectors.toList());
-//
-//    return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
-//}
 
-    @PostMapping("/listKakao")
-    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@RequestBody String origin) {
-        List<KakoDTO> allKakaoData = kakaoService.listKakao();
-        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
-                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
-    }
 
 
 
