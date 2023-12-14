@@ -68,7 +68,7 @@ public class EventController {
         return ResponseEntity.ok(responseData);
     }
 
-    @GetMapping("/events/listCurrent")
+    @GetMapping("/todayEvents")
     public ResponseEntity<List<Event>> getEventsWithCurrentDateStartDate() {
         LocalDate currentDate = LocalDate.now();
         List<Event> events = eventService.listEventsWithCurrentDateStartDate(currentDate);
