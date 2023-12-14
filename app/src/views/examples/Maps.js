@@ -14,7 +14,9 @@ let map;
 const MapWrapper = () => {
   const location = useLocation();
   const mapRef = useRef(null);
-  let positions = [{}];
+  const events = useRef(null);
+  const positions = useRef([{content: null, latlng: null}]);
+  const [sbikes, setSbikes] = useState([]);
   // let positions = [{
   //     // content: '<div>카카오</div>',
   //     content: `<div>카카오</div>`,
@@ -22,38 +24,69 @@ const MapWrapper = () => {
   //   }];
   console.log("location.state", location.state);
  
-  let lot = 37.566535;
-  let lat = 126.9779692;
+  let lot = 126.9779692;
+  let lat = 37.566535;
 
   useEffect(() => {
     if(location.state) {
       console.log("location state is here!", location.state);
-      lot = location.state.lot;
       lat = location.state.lat;
-      console.log(positions, positions.length);
-      positions = [{
-          // content: '<div>카카오</div>',
-          content: `<div>${location.state.title}</div>`,
-          latlng: new kakao.maps.LatLng(lot, lat)
-        }];
-        // ,{
-        //   // content: '<div>카카오</div>',
-        //   content: `<div>${location.state.title}</div>`,
-        //   latlng: new kakao.maps.LatLng(37.6499060881738, 127.945533810385)
-        // }
+      lot = location.state.lot;
+      
+      positions.current = [{
+        // content: '<div>카카오</div>',
+        content: `<div>${location.state.title}</div>`,
+        latlng: new kakao.maps.LatLng(lat, lot)
+      }];
 
-      console.log(positions, positions.length);
+      console.log(positions);
+
+      if(location.sbike) {
+        console.log("sbike exists");
+        setSbikes([{
+          content: `<div>${location.sbike.stationName}</div>`,
+          latlng: new kakao.maps.LatLng(location.sbike.stationLatitude, location.sbike.stationLongitude)
+        }]);
+      }
+
+      makeMap();
+    } else {
+      console.log("event fetching");
+      fetch(`http://localhost:8000/api/v1/event-service/events`)
+        .then(response => response.json())
+        .then(data => {
+          events.current = data;
+          // setEvents(data);
+        })
+        .then(() => {
+          console.log(events.current);
+          
+          events.current.map(event => {
+            let position = {
+              content: `<div>${event.title}</div>`,
+              latlng: new kakao.maps.LatLng(event.lat, event.lot)
+            }
+
+            positions.current = [...positions.current, position];
+          })
+          console.log(positions);
+        })
+        .then(() => {
+          console.log(positions);
+          makeMap();
+        })
     }
+  }, [])
 
-    
-
+  function makeMap() {
     const container = mapRef.current;
     const options = { //지도를 생성할 때 필요한 기본 옵션
-      center: new kakao.maps.LatLng(lot, lat), //지도의 중심좌표.
+      center: new kakao.maps.LatLng(lat, lot), //지도의 중심좌표.
       level: 6 //지도의 레벨(확대, 축소 정도)
     };
-
+  
     map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+  
     // 지도에 컨트롤을 추가해야 지도위에 표시됩니다
     // kakao.maps.ControlPosition은 컨트롤이 표시될 위치를 정의하는데 TOPRIGHT는 오른쪽 위를 의미합니다
     const mapTypeControl = new kakao.maps.MapTypeControl();
@@ -66,16 +99,41 @@ const MapWrapper = () => {
     // // 마커가 지도 위에 표시되도록 설정합니다
     // marker.setMap(map);
 
-    for (var i = 0; i < positions.length; i ++) {
+    console.log("마커생성", positions.current);
+    for (var i = 0; i < positions.current.length; i ++) {
       // 마커를 생성합니다
       var marker = new kakao.maps.Marker({
           map: map, // 마커를 표시할 지도
-          position: positions[i].latlng // 마커의 위치
+          position: positions.current[i].latlng, // 마커의 위치
       });
 
       // 마커에 표시할 인포윈도우를 생성합니다 
       var infowindow = new kakao.maps.InfoWindow({
-          content: positions[i].content // 인포윈도우에 표시할 내용
+          content: positions.current[i].content // 인포윈도우에 표시할 내용
+      });
+
+      // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
+      // 이벤트 리스너로는 클로저를 만들어 등록합니다 
+      // for문에서 클로저를 만들어 주지 않으면 마지막 마커에만 이벤트가 등록됩니다
+      kakao.maps.event.addListener(marker, 'mouseover', makeOverListener(map, marker, infowindow));
+      kakao.maps.event.addListener(marker, 'mouseout', makeOutListener(infowindow));
+    }
+
+    const imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png"; 
+    // 마커 이미지의 이미지 크기 입니다
+    const imageSize = new kakao.maps.Size(24, 35);
+    // 마커 이미지를 생성합니다    
+    const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize); 
+    for (var i = 0; i < sbikes.length; i ++) {
+      // 마커를 생성합니다
+      var marker = new kakao.maps.Marker({
+        map: map, // 마커를 표시할 지도
+        position: sbikes[i].latlng, // 마커의 위치
+        image : markerImage
+    });
+      // 마커에 표시할 인포윈도우를 생성합니다 
+      var infowindow = new kakao.maps.InfoWindow({
+        content: sbikes[i].content // 인포윈도우에 표시할 내용
       });
 
       // 마커에 mouseover 이벤트와 mouseout 이벤트를 등록합니다
@@ -98,7 +156,7 @@ const MapWrapper = () => {
           infowindow.close();
       };
     }
-  }, [])
+  }
 
   return (
     <>

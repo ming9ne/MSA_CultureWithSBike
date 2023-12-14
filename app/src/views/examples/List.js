@@ -54,17 +54,6 @@ const List = () => {
     
     console.log("events", events);
     setCounts(events.length);
-
-    // fetch(`http://localhost:8000/api/v1/event-service/events/${page}`)
-    //   .then(response => response.json())
-    //   .then(response => {
-    //     // console.log(response);
-    //     setEvents(response);
-    //   })
-    //   .catch(e => {
-    //     console.log(e);
-    //   })
-
   }, []);
 
   useEffect(() => {

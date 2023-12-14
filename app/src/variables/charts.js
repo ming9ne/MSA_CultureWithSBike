@@ -298,8 +298,8 @@ let chartExample1 = {
           },
           ticks: {
             callback: function (value) {
-              if (!(value % 10)) {
-                return "$" + value + "k";
+              if (!(value % 5)) {
+                return value + "건";
               }
             },
           },
@@ -317,7 +317,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "$" + yLabel + "k";
+          content += yLabel + "건";
           return content;
         },
       },
