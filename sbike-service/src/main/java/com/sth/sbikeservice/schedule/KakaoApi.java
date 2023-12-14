@@ -61,8 +61,9 @@ public class KakaoApi {
     public void createKakao() {
         try {
             RestTemplate restTemplate = new RestTemplate();
-//            String eventApiUrl = "http://"+env.getProperty("gateway")+"/api/v1/event-service/events";
-            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
+
+            String eventApiUrl = "http://"+env.getProperty("gateway")+":8000/api/v1/event-service/events";
+//            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
             EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
             List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
