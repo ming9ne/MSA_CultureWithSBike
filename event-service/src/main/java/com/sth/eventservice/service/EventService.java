@@ -118,21 +118,6 @@ public class EventService {
                                 logger.info("중복 이벤트 발견: " + eventName);
                             }
                         }
-//                        for (EventStts eventStts : eventSttsList) {
-//                            // 중복 검사: 이벤트 이름이 이미 데이터베이스에 존재하는지 확인
-//                            if (!eventRepository.existsByEventNm(eventStts.getEVENT_NM())) {
-//                                EventDTO eventDTO = EventDTO.builder()
-//                                        .areaNm(areaname)
-//                                        .eventNm(eventStts.getEVENT_NM())
-//                                        .build();
-//                                eventDTOList.add(eventDTO);
-//                            }else{
-//                                // 이미 존재하는 이벤트인 경우 콘솔과 로그에 메시지 출력
-//                                System.out.println("중복 이벤트 발견: ");
-//                                logger.info("중복 이벤트 발견: ");
-//                            }
-//                        }
-
                         System.out.println("API 호출 중");
                     } else {
                         logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");

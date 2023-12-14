@@ -54,7 +54,6 @@ public class Sbike {
                 .shared(shared)
                 .stationLatitude(String.valueOf(stationLatitude))
                 .stationLongitude(String.valueOf(stationLongitude))
-//                .destination(destination)
                 .build();
     }
 }

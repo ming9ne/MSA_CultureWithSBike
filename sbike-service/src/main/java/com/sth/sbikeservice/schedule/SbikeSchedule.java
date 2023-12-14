@@ -33,16 +33,10 @@ public class SbikeSchedule {
         this.sbikeRepository = sbikeRepository;
     }
 
-
-    @Scheduled(fixedDelay = 300000)
-    public void hello() {
-        log.info("Sbike Scheduler");
-    }
-
     //5분마다 호출
     @Scheduled(fixedDelay = 300000)
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackGetSbike")
-    public void get_sbike() {
+    public void createSbike() {
         int firstData = 1;
         int lastData = 1000; // 한 페이지당 가져올 이벤트 수
         int maxPage = 3000; // 최대 페이지 수
@@ -59,7 +53,7 @@ public class SbikeSchedule {
 
                     if (response != null && response.getRentBikeStatus() != null && response.getRentBikeStatus().getRow() != null && !response.getRentBikeStatus().getRow().isEmpty()) {
                         List<SbikeDTO> sbikeDTOList = response.getRentBikeStatus().getRow();
-                        saveSbikeToDatabase(sbikeDTOList);
+                        addSbikeToDatabase(sbikeDTOList);
                         System.out.println("API 호출 성공 - 페이지: " + firstData);
                     } else {
                         System.out.println("API 응답에서 이벤트 정보를 찾을 수 없습니다");
@@ -85,7 +79,7 @@ public class SbikeSchedule {
     }
 
     @Transactional
-    public void saveSbikeToDatabase(List<SbikeDTO> sbikeDTOList) {
+    public void addSbikeToDatabase(List<SbikeDTO> sbikeDTOList) {
         for (SbikeDTO sbikeDTO : sbikeDTOList) {
             // stationName에서 숫자. 패턴을 제거
             String stationName = sbikeDTO.getStationName().replaceAll("^\\d+\\.\\s*", "");

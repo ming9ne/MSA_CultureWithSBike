@@ -11,6 +11,7 @@ eureka:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
     prefer-ip-address: true
 
+
 spring:
   application:
     name: sbike-service
@@ -31,3 +32,7 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+
+
+gateway: localhost:8000

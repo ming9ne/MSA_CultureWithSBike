@@ -41,45 +41,39 @@ public class SbikeController {
         this.kakaoService = kakaoService;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    // 공공API에서 따릉이 데이터 저장 /// ///////////////////////////////////////////////////////////////
+    // 공공API에서 따릉이 데이터 저장 , 따릉이 리스트 조회
 
-    @GetMapping("/sbikeList")
-    public ResponseEntity<List<SbikeDTO>> getSbike() {
+    @GetMapping("/createSbike")
+    public ResponseEntity<String> createSbike() {
+        sbikeSchedule.createSbike();
+        return ResponseEntity.ok("Update Sbike successful");
+    }
+
+    @PostMapping("/addSbikeToDatabase")
+    public void addSbikeToDatabase(@RequestBody List<SbikeDTO> sbikeDTOList) {
+        sbikeSchedule.addSbikeToDatabase(sbikeDTOList);
+    }
+
+    @GetMapping("/listSbike")
+    public ResponseEntity<List<SbikeDTO>> listSbike() {
         Iterable<SbikeDTO> sbikeList = sbikeService.listSbike();  // 수정된 부분
         List<SbikeDTO> result = new ArrayList<>();
         sbikeList.forEach(result::add);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/sbike")
-    public ResponseEntity<String> get_sbike() {
-        sbikeSchedule.get_sbike();
-        return ResponseEntity.ok("Update Sbike successful");
-    }
-
-    @GetMapping("/")
-    public String index() {
-        return "hello, this is Sbike service";
-    }
-
-    @PostMapping("/saveSbikeToDatabase")
-    public void saveSbikeToDatabase(@RequestBody List<SbikeDTO> sbikeDTOList) {
-        sbikeSchedule.saveSbikeToDatabase(sbikeDTOList);
-    }
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    // 위도,경도에 따른 따릉이 정류장 저장 ///////////////////////////////////////////////////////////////
+    // 가까운 따릉이 정류장 조회 API
 
-    @GetMapping("/kakao")
-    public ResponseEntity<List<KakoDTO>> getKakao() {
+    @GetMapping("/listKakao")
+    public ResponseEntity<List<KakoDTO>> listKakao() {
         List<KakoDTO> result = kakaoService.listKakao();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/kakao/{origin}")
-    public ResponseEntity<List<KakoDTO>> getKakaoByOrigin(@PathVariable String origin) {
+    @GetMapping("/listKakao/{origin}")
+    public ResponseEntity<List<KakoDTO>> listKakaoByOrigin(@PathVariable String origin) {
         List<KakoDTO> allKakaoData = kakaoService.listKakao();
         List<KakoDTO> filteredKakaoData = allKakaoData.stream()
                 .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
@@ -88,35 +82,18 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
     }
 
-//    @PostMapping("/kakao/filterByOrigin")
-//    public ResponseEntity<List<KakoDTO>> filterKakaoByOrigin(@RequestBody String origin) {
-//        List<KakoDTO> allKakaoData = kakaoService.listKakao();
-//        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
-//                .filter(kakaoDTO -> kakaoDTO.getOrigin().equals(origin))
-//                .collect(Collectors.toList());
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
-//    }
 
 
-
-
-
-
-
-
-    @GetMapping("/getDistanceAndSaveToDB")
-    public ResponseEntity<String> getDistanceAndSaveToDB() {
-        kakaoApi.getDistanceAndSaveToDB();
-        return ResponseEntity.ok("Get distance and save to DB successful");
+    // 따릉이 위도 경도 API
+    @GetMapping("/createKakao")
+    public ResponseEntity<String> createKakao() {
+        kakaoApi.createKakao();
+        return ResponseEntity.ok("Create Kakao DB successful");
     }
 
 
-
-
-
-    @PostMapping("/saveDistance")
-    public void saveDistance(@RequestParam String origin) {
+    @PostMapping("/addDistance")
+    public void addDistance(@RequestParam String origin) {
         // 전체 정류장 정보를 읽어옴
         List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
@@ -144,6 +121,4 @@ public class SbikeController {
 
         kaKaoRepository.save(kaKao);
     }
-
-
 }

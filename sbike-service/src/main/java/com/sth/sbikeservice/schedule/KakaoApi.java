@@ -1,6 +1,7 @@
 package com.sth.sbikeservice.schedule;
 
 //import com.ctc.wstx.shaded.msv_core.datatype.xsd.Comparator;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
@@ -14,11 +15,16 @@ import com.sth.sbikeservice.vo.RentBikeStatus;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
 import java.util.Comparator;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,28 +35,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Slf4j
 @Component
 public class KakaoApi {
 
+    Environment env;
     private final SbikeService sbikeService;
     private final KaKaoRepository kaKaoRepository;
     private final RestTemplate restTemplate;
 
-
     @Autowired
-    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository,RestTemplate restTemplate) {
+    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository, RestTemplate restTemplate, Environment env) {
         this.sbikeService = sbikeService;
 
         this.kaKaoRepository = kaKaoRepository;
         this.restTemplate = restTemplate;
+        this.env = env;
     }
-    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistanceAndSaveToDB")
-    public void getDistanceAndSaveToDB() {
+
+    @Scheduled(cron = "0 0 */12 * * *") // 12시간마다 실행
+    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForCreateKakao")
+    public void createKakao() {
         try {
             RestTemplate restTemplate = new RestTemplate();
+//            String eventApiUrl = "http://"+env.getProperty("gateway")+"/api/v1/event-service/events";
             String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
             EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
             List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
@@ -114,10 +125,9 @@ public class KakaoApi {
             System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
         }
     }
-    public void fallbackForGetDistanceAndSaveToDB(Exception e) {
-        log.error("GetDistanceAndSaveToDB 실행 중 예외 발생: " + e.getMessage());
+    public void fallbackForCreateKakao(Exception e) {
+        log.error("CreateKakao 실행 중 예외 발생: " + e.getMessage());
     }
-
 
 
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistance")
@@ -199,6 +209,7 @@ public class KakaoApi {
             return -1; // 예외 발생 시 -1 반환 또는 다른 방식으로 처리
         }
     }
+
     public void fallbackForGetDistance(Exception e) {
         log.error("GetDistance 실행 중 예외 발생: " + e.getMessage());
     }

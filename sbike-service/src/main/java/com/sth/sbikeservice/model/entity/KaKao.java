@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KaKao {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(length = 255)
@@ -36,6 +37,7 @@ public class KaKao {
     @Column
     private double stationLongitude;
 
+
     public KakoDTO toDto() {
         return KakoDTO.builder()
                 .origin(origin)
@@ -45,5 +47,4 @@ public class KaKao {
                 .stationLongitude(String.valueOf(stationLongitude))
                 .build();
     }
-
 }
