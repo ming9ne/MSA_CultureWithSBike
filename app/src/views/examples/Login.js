@@ -35,7 +35,7 @@ const Login = () => {
     if(id.length === 0 || password.length === 0) {
       window.alert("!!!");
     } else {
-      fetch(`http://localhost:8000/api/v1/user-service/login`, {
+      fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/user-service/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -78,7 +78,7 @@ const Register = () => {
     } else if(!isEmailValid(email)) {
       window.alert("올바른 이메일 주소를 입력하세요!");
     } else {
-      fetch(`http://localhost:8000/api/v1/user-service/users`, {
+      fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/user-service/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
