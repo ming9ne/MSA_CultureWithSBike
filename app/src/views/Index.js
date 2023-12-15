@@ -55,21 +55,23 @@ const Index = (props) => {
   };
 
   useEffect(() => {
-    fetch(`http://localhost:8000/api/v1/event-service/statistics`)
+    console.log(process.env.REACT_APP_GATEWAY);
+
+    fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/event-service/statistics`)
       .then(response => response.json())
       .then(data => {
         setEventData(data);
       })
       .catch(e => console.log(e))
 
-    fetch(`http://localhost:8000/api/v1/coupon-service/statistics`)
+    fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/statistics`)
       .then(response => response.json())
       .then(data => {
         setCouponData(data);
       })
       .catch(e => console.log(e))
 
-    fetch(`http://localhost:8000/api/v1/congestion-service/populations`)
+    fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/congestion-service/populations`)
       .then(response => response.json())
       .then(data => {
         setPopulations(data.sort(function(a, b) {
@@ -277,7 +279,7 @@ const Index = (props) => {
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
-                </div> : null
+                </div>
               </CardBody>
             </Card>
           </Col>

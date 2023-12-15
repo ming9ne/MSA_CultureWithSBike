@@ -6,6 +6,7 @@ import com.sth.couponservice.model.entity.UserCoupon;
 import com.sth.couponservice.repository.UserCouponRepository;
 import com.sth.couponservice.vo.CouponException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,17 @@ public class UserCouponService {
     private final UserCouponRepository userCouponRepository;
     private final CouponService couponService;
     private RedisTemplate<String, Long> redisLongTemplate;
+    private Environment env;
 
     // 쿠폰 코드를 기반으로 발급 수를 관리하는 Redis 키의 템플릿
     private static final String COUPON_COUNT_KEY_TEMPLATE = "coupon:%s:count";
 
     @Autowired
-    public UserCouponService(UserCouponRepository userCouponRepository, CouponService couponService, RedisTemplate<String, Long> redisLongTemplate) {
+    public UserCouponService(UserCouponRepository userCouponRepository, CouponService couponService, RedisTemplate<String, Long> redisLongTemplate, Environment env) {
         this.userCouponRepository = userCouponRepository;
         this.couponService = couponService;
         this.redisLongTemplate = redisLongTemplate;
+        this.env = env;
     }
 
     // 쿠폰 발급
@@ -104,7 +107,7 @@ public class UserCouponService {
         RestTemplate restTemplate = new RestTemplate();
 
         // 유저 조회 API 엔드포인트 URL
-        String userApiUrl = "http://localhost:8000/api/v1/user-service/user";
+        String userApiUrl = "http://" + env.getProperty("gateway") + ":8000/api/v1/user-service/user";
         try {
             // 유저 조회 API 호출
             ResponseEntity<Map> response = restTemplate.getForEntity(userApiUrl + "?id=" + userId, Map.class);

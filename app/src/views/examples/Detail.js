@@ -17,7 +17,7 @@ function Detail() { // () 안에 정보들
             navigate("/");
         } else {
             // console.log(location.state);
-            fetch(`http://localhost:8000/api/v1/congestion-service/congestion/${location.state.areaNm}`)
+            fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/congestion-service/congestion/${location.state.areaNm}`)
                 .then(response => response.json())
                 .then(response => { 
                     setCongestion(response);
@@ -27,7 +27,7 @@ function Detail() { // () 안에 정보들
                     console.log(e);
             });
 
-            fetch(`http://localhost:8000/api/v1/congestion-service/population/${location.state.areaNm}`)
+            fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/congestion-service/population/${location.state.areaNm}`)
                 .then(response => response.json())
                 .then(response => {
                     setPopulation(response);

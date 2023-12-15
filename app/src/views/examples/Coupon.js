@@ -11,7 +11,7 @@ function Coupon() {
     // console.log(location.state);
     
     useEffect(() => {
-        fetch(`http://localhost:8000/api/v1/coupon-service/coupons`, {
+        fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/coupons`, {
             headers: {
                 "Authorization" : localStorage.getItem("login-token")
             }
@@ -53,7 +53,7 @@ function Coupon() {
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.target.hidden=true;
-                                                    fetch(`http://localhost:8000/api/v1/coupon-service/userCoupon`, {
+                                                    fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/userCoupon`, {
                                                         method: "POST",
                                                         headers: {
                                                         "Content-Type": "application/json",

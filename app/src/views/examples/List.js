@@ -40,7 +40,7 @@ const List = () => {
   useEffect(() => {
     // const page = params.page || 1;
     console.log("page", page);
-    fetch(`http://localhost:8000/api/v1/event-service/events`)
+    fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/event-service/events`)
       .then(response => response.json())
       .then(response => {
         console.log(response);
