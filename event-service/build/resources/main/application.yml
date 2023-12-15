@@ -1,5 +1,5 @@
 server:
-  port: 0
+  port: 8100
 
 eureka:
   client:
@@ -16,7 +16,7 @@ spring:
     name: event-service
   #database-config
   datasource:
-    url: jdbc:mysql://localhost:3306/cws?useUnicode=true;characterEncoding=utf8;
+    url: jdbc:mysql://211.62.99.58:7733/cws?useUnicode=true;characterEncoding=utf8;
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -30,4 +30,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
+
+gateway: localhost
