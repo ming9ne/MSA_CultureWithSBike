@@ -87,7 +87,7 @@ const List = () => {
                       key={event.id}
                       id={event.id}
                       title={event.title}
-                      startDate={event.strtdate}
+                      strtdate={event.strtdate}
                       endDate={event.endDate}
                       areaNm={event.areaNm}
                       codeName={event.codename}

@@ -7,7 +7,22 @@ import Header from "components/Headers/Header.js";
 function Detail() { // () 안에 정보들
     const[congestion, setCongestion] = useState([]);
     const[population, setPopulation] = useState([]);
-    const[sbikes, setSbikes] = useState([]);
+    const[sbikes, setSbikes] = useState([{
+        "stationName": "경복궁역 4번 출구 뒤",
+        "stationLatitude": "37.586150",
+        "stationLongitude": "126.98705",
+        "distance": "-1"
+    }, {
+        "stationName": "경복궁역 5번 출구 뒤",
+        "stationLatitude": "37.566175",
+        "stationLongitude": "126.98705",
+        "distance": "-1"
+    }, {
+        "stationName": "경복궁역 6번 출구 뒤",
+        "stationLatitude": "37.572200",
+        "stationLongitude": "126.98705",
+        "distance": "-1"
+    }, ]);
     const navigate = useNavigate();
     const location = useLocation();
     console.log(location.state);
@@ -37,7 +52,7 @@ function Detail() { // () 안에 정보들
                     console.log(e);
                 })
 
-            // fetch(`http://localhost:8000/api/v1/sbike-service/listkakao/${location.state.title}`)
+            // fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/sbike-service/listkakao/${location.state.title}`)
             //     .then(response => response.json())
             //     .then(data => {
             //         console.log(data);
@@ -61,7 +76,7 @@ function Detail() { // () 안에 정보들
                             width: "600px"
                         }}>
                         <CardHeader tag="h3">
-                            <Link to="/admin/maps" state={location.state} sbike={sbikes} >{location.state.title}</Link>
+                            <Link to="/admin/maps" state={{state: location.state, sbikes}} >{location.state.title}</Link>
                         </CardHeader>
                         <CardBody>
                             <CardImg 
@@ -76,7 +91,7 @@ function Detail() { // () 안에 정보들
                             />
                             <CardText>
                                 <h1>장소</h1>
-                                {location.state.startDate&&location.state.endDate ? <>기간 : {location.state.startDate} ~ {location.state.endDate} <br /></> : <>기간 : 미정</>}
+                                {location.state.strtdate&&location.state.endDate ? <>기간 : {location.state.strtdate} ~ {location.state.endDate} <br /></> : <>기간 : 미정</>}
                                 {location.state.guname ? <>지역 : {location.state.guname} <br /></> : ""}
                                 {location.state.place ? <>장소 : {location.state.place} <br /></> : ""}
                                 {location.state.useFee ? <>이용요금 : {location.state.useFee} <br /></> : ""}
@@ -89,11 +104,11 @@ function Detail() { // () 안에 정보들
                                     <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
                                 ) : <></>}<br />
                                 <h1>가까운 따릉이 대여소</h1>
-                                {sbikes.map((sbike) => {
+                                {sbikes.map((sbike, index) => {
                                     return (
                                         <>
-                                            대여소 명 : {sbike.stationName}<br/>
-                                            거리 : {sbike.distance}<br/>
+                                            {index+1}) {sbike.stationName}<br/>
+                                            거리 : {sbike.distance}<br/><br/>
                                         </>
                                     );
                                 })}
