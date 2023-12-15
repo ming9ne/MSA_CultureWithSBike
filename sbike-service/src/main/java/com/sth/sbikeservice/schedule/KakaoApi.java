@@ -6,26 +6,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
 import com.sth.sbikeservice.model.entity.KaKao;
-import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.KaKaoRepository;
-import com.sth.sbikeservice.repository.SbikeRepository;
 import com.sth.sbikeservice.service.SbikeService;
 import com.sth.sbikeservice.vo.EventResponse;
-import com.sth.sbikeservice.vo.RentBikeStatus;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.sql.*;
 import java.util.Comparator;
 
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -33,7 +27,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -77,8 +70,6 @@ public class KakaoApi {
 
                     String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
 
-                    System.out.println("Origin value: " + origin);
-
                     // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
                     List<KaKao> eventKaKaoList = new ArrayList<>();
 
@@ -87,23 +78,26 @@ public class KakaoApi {
                         double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
 
                         // 범위 내의 데이터만 처리
-                        if (stationLongitude >= eventLongitude - 0.025 && stationLongitude <= eventLongitude + 0.025
-                                && stationLatitude >= eventLatitude - 0.025 && stationLatitude <= eventLatitude + 0.025) {
+                        if (stationLongitude >= eventLongitude - 0.015 && stationLongitude <= eventLongitude + 0.015
+                                && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
 
                             String destination = stationLongitude + "," + stationLatitude;
                             String stationName = sbikeDTO.getStationName();
-                            int distance = getDistance(origin, destination);
 
-                            KaKao kaKao = KaKao.builder()
-                                    .stationName(stationName)
-                                    .eventName(eventName)
-                                    .destination(destination)
-                                    .distance(distance)
-                                    .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
-                                    .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
-                                    .build();
+                            // 이미 저장된 데이터와 새로운 데이터를 비교하여 중복 여부 확인
+                            if (!isDuplicateData(eventName, stationName)) {
+                                int distance = getDistance(origin, destination);
+                                KaKao kaKao = KaKao.builder()
+                                        .stationName(stationName)
+                                        .eventName(eventName)
+                                        .destination(destination)
+                                        .distance(distance)
+                                        .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
+                                        .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
+                                        .build();
 
-                            eventKaKaoList.add(kaKao);
+                                eventKaKaoList.add(kaKao);
+                            }
                         }
                     }
 
@@ -129,6 +123,18 @@ public class KakaoApi {
     public void fallbackForCreateKakao(Exception e) {
         log.error("CreateKakao 실행 중 예외 발생: " + e.getMessage());
     }
+
+    private boolean isDuplicateData(String eventName, String stationName) {
+
+        int eventCount = kaKaoRepository.countByEventName(eventName);
+
+        if (eventCount >= 3) {
+            System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
+            return true;
+        }
+        return false;
+    }
+
 
 
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistance")

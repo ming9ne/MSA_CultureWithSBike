@@ -21,9 +21,6 @@ public class KakoDTO {
     private String stationLatitude;
     private String stationLongitude;
     private String distance;
-    private String uniqueIdentifier;
-
-
 
 
     public KaKao toEntity() {

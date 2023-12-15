@@ -37,10 +37,6 @@ public class SbikeDTO {
     @XmlElement(name = "stationLongitude")
     private String stationLongitude;
 
-//    private String destination;
-//
-//    private String origin;
-
 
 
     public Sbike toEntity() {
@@ -52,7 +48,6 @@ public class SbikeDTO {
                 .shared(shared)
                 .stationLatitude(Double.parseDouble(stationLatitude))
                 .stationLongitude(Double.parseDouble(stationLongitude))
-//                .destination(destination)
                 .build();
     }
 

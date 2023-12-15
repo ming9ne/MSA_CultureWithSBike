@@ -11,7 +11,5 @@ import java.util.Optional;
 
 @Repository
 public interface KaKaoRepository extends JpaRepository<KaKao, String> {
-
-    Optional<KaKao> findByStationName(String stationName);
-
+    int countByEventName(String eventName);
 }

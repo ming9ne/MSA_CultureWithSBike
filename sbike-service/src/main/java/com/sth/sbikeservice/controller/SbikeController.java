@@ -118,7 +118,6 @@ public class SbikeController {
                 .destination(destination)
                 .distance(distance)
                 .build();
-
         kaKaoRepository.save(kaKao);
     }
 }

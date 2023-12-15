@@ -21,7 +21,6 @@ public class SbikeService {
 
     @Autowired
     private SbikeRepository sbikeRepository;
-    private KaKaoRepository kaKaoRepository;
 
     public List<SbikeDTO> listSbike() {
         List<Sbike> list = sbikeRepository.findAll();

@@ -12,5 +12,4 @@ public interface SbikeRepository extends JpaRepository<Sbike, String> {
 
     Optional<Sbike> findByStationId(String stationId);
 
-    Optional<Sbike> findByStationName(String stationName);
 }
