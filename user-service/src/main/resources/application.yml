@@ -45,3 +45,6 @@ jwt:
 #  secret: usertokenusertokenusertokenusertokenusertokenusertokenusertokenusertokenusertokenusertokenusertoken
   secret: dXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2VudXNlcnRva2Vu
   token-validity-in-seconds: 8640000
+
+gateway: localhost:8000
+front: localhost:3000
