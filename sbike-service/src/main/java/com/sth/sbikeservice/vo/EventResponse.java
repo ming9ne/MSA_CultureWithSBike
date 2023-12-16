@@ -12,4 +12,5 @@ public class EventResponse {
     private double lat;
     private String eventNm;
     private String stationName;
+    private Long eventId;
 }

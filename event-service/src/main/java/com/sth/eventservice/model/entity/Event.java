@@ -1,9 +1,7 @@
 package com.sth.eventservice.model.entity;
 
 import com.sth.eventservice.model.dto.EventDTO;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import lombok.*;
@@ -18,6 +16,10 @@ import java.time.LocalDate;
 @Data
 public class Event {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long eventId;
+
+    @Column(unique = true)
     private String eventNm;
 
     @Column(nullable = false,length = 20)  //2023.12.13.13:49
@@ -61,6 +63,7 @@ public class Event {
 
     public EventDTO toDto() {
         return EventDTO.builder()
+                .eventId(eventId)
                 .eventNm(eventNm)
                 .areaNm(areaNm)
                 .guname(guname)

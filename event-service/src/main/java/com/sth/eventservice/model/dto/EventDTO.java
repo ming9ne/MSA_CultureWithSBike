@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Builder
 @Data
 public class EventDTO {
+    private Long eventId;
     private String eventNm;
     private String areaNm;
     private String guname;
@@ -32,6 +33,7 @@ public class EventDTO {
 
     public Event toEntity() {
         return Event.builder()
+                .eventId(eventId)
                 .eventNm(eventNm)
                 .areaNm(areaNm)
                 .guname(guname)
