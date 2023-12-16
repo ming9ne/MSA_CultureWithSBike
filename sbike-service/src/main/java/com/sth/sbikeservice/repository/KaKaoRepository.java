@@ -18,4 +18,5 @@ public interface KaKaoRepository extends JpaRepository<KaKao, String> {
     List<KaKao> findByEventId(Long eventId);
 
 
+    boolean existsByEventName(String eventName);
 }
