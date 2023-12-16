@@ -67,10 +67,10 @@ public class KakaoApi {
                     double eventLongitude = responseEvent.getLot();
 
                     // DB에 이미 있는 데이터인지 확인
-//                    if (kaKaoRepository.existsByEventName(eventName)) {
-//                        System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
-//                        continue;
-//                    }
+                    if (kaKaoRepository.existsByEventName(eventName)) {
+                        System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
+                        continue;
+                    }
 
                     String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
 
