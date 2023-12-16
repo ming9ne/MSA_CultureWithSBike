@@ -33,6 +33,7 @@ spring:
         show_sql: false
   data:
     redis:
+      host: localhost
       port: 6379
 
 gateway: localhost:8000
