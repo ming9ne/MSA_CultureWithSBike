@@ -88,7 +88,7 @@ public class EventService {
 
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForSaveEvents")
     public void saveEvents() {
-        String areaApiUrl = "http://" + env.getProperty("gateway") + ":8000/api/v1/area-service/areas";
+        String areaApiUrl = "http://" + env.getProperty("gateway") + "/api/v1/area-service/areas";
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
         List<EventDTO> eventDTOList = new ArrayList<>();

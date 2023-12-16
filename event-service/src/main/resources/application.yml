@@ -32,4 +32,5 @@ spring:
         format_sql: true
         show_sql: false
 
-gateway: localhost
+gateway: localhost:8000
+front: localhost:3000
