@@ -40,7 +40,7 @@ public class CongestionSchedule {
         }
         RestTemplate restTemplate = new RestTemplate();
 
-        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
+        String areaApiUrl = "http://" + env.getProperty("gateway") + "/api/v1/area-service/areas";
 
         AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
 
