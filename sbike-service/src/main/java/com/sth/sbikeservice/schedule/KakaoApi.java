@@ -67,6 +67,7 @@ public class KakaoApi {
                     double eventLongitude = eventResponse.getLot();
                     double eventLatitude = eventResponse.getLat();
                     String eventName = eventResponse.getEventNm();
+                    long eventId = eventResponse.getEventId();
 
                     String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
 
@@ -88,12 +89,10 @@ public class KakaoApi {
                             if (!isDuplicateData(eventName, stationName)) {
                                 int distance = getDistance(origin, destination);
                                 KaKao kaKao = KaKao.builder()
+                                        .distance(distance)
+                                        .eventId(eventId)
                                         .stationName(stationName)
                                         .eventName(eventName)
-                                        .destination(destination)
-                                        .distance(distance)
-                                        .stationLatitude(Double.parseDouble(String.valueOf(eventLatitude)))
-                                        .stationLongitude(Double.parseDouble(String.valueOf(eventLongitude)))
                                         .build();
 
                                 eventKaKaoList.add(kaKao);

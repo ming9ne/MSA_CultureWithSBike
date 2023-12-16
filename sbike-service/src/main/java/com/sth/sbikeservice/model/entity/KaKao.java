@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Data
 @Builder
@@ -19,32 +21,24 @@ public class KaKao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(length = 255)
-    private String stationName;
+    private Long eventId;
 
     @Column(length = 1000)
     private String eventName;
 
-    @Column(length = 1000)
-    private String destination;
+    @Column(length = 255)
+    private String stationName;
 
-    @Column
     private int distance;
-
-    @Column
-    private double stationLatitude;
-
-    @Column
-    private double stationLongitude;
 
 
     public KakoDTO toDto() {
         return KakoDTO.builder()
+                .distance(String.valueOf(distance))
+                .eventId(eventId)
                 .eventName(eventName)
                 .stationName(stationName)
-                .distance(String.valueOf(distance))
-                .stationLatitude(String.valueOf(stationLatitude))
-                .stationLongitude(String.valueOf(stationLongitude))
                 .build();
     }
+
 }

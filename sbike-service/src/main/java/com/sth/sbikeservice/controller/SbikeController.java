@@ -2,6 +2,7 @@ package com.sth.sbikeservice.controller;
 
 import com.sth.sbikeservice.model.dto.KakoDTO;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.schedule.KakaoApi;
 import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.repository.KaKaoRepository;
@@ -9,16 +10,13 @@ import com.sth.sbikeservice.schedule.SbikeSchedule;
 import com.sth.sbikeservice.service.KakaoService;
 import com.sth.sbikeservice.service.SbikeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.sth.sbikeservice.service.KakaoService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -60,6 +58,12 @@ public class SbikeController {
         List<SbikeDTO> result = new ArrayList<>();
         sbikeList.forEach(result::add);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @GetMapping("/findSbike/{stationId}")
+    public ResponseEntity<Optional<Sbike>> listSbikeByStationId(@PathVariable String stationId) {
+        Optional<Sbike> sbikeOptional = sbikeService.findSbikeByStationId(stationId);
+        return ResponseEntity.status(HttpStatus.OK).body(sbikeOptional);
     }
 
 
@@ -115,9 +119,11 @@ public class SbikeController {
         KaKao kaKao = KaKao.builder()
                 .stationName(stationName)
                 .eventName(eventName)
-                .destination(destination)
-                .distance(distance)
                 .build();
         kaKaoRepository.save(kaKao);
     }
+
+
+
+
 }

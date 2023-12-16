@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KakoDTO {
 
+    private Long eventId;
     private String eventName;
     private String stationName;
     private String stationLatitude;
@@ -25,10 +26,9 @@ public class KakoDTO {
 
     public KaKao toEntity() {
         return KaKao.builder()
-                .stationName(stationName)
                 .distance(Integer.parseInt(distance))
-                .stationLatitude(Double.parseDouble(stationLatitude))
-                .stationLongitude(Double.parseDouble(stationLongitude))
+                .eventId(eventId)
+                .stationName(stationName)
                 .build();
     }
 
