@@ -107,7 +107,7 @@ public class UserCouponService {
         RestTemplate restTemplate = new RestTemplate();
 
         // 유저 조회 API 엔드포인트 URL
-        String userApiUrl = "http://" + env.getProperty("gateway") + ":8000/api/v1/user-service/user";
+        String userApiUrl = "http://" + env.getProperty("gateway") + "/api/v1/user-service/user";
         try {
             // 유저 조회 API 호출
             ResponseEntity<Map> response = restTemplate.getForEntity(userApiUrl + "?id=" + userId, Map.class);
