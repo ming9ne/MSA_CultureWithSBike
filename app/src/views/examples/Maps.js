@@ -21,6 +21,7 @@ const Maps = (props) => {
     center: { lat: 37.566535, lng: 126.9779692 },
     // 지도 위치 변경시 panto를 이용할지에 대해서 정의
     isPanto: false,
+    level: 6
   })
   const [events, setEvents] = useState([]);
   const [sbikes, setSbikes] = useState();
@@ -31,6 +32,7 @@ const Maps = (props) => {
       setState({
         center: { lat: location.state.state.lat, lng: location.state.state.lot },
         isPanto: false,
+        level: 3
       })
       setEvents([location.state.state]);
       setSbikes(location.state.sbikes, {isOpen: false});
@@ -86,7 +88,7 @@ const Maps = (props) => {
                 center={state.center}
                 isPanto={state.isPanto}
                 style={{ width: "100%", height: "60vh" }}
-                level={6}
+                level={state.level}
               >
                 <MapTypeControl position={"TOPRIGHT"} />
                 <ZoomControl position={"RIGHT"} />

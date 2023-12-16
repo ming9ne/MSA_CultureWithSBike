@@ -65,9 +65,10 @@ const Index = (props) => {
       .catch(e => console.log(e))
 
     fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/statistics`)
-      .then(response => response.json())
-      .then(data => {
-        setCouponData(data);
+      .then(response => {
+        if(response.ok) {
+          setCouponData(response.json());
+        }
       })
       .catch(e => console.log(e))
 

@@ -5,24 +5,25 @@ import { Card, CardHeader, CardImg, CardTitle, CardFooter, CardBody, CardText, C
 import Header from "components/Headers/Header.js";
 
 function Detail() { // () 안에 정보들
-    const[congestion, setCongestion] = useState([]);
-    const[population, setPopulation] = useState([]);
-    const[sbikes, setSbikes] = useState([{
-        "stationName": "경복궁역 4번 출구 뒤",
-        "stationLatitude": "37.586150",
-        "stationLongitude": "126.98705",
-        "distance": "-1"
-    }, {
-        "stationName": "경복궁역 5번 출구 뒤",
-        "stationLatitude": "37.566175",
-        "stationLongitude": "126.98705",
-        "distance": "-1"
-    }, {
-        "stationName": "경복궁역 6번 출구 뒤",
-        "stationLatitude": "37.572200",
-        "stationLongitude": "126.98705",
-        "distance": "-1"
-    }, ]);
+    const [congestion, setCongestion] = useState([]);
+    const [population, setPopulation] = useState([]);
+    // const[sbikes, setSbikes] = useState([{
+    //     "stationName": "경복궁역 4번 출구 뒤",
+    //     "stationLatitude": "37.586150",
+    //     "stationLongitude": "126.98705",
+    //     "distance": "-1"
+    // }, {
+    //     "stationName": "경복궁역 5번 출구 뒤",
+    //     "stationLatitude": "37.566175",
+    //     "stationLongitude": "126.98705",
+    //     "distance": "-1"
+    // }, {
+    //     "stationName": "경복궁역 6번 출구 뒤",
+    //     "stationLatitude": "37.572200",
+    //     "stationLongitude": "126.98705",
+    //     "distance": "-1"
+    // }, ]);
+    const [sbikes, setSbikes] = useState();
     const navigate = useNavigate();
     const location = useLocation();
     console.log(location.state);
@@ -52,15 +53,15 @@ function Detail() { // () 안에 정보들
                     console.log(e);
                 })
 
-            // fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/sbike-service/listkakao/${location.state.title}`)
-            //     .then(response => response.json())
-            //     .then(data => {
-            //         console.log(data);
-            //         setSbikes(data);
-            //     })
-            //     .catch(e => {
-            //         console.log(e);
-            //     })
+            fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/sbike-service/kakaos/${location.state.id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data[0].sbike);
+                    setSbikes(data[0].sbike);
+                })
+                .catch(e => {
+                    console.log(e);
+                })
         };        
     }, [])
 
@@ -104,11 +105,12 @@ function Detail() { // () 안에 정보들
                                     <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
                                 ) : <></>}<br />
                                 <h1>가까운 따릉이 대여소</h1>
-                                {sbikes.map((sbike, index) => {
+                                {sbikes && sbikes.map((sbike, index) => {
                                     return (
                                         <>
-                                            {index+1}) {sbike.stationName}<br/>
-                                            거리 : {sbike.distance}<br/><br/>
+                                            {index+1}) <b>{sbike.stationName}</b><br/>
+                                            &emsp;&emsp;거치대 개수 : {sbike.rackTotCnt}<br/>
+                                            &emsp;&emsp;자전거 주차 총 건수 : {sbike.parkingBikeTotCnt}<br/>
                                         </>
                                     );
                                 })}

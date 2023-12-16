@@ -84,8 +84,8 @@ const List = () => {
                 // <Col sm="6">
                   <div className="events">
                     <Event
-                      key={event.id}
-                      id={event.id}
+                      key={event.event_id}
+                      id={event.eventId}
                       title={event.title}
                       strtdate={event.strtdate}
                       endDate={event.endDate}

@@ -25,10 +25,10 @@ const Profile = () => {
       "Content-Type": "application/json",
       "Authorization" : localStorage.getItem("login-token")
       }})
-        .then(response => response.json())
-        .then(response => { 
-            setCoupons(response);
-            console.log(response);
+        .then(response => {
+          if(response.ok) {
+            setCoupons(response.json());
+          }
         })
         .catch(e => {
             console.log(e);
@@ -112,7 +112,7 @@ const Profile = () => {
               </CardHeader>
               <CardBody>
                 <Row>
-                  {coupons.map(coupon => {
+                  {coupons.length === 0 ? <></> : coupons.map(coupon => {; 
                     return( 
                       <Card
                         style={{

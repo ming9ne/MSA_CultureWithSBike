@@ -17,12 +17,10 @@ function Coupon() {
             }
         })
             .then(response => {
-                console.log(response);
-                return response.json()
-            })
-            .then(response => {
-                setCoupons(response);
-                console.log(response);
+                if(response.ok) {
+                    setCoupons(response.json());
+                    console.log(response);
+                }
             })
             .catch(e => {
                 console.log(e);
@@ -34,14 +32,27 @@ function Coupon() {
         <>
             <Header />
             <Container className="mt--7" fluid>
-                <Row>
-                    {coupons.map((coupon) => {
-                        return (
+                {coupons.length === 0 ? (
+                    <Row>
+                        <Card
+                            style={{
+                                margin: "30px",
+                                width: "300px"
+                            }} >
+                                
+                            <CardBody>
+                                쿠폰이 없습니다
+                            </CardBody>
+                        </Card>
+                    </Row>
+                ) : (
+                    <Row>
+                        {coupons.map((coupon) => (
                             <Card
                                 style={{
                                     margin: "30px",
                                     width: "300px"
-                            }}key={coupon.couponCode}>
+                                }} key={coupon.couponCode}>
                                 <CardHeader tag="h3">
                                     <Row className="align-items-center">
                                         <Col xs="6">
@@ -52,35 +63,35 @@ function Coupon() {
                                                 color="primary"
                                                 onClick={(e) => {
                                                     e.preventDefault();
-                                                    e.target.hidden=true;
+                                                    e.target.hidden = true;
                                                     fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/userCoupon`, {
                                                         method: "POST",
                                                         headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization" : localStorage.getItem("login-token")
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": localStorage.getItem("login-token")
                                                         },
                                                         body: JSON.stringify({
                                                             couponCode: coupon.couponCode, userId: localStorage.getItem("id")
                                                         }),
                                                     })
-                                                    .then(response => {
-                                                        if(response.ok) {
-                                                            return response.json()
-                                                        } else {
-                                                            return response.json().then(data => Promise.reject(data));
-                                                        }
-                                                    }).then(data => {
-                                                        console.log(data);
-                                                        alert("쿠폰이 발급되었습니다.");
-                                                        window.location.reload();
-                                                    })
-                                                    .catch(e => {
-                                                        alert(e.error);
-                                                        window.location.reload();
-                                                    })
+                                                        .then(response => {
+                                                            if (response.ok) {
+                                                                return response.json();
+                                                            } else {
+                                                                return response.json().then(data => Promise.reject(data));
+                                                            }
+                                                        }).then(data => {
+                                                            console.log(data);
+                                                            alert("쿠폰이 발급되었습니다.");
+                                                            window.location.reload();
+                                                        })
+                                                        .catch(e => {
+                                                            alert(e.error);
+                                                            window.location.reload();
+                                                        });
                                                 }}
                                                 size="sm"
-                                                >
+                                            >
                                                 발급받기
                                             </Button>
                                         </Col>
@@ -89,12 +100,12 @@ function Coupon() {
                                 <CardBody>
                                     <h2>{coupon.couponCode}</h2><br/>
                                     기한 : {coupon.issueDate} ~ {coupon.expirationDate}<br/>
-                                    남은 개수 : {coupon.quantity} <br />
+                                    남은 개수 : {coupon.quantity} <br/>
                                 </CardBody>
                             </Card>
-                        )
-                    })}
-                </Row>
+                        ))}
+                    </Row>
+                )}
             </Container>
         </>
     );
