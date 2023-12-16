@@ -35,4 +35,5 @@ spring:
     redis:
       port: 6379
 
-gateway: localhost
+gateway: localhost:8000
+front: localhost:3000

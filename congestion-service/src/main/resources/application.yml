@@ -31,3 +31,6 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+gateway: localhost:8000
+front: localhost:3000
