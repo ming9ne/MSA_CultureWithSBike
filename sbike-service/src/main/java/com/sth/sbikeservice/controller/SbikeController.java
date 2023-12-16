@@ -52,7 +52,7 @@ public class SbikeController {
         sbikeSchedule.addSbikeToDatabase(sbikeDTOList);
     }
 
-    @GetMapping("/listSbike")
+    @GetMapping("/sbikes")
     public ResponseEntity<List<SbikeDTO>> listSbike() {
         Iterable<SbikeDTO> sbikeList = sbikeService.listSbike();  // 수정된 부분
         List<SbikeDTO> result = new ArrayList<>();
@@ -60,7 +60,7 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/findSbike/{stationId}")
+    @GetMapping("/sbikes/{stationId}")
     public ResponseEntity<Optional<Sbike>> listSbikeByStationId(@PathVariable String stationId) {
         Optional<Sbike> sbikeOptional = sbikeService.findSbikeByStationId(stationId);
         return ResponseEntity.status(HttpStatus.OK).body(sbikeOptional);
@@ -70,14 +70,14 @@ public class SbikeController {
 
     // 가까운 따릉이 정류장 조회 API
 
-    @GetMapping("/listKakao")
+    @GetMapping("/kakaos")
     public ResponseEntity<List<KakoDTO>> listKakao() {
         List<KakoDTO> result = kakaoService.listKakao();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/findEventId/{eventId}")
-    public ResponseEntity<List<KakoDTO>> listKakaoByEventId(@PathVariable String eventId) {
+    @GetMapping("/kakaos/{eventId}")
+    public ResponseEntity<List<KakoDTO>> findKakaoByEventId(@PathVariable String eventId) {
         List<KakoDTO> resultList = kakaoService.listKakaoByEventId(eventId);
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
     }
@@ -93,32 +93,32 @@ public class SbikeController {
     }
 
 
-    @PostMapping("/addDistance")
-    public void addDistance(@RequestParam String eventName) {
-        // 전체 정류장 정보를 읽어옴
-        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-
-        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
-        for (SbikeDTO sbikeDTO : sbikeDTOList) {
-            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
-            String stationName = sbikeDTO.getStationName();
-
-            // 거리를 호출하고 저장하는 메서드 추가
-            saveDistanceForStation(eventName, destination, stationName);
-        }
-    }
-
-    private void saveDistanceForStation(String eventName, String destination, String stationName) {
-        // 거리를 호출하고 반환
-        int distance = kakaoApi.getDistance(eventName, destination);
-
-        // 거리를 이용하여 KaKao 엔티티 생성
-        KaKao kaKao = KaKao.builder()
-                .stationName(stationName)
-                .eventName(eventName)
-                .build();
-        kaKaoRepository.save(kaKao);
-    }
+//    @PostMapping("/addDistance")
+//    public void addDistance(@RequestParam String eventName) {
+//        // 전체 정류장 정보를 읽어옴
+//        List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
+//
+//        // 각 정류장의 정보를 이용하여 Distance 메서드 호출
+//        for (SbikeDTO sbikeDTO : sbikeDTOList) {
+//            String destination = sbikeDTO.getStationLongitude() + "," + sbikeDTO.getStationLatitude();
+//            String stationName = sbikeDTO.getStationName();
+//
+//            // 거리를 호출하고 저장하는 메서드 추가
+//            saveDistanceForStation(eventName, destination, stationName);
+//        }
+//    }
+//
+//    private void saveDistanceForStation(String eventName, String destination, String stationName) {
+//        // 거리를 호출하고 반환
+//        int distance = kakaoApi.getDistance(eventName, destination);
+//
+//        // 거리를 이용하여 KaKao 엔티티 생성
+//        KaKao kaKao = KaKao.builder()
+//                .stationName(stationName)
+//                .eventName(eventName)
+//                .build();
+//        kaKaoRepository.save(kaKao);
+//    }
 
 
 

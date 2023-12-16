@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventResponse {
+public class ResponseEvent {
+    private Long eventId;
+    private String eventNm;
     private double lot;
     private double lat;
-    private String eventNm;
-    private String stationName;
-    private Long eventId;
 }

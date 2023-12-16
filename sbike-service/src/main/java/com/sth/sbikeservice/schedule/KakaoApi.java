@@ -6,9 +6,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
 import com.sth.sbikeservice.model.entity.KaKao;
+import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.KaKaoRepository;
 import com.sth.sbikeservice.service.SbikeService;
-import com.sth.sbikeservice.vo.EventResponse;
+import com.sth.sbikeservice.vo.NearSbike;
+import com.sth.sbikeservice.vo.ResponseEvent;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,29 +53,34 @@ public class KakaoApi {
         try {
             RestTemplate restTemplate = new RestTemplate();
 
-            String eventApiUrl = "http://" + env.getProperty("gateway") + ":8000/api/v1/event-service/events";
-            EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
+            String eventApiUrl = "http://" + env.getProperty("gateway") + "/api/v1/event-service/events";
+            ResponseEvent[] responsEvents = restTemplate.getForObject(eventApiUrl, ResponseEvent[].class);
             List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
 
             if (!sbikeDTOList.isEmpty()) {
                 List<KaKao> kaKaoList = new ArrayList<>();
 
-                for (EventResponse eventResponse : eventResponses) {
-                    double eventLongitude = eventResponse.getLot();
-                    double eventLatitude = eventResponse.getLat();
-                    String eventName = eventResponse.getEventNm();
-                    long eventId = eventResponse.getEventId();
+                for (ResponseEvent responseEvent : responsEvents) {
+                    long eventId = responseEvent.getEventId();
+                    String eventName = responseEvent.getEventNm();
+                    double eventLatitude = responseEvent.getLat();
+                    double eventLongitude = responseEvent.getLot();
 
                     // DB에 이미 있는 데이터인지 확인
-                    if (kaKaoRepository.existsByEventName(eventName)) {
-                        System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
-                        continue;
-                    }
+//                    if (kaKaoRepository.existsByEventName(eventName)) {
+//                        System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
+//                        continue;
+//                    }
 
                     String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
 
                     // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
-                    List<KaKao> eventKaKaoList = new ArrayList<>();
+                    KaKao kakao = KaKao.builder()
+                            .eventId(eventId)
+                            .eventName(eventName)
+                            .build();
+
+                    List<NearSbike> nearSbikes = new ArrayList<>();
 
                     for (SbikeDTO sbikeDTO : sbikeDTOList) {
                         double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
@@ -84,27 +91,29 @@ public class KakaoApi {
                                 && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
 
                             String destination = stationLongitude + "," + stationLatitude;
-                            String stationName = sbikeDTO.getStationName();
 
                             int distance = getDistance(origin, destination);
-                            KaKao kaKao = KaKao.builder()
+
+                            NearSbike nearSbike = NearSbike.builder()
+                                    .sbikeDTO(sbikeDTO)
                                     .distance(distance)
-                                    .eventId(eventId)
-                                    .stationName(stationName)
-                                    .eventName(eventName)
                                     .build();
 
-                            eventKaKaoList.add(kaKao);
+                            nearSbikes.add(nearSbike);
                         }
                     }
 
                     // 거리를 기준으로 정렬
-                    eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
+                    nearSbikes.sort(Comparator.comparingInt(NearSbike::getDistance));
 
+                    List<Sbike> sbikes = new ArrayList<>();
                     // 상위 3개의 데이터만 선택
-                    List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
+                    for(int i = 0; i < 3; i++) {
+                        sbikes.add(nearSbikes.get(i).getSbikeDTO().toEntity());
+                    }
+                    kakao.setSbike(sbikes);
 
-                    kaKaoRepository.saveAll(selectedKaKaoList); // 이벤트 당 상위 3개 저장
+                    kaKaoRepository.save(kakao); // 이벤트 당 상위 3개 저장
                 }
             } else {
                 System.out.println("리스트에 사용 가능한 데이터가 없습니다.");

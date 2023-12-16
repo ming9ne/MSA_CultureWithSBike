@@ -3,12 +3,14 @@ package com.sth.sbikeservice.model.entity;
 
 import com.sth.sbikeservice.model.dto.KakoDTO;
 import com.sth.sbikeservice.model.dto.SbikeDTO;
+import com.sth.sbikeservice.vo.NearSbike;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,23 +23,21 @@ public class KaKao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column
     private Long eventId;
 
     @Column(length = 1000)
     private String eventName;
-
-    @Column(length = 255)
-    private String stationName;
-
-    private int distance;
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<Sbike> sbike = new ArrayList<>();
 
 
     public KakoDTO toDto() {
         return KakoDTO.builder()
-                .distance(String.valueOf(distance))
+                .id(id)
                 .eventId(eventId)
                 .eventName(eventName)
-                .stationName(stationName)
+                .sbike(sbike)
                 .build();
     }
 
