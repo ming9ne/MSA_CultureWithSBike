@@ -19,8 +19,6 @@ public class KakoDTO {
     private Long eventId;
     private String eventName;
     private String stationName;
-    private String stationLatitude;
-    private String stationLongitude;
     private String distance;
 
 

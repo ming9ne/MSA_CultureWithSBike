@@ -76,17 +76,7 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @GetMapping("/listKakao/{origin}")
-    public ResponseEntity<List<KakoDTO>> listKakaoByOrigin(@PathVariable String origin) {
-        List<KakoDTO> allKakaoData = kakaoService.listKakao();
-        List<KakoDTO> filteredKakaoData = allKakaoData.stream()
-                .filter(kakaoDTO -> kakaoDTO.getEventName().equals(origin))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
-    }
-
-    @GetMapping("/findEvent/{eventId}")
+    @GetMapping("/findEventId/{eventId}")
     public ResponseEntity<List<KakoDTO>> listKakaoByEventId(@PathVariable String eventId) {
         List<KakoDTO> resultList = kakaoService.listKakaoByEventId(eventId);
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
