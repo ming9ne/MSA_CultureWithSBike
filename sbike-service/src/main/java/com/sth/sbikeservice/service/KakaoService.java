@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class KakaoService {
@@ -29,7 +30,12 @@ public class KakaoService {
         return resultList;
     }
 
-
-
-
+    public List<KakoDTO> listKakaoByEventId(String eventId) {
+        List<KaKao> events = kaKaoRepository.findByEventId(Long.valueOf(eventId));
+        List<KakoDTO> resultList = new ArrayList<>();
+        for (KaKao event : events) {
+            resultList.add(event.toDto());
+        }
+        return resultList;
+    }
 }

@@ -86,6 +86,13 @@ public class SbikeController {
         return ResponseEntity.status(HttpStatus.OK).body(filteredKakaoData);
     }
 
+    @GetMapping("/findEvent/{eventId}")
+    public ResponseEntity<List<KakoDTO>> listKakaoByEventId(@PathVariable String eventId) {
+        List<KakoDTO> resultList = kakaoService.listKakaoByEventId(eventId);
+        return ResponseEntity.status(HttpStatus.OK).body(resultList);
+    }
+
+
 
 
     // 따릉이 위도 경도 API
