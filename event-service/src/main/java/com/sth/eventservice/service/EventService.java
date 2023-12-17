@@ -6,6 +6,7 @@ import com.sth.eventservice.model.dto.EventDTO;
 import com.sth.eventservice.model.entity.Event;
 import com.sth.eventservice.repository.EventRepository;
 import com.sth.eventservice.vo.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import java.time.format.TextStyle;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
+@Slf4j
 public class EventService {
 
     Environment env;
@@ -286,13 +288,13 @@ public class EventService {
 
         // 일별 이벤트 건수를 저장할 Map 초기화 (요일 순서대로)
         Map<String, Integer> eventCountByDayOfWeek = new LinkedHashMap<>();
-        eventCountByDayOfWeek.put("월요일", 0);
-        eventCountByDayOfWeek.put("화요일", 0);
-        eventCountByDayOfWeek.put("수요일", 0);
-        eventCountByDayOfWeek.put("목요일", 0);
-        eventCountByDayOfWeek.put("금요일", 0);
-        eventCountByDayOfWeek.put("토요일", 0);
-        eventCountByDayOfWeek.put("일요일", 0);
+        eventCountByDayOfWeek.put("Monday", 0);
+        eventCountByDayOfWeek.put("Tuesday", 0);
+        eventCountByDayOfWeek.put("Wednesday", 0);
+        eventCountByDayOfWeek.put("Thursday", 0);
+        eventCountByDayOfWeek.put("Friday", 0);
+        eventCountByDayOfWeek.put("Saturday", 0);
+        eventCountByDayOfWeek.put("Sunday", 0);
 
         // 월별 이벤트 건수를 저장할 Map 초기화 (월 순서대로)
         Map<String, Integer> eventCountByMonth = new LinkedHashMap<>();
@@ -312,9 +314,16 @@ public class EventService {
                     // 요일 계산
                     DayOfWeek dayOfWeek = startDate.getDayOfWeek();
                     String dayOfWeekName = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+                    log.info("dayOfWeekName: " + dayOfWeekName);
+                    log.info("오류나기 전"+eventCountByDayOfWeek.get(dayOfWeekName));
 
                     // 해당 요일의 이벤트 건수 증가
-                    eventCountByDayOfWeek.put(dayOfWeekName, eventCountByDayOfWeek.get(dayOfWeekName) + 1);
+                    try {
+                        eventCountByDayOfWeek.put(dayOfWeekName, eventCountByDayOfWeek.getOrDefault(dayOfWeekName, 0) + 1);
+                    } catch (Exception e) {
+                        log.warn(e.getMessage());
+                    }
+                    log.info("오류난 후"+eventCountByDayOfWeek.get(dayOfWeekName));
 
                     // 월 계산
                     Month month = startDate.getMonth();
