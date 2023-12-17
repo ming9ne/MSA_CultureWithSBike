@@ -391,7 +391,7 @@ const Index = (props) => {
                       <td>{population.areaPpltnMax}</td>
                       <td>
                         <div className="d-flex align-items-center">
-                          <span className="mr-2">{population.areaPpltnMax / 100000 * 100}%</span>
+                          <span className="mr-2">{Math.round(population.areaPpltnMax / 100000 * 100)}%</span>
                           <div>
                             <Progress
                               max="100"

@@ -18,9 +18,12 @@ function Coupon() {
         })
             .then(response => {
                 if(response.ok) {
-                    setCoupons(response.json());
-                    console.log(response);
+                    return response.json();
                 }
+                return [];
+            })
+            .then(data => {
+                setCoupons(data);
             })
             .catch(e => {
                 console.log(e);

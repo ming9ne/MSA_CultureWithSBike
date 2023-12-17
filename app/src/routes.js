@@ -50,14 +50,6 @@ var routes = [
     requireLogin: true,
   },
   {
-    path: "/icons",
-    name: "Icons",
-    icon: "ni ni-planet text-blue",
-    component: <Icons />,
-    layout: "/admin",
-    requireLogin: true,
-  },
-  {
     path: "/login",
     name: "Login",
     icon: "ni ni-key-25 text-info",
