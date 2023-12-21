@@ -8,6 +8,7 @@ import com.sth.sbikeservice.model.dto.SbikeDTO;
 import com.sth.sbikeservice.model.entity.KaKao;
 import com.sth.sbikeservice.model.entity.Sbike;
 import com.sth.sbikeservice.repository.KaKaoRepository;
+import com.sth.sbikeservice.service.KakaoService;
 import com.sth.sbikeservice.service.SbikeService;
 import com.sth.sbikeservice.vo.NearSbike;
 import com.sth.sbikeservice.vo.ResponseEvent;
@@ -33,263 +34,26 @@ import java.util.stream.Collectors;
 @Component
 public class KakaoApi {
 
-    private final SbikeService sbikeService;
-    private final KaKaoRepository kaKaoRepository;
-    private final RestTemplate restTemplate;
-    Environment env;
+
+    private final KakaoService kakaoService;
 
     @Autowired
-    public KakaoApi(SbikeService sbikeService, KaKaoRepository kaKaoRepository, RestTemplate restTemplate, Environment env) {
-        this.sbikeService = sbikeService;
+    public KakaoApi(KakaoService kakaoService) {
 
-        this.kaKaoRepository = kaKaoRepository;
-        this.restTemplate = restTemplate;
-        this.env = env;
+        this.kakaoService = kakaoService;
+
     }
 
     @Scheduled(cron = "0 0 */12 * * *") // 12시간마다 실행
+
     @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForCreateKakao")
     public void createKakao() {
         try {
-            RestTemplate restTemplate = new RestTemplate();
-
-            String eventApiUrl = "http://" + env.getProperty("gateway") + "/api/v1/event-service/events";
-            ResponseEvent[] responsEvents = restTemplate.getForObject(eventApiUrl, ResponseEvent[].class);
-            List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-
-            if (!sbikeDTOList.isEmpty()) {
-                List<KaKao> kaKaoList = new ArrayList<>();
-
-                for (ResponseEvent responseEvent : responsEvents) {
-                    long eventId = responseEvent.getEventId();
-                    String eventName = responseEvent.getEventNm();
-                    double eventLatitude = responseEvent.getLat();
-                    double eventLongitude = responseEvent.getLot();
-
-                    // DB에 이미 있는 데이터인지 확인
-                    if (kaKaoRepository.existsByEventName(eventName)) {
-                        System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
-                        continue;
-                    }
-
-                    String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
-
-                    // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
-                    KaKao kakao = KaKao.builder()
-                            .eventId(eventId)
-                            .eventName(eventName)
-                            .build();
-
-                    List<NearSbike> nearSbikes = new ArrayList<>();
-
-                    for (SbikeDTO sbikeDTO : sbikeDTOList) {
-                        double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
-                        double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
-
-                        // 범위 내의 데이터만 처리
-                        if (stationLongitude >= eventLongitude - 0.015 && stationLongitude <= eventLongitude + 0.015
-                                && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
-
-                            String destination = stationLongitude + "," + stationLatitude;
-
-                            int distance = getDistance(origin, destination);
-
-                            NearSbike nearSbike = NearSbike.builder()
-                                    .sbikeDTO(sbikeDTO)
-                                    .distance(distance)
-                                    .build();
-
-                            nearSbikes.add(nearSbike);
-                        }
-                    }
-
-                    // 거리를 기준으로 정렬
-                    nearSbikes.sort(Comparator.comparingInt(NearSbike::getDistance));
-
-                    List<Sbike> sbikes = new ArrayList<>();
-                    // 상위 3개의 데이터만 선택
-                    for(int i = 0; i < 3; i++) {
-                        sbikes.add(nearSbikes.get(i).getSbikeDTO().toEntity());
-                    }
-                    kakao.setSbike(sbikes);
-
-                    kaKaoRepository.save(kakao); // 이벤트 당 상위 3개 저장
-                }
-            } else {
-                System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
-            }
+            kakaoService.createKakao();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
         }
     }
 
-    public void fallbackForCreateKakao(Exception e) {
-        log.error("CreateKakao 실행 중 예외 발생: " + e.getMessage());
-    }
-
-
-    //    public void createKakao() {
-//        try {
-//            RestTemplate restTemplate = new RestTemplate();
-//
-//            String eventApiUrl = "http://"+env.getProperty("gateway")+":8000/api/v1/event-service/events";
-////            String eventApiUrl = "http://localhost:8000/api/v1/event-service/events";
-//            EventResponse[] eventResponses = restTemplate.getForObject(eventApiUrl, EventResponse[].class);
-//            List<SbikeDTO> sbikeDTOList = sbikeService.listSbike();
-//
-//            if (!sbikeDTOList.isEmpty()) {
-//                List<KaKao> kaKaoList = new ArrayList<>();
-//
-//                for (EventResponse eventResponse : eventResponses) {
-//                    double eventLongitude = eventResponse.getLot();
-//                    double eventLatitude = eventResponse.getLat();
-//                    String eventName = eventResponse.getEventNm();
-//                    long eventId = eventResponse.getEventId();
-//
-//                    String origin = eventLongitude + "," + eventLatitude + ",name=" + eventName;
-//
-//                    // 각 이벤트에 대한 정류장 거리 계산 및 KaKao 엔티티 생성
-//                    List<KaKao> eventKaKaoList = new ArrayList<>();
-//
-//                    for (SbikeDTO sbikeDTO : sbikeDTOList) {
-//                        double stationLongitude = Double.parseDouble(sbikeDTO.getStationLongitude());
-//                        double stationLatitude = Double.parseDouble(sbikeDTO.getStationLatitude());
-//
-//                        // 범위 내의 데이터만 처리
-//                        if (stationLongitude >= eventLongitude - 0.015 && stationLongitude <= eventLongitude + 0.015
-//                                && stationLatitude >= eventLatitude - 0.015 && stationLatitude <= eventLatitude + 0.015) {
-//
-//                            String destination = stationLongitude + "," + stationLatitude;
-//                            String stationName = sbikeDTO.getStationName();
-//
-//                            // 이미 저장된 데이터와 새로운 데이터를 비교하여 중복 여부 확인
-//                            if (!isDuplicateData(eventName, stationName)) {
-//                                int distance = getDistance(origin, destination);
-//                                KaKao kaKao = KaKao.builder()
-//                                        .distance(distance)
-//                                        .eventId(eventId)
-//                                        .stationName(stationName)
-//                                        .eventName(eventName)
-//                                        .build();
-//
-//                                eventKaKaoList.add(kaKao);
-//                            }
-//                        }
-//                    }
-//
-//                    // 거리를 기준으로 정렬
-//                    eventKaKaoList.sort(Comparator.comparingInt(KaKao::getDistance));
-//
-//                    // 상위 3개의 데이터만 선택
-//                    List<KaKao> selectedKaKaoList = eventKaKaoList.stream().limit(3).collect(Collectors.toList());
-//
-//                    kaKaoList.addAll(selectedKaKaoList);
-//                }
-//
-//                // 최종 결과를 DB에 저장
-//                kaKaoRepository.saveAll(kaKaoList);
-//            } else {
-//                System.out.println("리스트에 사용 가능한 데이터가 없습니다.");
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            System.out.println("이벤트 데이터를 가져오거나 API 호출에 실패했습니다.");
-//        }
-//    }
-    //    private boolean isDuplicateData(String eventName, String stationName) {
-//
-//        int eventCount = kaKaoRepository.countByEventName(eventName);
-//
-//        if (eventCount >= 3) {
-//            System.out.println("이미 존재한 데이터입니다: EventName=" + eventName);
-//            return true;
-//        }
-//        return false;
-//    }
-
-
-    @CircuitBreaker(name = "basicCircuitBreaker", fallbackMethod = "fallbackForGetDistance")
-    public int getDistance(String origin, String destination) {
-        try {
-            // 카카오디벨로퍼스에서 발급 받은 REST API 키
-            String REST_API_KEY = "b607b434b034948b1f4dcba5efc74551";
-
-            // 요청 URL 생성
-            String baseUrl = "https://apis-navi.kakaomobility.com/v1/directions";
-            String waypoints = "";
-            String priority = "RECOMMEND";
-            String carFuel = "GASOLINE";
-            String carHipass = "false";
-            String alternatives = "false";
-            String roadDetails = "false";
-
-            StringBuilder queryParams = new StringBuilder();
-            queryParams.append("origin=").append(URLEncoder.encode(origin, "UTF-8"));
-            queryParams.append("&destination=").append(URLEncoder.encode(destination, "UTF-8"));
-            queryParams.append("&waypoints=").append(URLEncoder.encode(waypoints, "UTF-8"));
-            queryParams.append("&priority=").append(URLEncoder.encode(priority, "UTF-8"));
-            queryParams.append("&car_fuel=").append(URLEncoder.encode(carFuel, "UTF-8"));
-            queryParams.append("&car_hipass=").append(URLEncoder.encode(carHipass, "UTF-8"));
-            queryParams.append("&alternatives=").append(URLEncoder.encode(alternatives, "UTF-8"));
-            queryParams.append("&road_details=").append(URLEncoder.encode(roadDetails, "UTF-8"));
-
-            URL url = new URL(baseUrl + "?" + queryParams.toString());
-
-            // HttpURLConnection 생성
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // 요청 메서드 설정 (GET)
-            connection.setRequestMethod("GET");
-
-            // 인증 정보 추가
-            connection.setRequestProperty("Authorization", "KakaoAK " + REST_API_KEY);
-
-            // 응답 코드 확인
-            int responseCode = connection.getResponseCode();
-
-            // 응답이 성공(200)일 경우 데이터 읽기
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    String inputLine;
-                    StringBuilder response = new StringBuilder();
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-
-                    // 응답 내용 출력
-//                    System.out.println("Response:\n" + response.toString());
-
-                    // JSON 파싱하여 distance 값 추출
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(response.toString());
-                    int distance = jsonNode
-                            .path("routes")
-                            .path(0)
-                            .path("summary")
-                            .path("distance")
-                            .asInt();
-
-                    // 추출한 distance 값 출력
-                    System.out.println("둘 사이 거리: " + distance + " 미터");
-
-                    // 추출한 distance 값 반환
-                    return distance;
-                }
-            } else {
-                // 에러 발생 시 에러 코드 출력
-                System.out.println("HTTP Request Failed with error code: " + responseCode);
-                return -1; // 에러 발생 시 -1 반환 또는 다른 방식으로 처리
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1; // 예외 발생 시 -1 반환 또는 다른 방식으로 처리
-        }
-    }
-
-    public void fallbackForGetDistance(Exception e) {
-        log.error("GetDistance 실행 중 예외 발생: " + e.getMessage());
-    }
 }
