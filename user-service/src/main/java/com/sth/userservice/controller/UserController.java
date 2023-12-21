@@ -10,6 +10,7 @@ import com.sth.userservice.vo.ResponseUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/user-service")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final TokenProvider tokenProvider;
@@ -66,8 +68,15 @@ public class UserController {
 
     // 유저 등록
     @PostMapping("/users")
-    public ResponseEntity<ResponseUser> createUser(@RequestBody RequestUser user) {
-        UserDTO userDTO = userService.createUser(user);
+    public ResponseEntity<Object> createUser(@RequestBody RequestUser user) {
+        UserDTO userDTO;
+
+        try {
+            userDTO = userService.createUser(user);
+        } catch (RuntimeException e) {
+            log.warn(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
 
         ResponseUser responseUser = ResponseUser.builder()
                 .id(userDTO.getId())
@@ -105,15 +114,5 @@ public class UserController {
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         return new ResponseEntity<>(responseUser, httpHeaders, HttpStatus.OK);
-    }
-
-    @PostMapping("/valid")
-    public HttpStatus valid(HttpServletRequest httpServletRequest) {
-        String jwt = httpServletRequest.getHeader("Authorization");
-        if(tokenProvider.validateToken(jwt)) {
-            return HttpStatus.OK;
-        } else {
-            return HttpStatus.FORBIDDEN;
-        }
     }
 }
