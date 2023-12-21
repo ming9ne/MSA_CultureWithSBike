@@ -39,7 +39,12 @@ const Maps = (props) => {
     } else {
       console.log("event fetching");
       fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/event-service/todayEvents`)
-        .then(response => response.json())
+        .then(response => {
+          if(response.ok) {
+            return response.json();
+          }
+          return [];
+        })
         .then(data => {
           console.log(data);
           setEvents(data, {isOpen: false});
@@ -102,12 +107,9 @@ const Maps = (props) => {
                     position={{lat: sbike.stationLatitude, lng: sbike.stationLongitude}} // 마커를 표시할 위치
                     title={sbike.stationName}
                     image={{
-                      src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-                      size: { width: 22, height: 26 },
-                      options: {
-                        spriteSize: { width: 36, height: 98 },
-                        spriteOrigin: { x: 10, y: 72 },
-                      },
+                      // src: "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
+                      src: require("../../assets/img/theme/Sbike.png"),
+                      size: { width: 50, height: 50 },
                     }}
                     onMouseOver={() => handleMarkerMouse(index)}
                     // onMouseOut={() => handleMarkerMouse(index)}

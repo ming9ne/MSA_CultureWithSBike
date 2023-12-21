@@ -67,8 +67,18 @@ const Index = (props) => {
     fetch(`http://${process.env.REACT_APP_GATEWAY}/api/v1/coupon-service/statistics`)
       .then(response => {
         if(response.ok) {
-          setCouponData(response.json());
+          return response.json();
         }
+        return [];
+      })
+      .then(data => {
+        let coupon = {};
+        Object.keys(data).sort().map(key => {
+          coupon[key] = data[key];
+        })
+
+        console.log(coupon);
+        setCouponData(coupon);
       })
       .catch(e => console.log(e))
 
@@ -202,7 +212,7 @@ const Index = (props) => {
   useEffect(() => {
     let labels = [];
     let datas = [];
-    Object.keys(couponData).reverse().map(data => {
+    Object.keys(couponData).map(data => {
       labels = [...labels, data];
       datas = [...datas, couponData[data]];
     })

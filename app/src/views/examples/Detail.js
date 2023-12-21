@@ -102,7 +102,7 @@ function Detail() { // () 안에 정보들
                                 {congestion.areaCongestLvl ? (<>장소 혼잡도 지표 : {congestion.areaCongestLvl}<br /></>) : ""}
                                 {congestion.areaCongestMsg ? <>장소 혼잡도 지표 관련 메세지 : {congestion.areaCongestMsg}<br /></> : ""}
                                 {population.areaPpltnMin && population.areaPpltnMax ? (
-                                    <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax}(만 명)<br /></>
+                                    <>인구 수 : {population.areaPpltnMin} ~ {population.areaPpltnMax} 명<br /></>
                                 ) : <></>}<br />
                                 <h1>가까운 따릉이 대여소</h1>
                                 {sbikes && sbikes.map((sbike, index) => {
