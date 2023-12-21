@@ -25,6 +25,7 @@ public class CouponSchedule {
 
     @Scheduled(cron = "0 0 0 * * *") // 매일 12시
     public void CreateCouponSchedule() {
+        log.info("Create Coupon Schedule");
         if(!env.getProperty("server.port").equals("8600")) {
             return;
         }
