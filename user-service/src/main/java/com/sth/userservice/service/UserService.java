@@ -42,6 +42,10 @@ public class UserService implements UserDetailsService {
 
     // 유저 회원가입
     public UserDTO createUser(RequestUser requestUser) {
+        if(userRepository.existsUserById(requestUser.getId())) {
+            throw new RuntimeException("ID already Exists. ID : " + requestUser.getId());
+        }
+
         User user = User.builder()
                 .id(requestUser.getId())
                 .username(requestUser.getUsername())
