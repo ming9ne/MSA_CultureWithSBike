@@ -25,11 +25,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EventSchedule {
     private final EventService eventService;
-    private final EventRepository eventRepository;
 
     //매일 오전12시, 오후12시 마다 서비스 실행
     @Scheduled(cron = "0 0 */12 * * *")
-//    @Scheduled(fixedDelay = 300000)
     public void saveEvents() {
         log.info("Scheduled Task: saveEvents");
         eventService.saveEvents();

@@ -144,61 +144,6 @@ public class EventService {
         logger.info("도시 데이터 호출 끝");
         // 이벤트 저장 로직 완료 후 추가 작업을 수행할 수 있음
     }
-
-    //    public void saveEvents() {
-//
-////        String areaApiUrl = "http://localhost:8000/api/v1/area-service/areas";
-//        String areaApiUrl = "http://"+env.getProperty("gateway")+":8000/api/v1/area-service/areas";
-//        AreaResponse[] areas = restTemplate.getForObject(areaApiUrl, AreaResponse[].class);
-//
-//        List<EventDTO> eventDTOList = new ArrayList<>();
-//        logger.info("도시 데이터 호출 시작");
-//        for (AreaResponse area : areas) {
-//            int startPage = 1;
-//            int pageSize = 100;
-//            String areaname = area.getAreaNm();
-//            String apiUrl = "http://openapi.seoul.go.kr:8088/48435455656b617238305977625a75/xml/citydata/" + startPage + "/" + pageSize + "/" + areaname;
-//
-//            try {
-//                ResponseEntity<EventResponse> responseEntity = restTemplate.getForEntity(apiUrl, EventResponse.class);
-//                if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//                    EventResponse response = responseEntity.getBody();
-//                    if (response != null && response.getCitydata().getEvents() != null && !response.getCitydata().getEvents().isEmpty()) {
-//                        List<EventStts> eventSttsList = response.getCitydata().getEvents();
-//
-//                        for (EventStts eventStts : eventSttsList) {
-//                            String eventName = eventStts.getEVENT_NM();
-//
-//                            // 중복 검사: 이벤트 이름이 이미 데이터베이스에 존재하는지 확인
-//                            if (!eventRepository.existsByEventNm(eventName)) {
-//                                EventDTO eventDTO = EventDTO.builder()
-//                                        .areaNm(areaname)
-//                                        .eventNm(eventName)
-//                                        .build();
-//                                eventDTOList.add(eventDTO);
-//                            } else {
-//                                // 이미 존재하는 이벤트인 경우 콘솔과 로그에 메시지 출력
-//                                System.out.println("중복 이벤트 발견: " + eventName);
-//                                logger.info("중복 이벤트 발견: " + eventName);
-//                            }
-//                        }
-//                        System.out.println("API 호출 중");
-//                    } else {
-//                        logger.info("API 응답에서 이벤트 정보를 찾을 수 없습니다.");
-//                    }
-//                } else {
-//                    logger.warn("API 호출 실패");
-//                    System.out.println("API 호출이 실패했습니다. 상태 코드: " + responseEntity.getStatusCodeValue());
-//                }
-//            } catch (Exception e) {
-//                logger.warn("API 호출 중 오류 발생");
-//                System.out.println("API 호출 중 오류 발생: " + e.getMessage());
-//                e.printStackTrace();
-//            }
-//        }
-//        logger.info("도시 데이터 호출 끝");
-//        addEvents(eventDTOList);
-//    }
     public void fallbackForSaveEvents(Exception e) {
         logger.error("saveEvents 실행 중 예외 발생: " + e.getMessage());
     }
