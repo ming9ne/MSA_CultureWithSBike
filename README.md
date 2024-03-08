@@ -22,7 +22,7 @@
 - `Java 17` 
 - `JDK 17` 
 - **IDE** : Intellij 
-- **Framework** : 스프링부트 3.1.5 
+- **Framework** :  스프링부트 3.1.5 
 - **Front** : 리액트
 - **DataBase** : MySQL, Redis
 - **ORM** : JPA
